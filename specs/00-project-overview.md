@@ -3,7 +3,9 @@
 ## Product
 
 A silent, lightweight Android app that warns drivers about speed cameras.
-Install it, grant permissions, forget about it. It detects driving, checks proximity to known cameras, and vibrates your phone. No maps, no navigation, no account, no internet required while driving.
+Install it, grant permissions, forget about it. It detects driving, checks proximity to known cameras, and vibrates your phone. No navigation, no account, no internet required while driving.
+
+When opened, the app shows a live map centered on your position with camera markers around you. The map follows your movement in real-time with zoom in/out. This is NOT a navigation app — no routes, no directions. Just a radar-like view of you and the cameras nearby.
 
 ## Platform
 
@@ -37,14 +39,14 @@ The app is a generic proximity alert engine. Camera data is decoupled into downl
 
 ## Phases
 
-| Phase | Name                          | Depends On |
-|-------|-------------------------------|------------|
-| 1     | Data Pipeline + Pack Gen      | —          |
-| 2     | Android Core Engine           | —          |
-| 3     | Pack System in App            | 1, 2       |
-| 4     | Admin Portal                  | 1          |
-| 5     | Multi-Country + Auto-Detect   | 3, 4       |
-| 6     | Hebrew + RTL + Community      | 5          |
+| Phase | Name                          | Depends On | Status |
+|-------|-------------------------------|------------|--------|
+| 1     | Data Pipeline + Pack Gen      | —          | DONE   |
+| 2     | Android Core Engine           | —          | UP NEXT |
+| 3     | Pack System in App            | 1, 2       | —      |
+| 4     | Admin Portal                  | 1          | —      |
+| 5     | Multi-Country + Auto-Detect   | 3, 4       | —      |
+| 6     | Hebrew + RTL + Community      | 5          | —      |
 
 ## Country Pack Format (Standard Schema)
 

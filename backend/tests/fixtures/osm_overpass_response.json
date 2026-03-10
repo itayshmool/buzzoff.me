@@ -1,0 +1,57 @@
+{
+  "version": 0.6,
+  "elements": [
+    {
+      "type": "node",
+      "id": 452459007,
+      "lat": 32.2744984,
+      "lon": 34.8533643,
+      "tags": {
+        "enforcement": "traffic_signals",
+        "highway": "speed_camera",
+        "note": "Red light camera"
+      }
+    },
+    {
+      "type": "node",
+      "id": 716763677,
+      "lat": 31.9097892,
+      "lon": 34.8048242,
+      "tags": {
+        "highway": "speed_camera"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1096560968,
+      "lat": 31.246333,
+      "lon": 34.783101,
+      "tags": {
+        "highway": "speed_camera",
+        "maxspeed": "50"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1096560969,
+      "lat": 31.2510193,
+      "lon": 34.7985,
+      "tags": {
+        "enforcement": "traffic_signals",
+        "highway": "speed_camera",
+        "maxspeed": "50"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1096560973,
+      "lat": 31.2436092,
+      "lon": 34.7937043,
+      "tags": {
+        "highway": "speed_camera",
+        "maxspeed": "50",
+        "direction": "180"
+      }
+    }
+  ]
+}

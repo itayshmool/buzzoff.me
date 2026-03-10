@@ -11,8 +11,9 @@ Build the core driving detection and proximity alert engine. This phase uses a h
 3. Proximity engine (spatial queries against camera DB)
 4. Alert manager (vibration patterns)
 5. Boot receiver (survive reboots)
-6. Minimal settings UI (one screen)
-7. Test dataset bundled in assets
+6. Live map screen (OSM tiles, centered on user, camera markers)
+7. Settings screen (alert preferences)
+8. Test dataset bundled in assets
 
 ## Core Loop
 
@@ -206,11 +207,42 @@ class BootReceiver : BroadcastReceiver() {
 }
 ```
 
-### 6. Settings UI (Single Screen - Jetpack Compose)
+### 6. Main UI (Jetpack Compose)
+
+The app has two screens: **Map** (main) and **Settings**.
+
+#### Map Screen (default)
+
+A live map centered on the user's current position. NOT a navigation app — no routes, no directions. Think of it as a radar view.
 
 ```
 ┌─────────────────────────────────┐
-│ BuzzOff            [active]  │
+│ [map fills entire screen]       │
+│                                 │
+│         ○  (camera dot)         │
+│                                 │
+│              ●                  │
+│           (you are here)        │
+│                                 │
+│     ○          ○                │
+│                                 │
+│                          [+][-] │
+│                          [⚙]   │
+└─────────────────────────────────┘
+```
+
+- Map centered on user's GPS position, follows movement in real-time
+- Camera markers as colored dots (blue=speed, red=red light, amber=avg speed)
+- Zoom in/out controls
+- Small settings gear button to access settings
+- Status bar at top or bottom showing: "Active" / "Waiting for driving..."
+- Uses OpenStreetMap tiles (free, no API key)
+
+#### Settings Screen
+
+```
+┌─────────────────────────────────┐
+│ ← Settings                      │
 │─────────────────────────────────│
 │                                 │
 │ Alert Distance                  │
@@ -228,7 +260,6 @@ class BootReceiver : BroadcastReceiver() {
 │ ☑ Red light cameras             │
 │ ☑ Average speed zones           │
 │                                 │
-│ Status: Waiting for driving...  │
 │ Cameras loaded: 187             │
 │                                 │
 └─────────────────────────────────┘

@@ -1,0 +1,6 @@
+lat,lon,type,speed_limit,heading,address,external_id
+32.2744984,34.8533643,red_light,60,90.0,,CSV-001
+31.9097892,34.8048242,fixed_speed,,,,CSV-002
+31.246333,34.783101,,50,180.0,Main St Beer Sheva,CSV-003
+,,,,,,CSV-004-no-coords
+31.2510193,34.7985,avg_speed,70,,,CSV-005

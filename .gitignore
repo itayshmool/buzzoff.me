@@ -28,6 +28,13 @@ android/local.properties
 # Packs (generated)
 backend/packs/*.db
 
+# Generated files
+backend/map.html
+
+# Test/cache
+.pytest_cache/
+backend/.pytest_cache/
+
 # Secrets
 *.pem
 *.key
