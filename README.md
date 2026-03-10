@@ -45,8 +45,8 @@ Silent speed camera warning app. Detects driving, alerts via vibration when appr
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 1 | Data Pipeline + Pack Generation | Done |
-| 2 | Flutter App Core Engine | Up Next |
-| 3 | Pack System in App | - |
+| 2 | Flutter App Core Engine | Done |
+| 3 | Pack System in App | Up Next |
 | 4 | Admin Portal | - |
 | 5 | Multi-Country + Auto-Detect | - |
 | 6 | Hebrew + RTL + Community | - |
@@ -59,6 +59,17 @@ Silent speed camera warning app. Detects driving, alerts via vibration when appr
 - 69 fixed speed + 78 red light cameras
 - API serving country list, pack metadata, and pack downloads
 - 88 tests passing
+
+### Phase 2 Results
+
+- Flutter 3.41.4 app with full core engine architecture
+- Pure Dart proximity engine: haversine distance, heading filter, debouncing
+- SQLite R-tree spatial queries via CameraDao (implements CameraQueryPort)
+- Orchestrator: driving state machine (idle → driving → stopping)
+- Live map screen (OSM tiles) + settings screen with persistent preferences
+- 10-camera test dataset near Tel Aviv (32KB SQLite)
+- Android manifest with all permissions, foreground service, boot receiver
+- 48 tests passing
 
 ## Tech Stack
 
@@ -105,6 +116,15 @@ uvicorn app.main:app --reload
 pytest -v
 ```
 
+## Flutter App Setup (Local Dev)
+
+```bash
+cd app
+flutter pub get
+flutter test        # 48 tests
+flutter run         # requires Android emulator or device
+```
+
 ## API Endpoints
 
 ```
@@ -133,5 +153,13 @@ buzzoff.me/
 │   ├── migrations/          # Alembic
 │   ├── tests/               # 88 tests
 │   └── packs/               # Generated pack files
-└── app/                     # Flutter mobile app (Phase 2)
+└── app/                     # Flutter mobile app
+    ├── lib/
+    │   ├── core/            # Pure Dart engine (geo, proximity, models)
+    │   ├── data/            # SQLite DAO, preferences
+    │   ├── services/        # Location, alert, foreground task, orchestrator
+    │   ├── providers/       # Riverpod state management
+    │   └── ui/              # Map screen, settings screen, widgets
+    ├── test/                # 48 tests
+    └── assets/              # Test camera dataset
 ```
