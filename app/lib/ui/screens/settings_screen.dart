@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/settings_provider.dart';
 import '../../providers/database_provider.dart';
+import '../../providers/pack_provider.dart';
+import 'country_picker_screen.dart';
+import 'setup_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -12,6 +15,8 @@ class SettingsScreen extends ConsumerWidget {
     final settings = ref.watch(settingsProvider);
     final notifier = ref.read(settingsProvider.notifier);
     final cameraCount = ref.watch(cameraCountProvider);
+    final activeCountry = ref.watch(activeCountryProvider);
+    final installedPacks = ref.watch(installedPacksProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -72,6 +77,52 @@ class SettingsScreen extends ConsumerWidget {
             value: settings.avgSpeedZonesEnabled,
             onChanged: notifier.toggleAvgSpeedZones,
           ),
+
+          const SizedBox(height: 24),
+
+          // Country
+          _SectionTitle('Country'),
+          if (activeCountry != null) ...[
+            ListTile(
+              title: Text('Active: $activeCountry'),
+              subtitle: Text('$cameraCount cameras loaded'),
+              trailing: const Icon(Icons.swap_horiz),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => CountryPickerScreen(
+                      onCountrySelected: (country) async {
+                        final manager = ref.read(packManagerProvider);
+                        // Check if already installed
+                        final installed = installedPacks
+                            .any((p) => p.countryCode == country.code);
+                        if (installed) {
+                          final dao =
+                              await manager.switchCountry(country.code);
+                          ref.read(activeCountryProvider.notifier)
+                              .setCountry(country.code);
+                          ref.read(cameraDaoProvider.notifier).state = dao;
+                          if (context.mounted) Navigator.of(context).pop();
+                        } else {
+                          if (context.mounted) {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (_) => const SetupScreen(),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+          ] else
+            const ListTile(
+              title: Text('No country selected'),
+              subtitle: Text('Download a camera pack to get started'),
+            ),
 
           const SizedBox(height: 24),
 

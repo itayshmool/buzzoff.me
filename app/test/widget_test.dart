@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,17 +7,37 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:buzzoff/ui/screens/settings_screen.dart';
 import 'package:buzzoff/providers/settings_provider.dart';
+import 'package:buzzoff/providers/pack_provider.dart';
+import 'package:buzzoff/services/pack_storage.dart';
 
 void main() {
+  late Directory tempDir;
+
+  setUp(() async {
+    tempDir = await Directory.systemTemp.createTemp('widget_test_');
+  });
+
+  tearDown(() async {
+    if (await tempDir.exists()) {
+      await tempDir.delete(recursive: true);
+    }
+  });
+
+  List<Override> buildOverrides(SharedPreferences prefs) {
+    final storage = PackStorage(baseDir: tempDir.path, prefs: prefs);
+    return [
+      sharedPreferencesProvider.overrideWithValue(prefs),
+      packStorageProvider.overrideWithValue(storage),
+    ];
+  }
+
   testWidgets('Settings screen renders with default values', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-        ],
+        overrides: buildOverrides(prefs),
         child: const MaterialApp(home: SettingsScreen()),
       ),
     );
@@ -45,9 +67,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-        ],
+        overrides: buildOverrides(prefs),
         child: const MaterialApp(home: SettingsScreen()),
       ),
     );
@@ -68,9 +88,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-        ],
+        overrides: buildOverrides(prefs),
         child: const MaterialApp(home: SettingsScreen()),
       ),
     );

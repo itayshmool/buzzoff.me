@@ -46,8 +46,8 @@ The app is a generic proximity alert engine. Camera data is decoupled into downl
 |-------|-------------------------------|------------|--------|
 | 1     | Data Pipeline + Pack Gen      | —          | DONE   |
 | 2     | Flutter App Core Engine       | —          | DONE   |
-| 3     | Pack System in App            | 1, 2       | UP NEXT |
-| 4     | Admin Portal                  | 1          | —      |
+| 3     | Pack System in App            | 1, 2       | DONE   |
+| 4     | Admin Portal                  | 1          | UP NEXT |
 | 5     | Multi-Country + Auto-Detect   | 3, 4       | —      |
 | 6     | Hebrew + RTL + Community      | 5          | —      |
 

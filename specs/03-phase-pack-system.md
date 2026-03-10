@@ -2,12 +2,12 @@
 
 ## Goal
 
-Connect the Android app to the backend. Replace the hardcoded test dataset with downloadable country packs. Implement pack management: download, install, switch, update, and auto-detect country by GPS.
+Connect the app to the backend. Replace the hardcoded test dataset with downloadable country packs. Implement pack management: download, install, switch, update, and auto-detect country by GPS.
 
 ## Depends On
 
 - Phase 1 (backend serving packs via API)
-- Phase 2 (Android core engine working with local SQLite)
+- Phase 2 (Flutter core engine working with local SQLite)
 
 ## Deliverables
 
@@ -35,13 +35,13 @@ User picks Israel → download pack (small SQLite file)
 Pack saved to app internal storage
     │
     ▼
-Room database points to downloaded pack
+CameraDao points to downloaded pack
     │
     ▼
 [Normal operation — same as Phase 2]
     │
     ▼
-[Weekly, on WiFi] WorkManager checks for updates
+[On app resume, on WiFi] Check for updates
     │  (fetches /api/v1/packs/IL/meta → compares version)
     │
     ├── Same version → do nothing
@@ -51,19 +51,19 @@ Room database points to downloaded pack
 ## Pack Storage Strategy
 
 ```
-/data/data/com.buzzoff/files/
+{app_documents_dir}/
 ├── packs/
 │   ├── IL/
-│   │   ├── current.db        ← active pack (symlink or copy)
+│   │   ├── current.db        ← active pack (copy of latest version)
 │   │   ├── v3.db             ← downloaded version
 │   │   └── v4.db             ← newer version (downloaded, pending swap)
 │   └── DE/
 │       ├── current.db
 │       └── v1.db
-└── active_country.txt         ← "IL"
+└── (active_country stored in SharedPreferences)
 ```
 
-Atomic swap: download new version to temp file → verify checksum → rename to vN.db → update current.db → delete old version.
+Atomic swap: download new version to temp file → verify checksum → rename to vN.db → copy to current.db → delete old version.
 
 ## Country Auto-Detection
 
@@ -88,125 +88,146 @@ This check is cheap — just a bounding box comparison, no network calls during 
 
 ### PackManager
 
-```kotlin
-class PackManager @Inject constructor(
-    private val packApi: PackApiService,
-    private val packStorage: PackStorage,
-    private val database: CameraDatabase,
-    private val preferences: UserPreferences
-) {
-    suspend fun getAvailableCountries(): List<CountryInfo>
-    suspend fun downloadPack(countryCode: String, onProgress: (Float) -> Unit)
-    suspend fun installPack(countryCode: String, version: Int)
-    suspend fun switchCountry(countryCode: String)
-    suspend fun checkForUpdates(countryCode: String): UpdateInfo?
-    suspend fun getInstalledPacks(): List<InstalledPack>
-    suspend fun deletePack(countryCode: String)
-    fun getActiveCountry(): String?
+```dart
+class PackManager {
+  final PackApiClient _apiClient;
+  final PackStorage _storage;
+
+  PackManager(this._apiClient, this._storage);
+
+  Future<List<Country>> fetchCountries();
+  Future<CameraDao> downloadAndInstall(String countryCode, {void Function(double)? onProgress});
+  Future<CameraDao> switchCountry(String countryCode);
+  Future<PackMeta?> checkForUpdate(String countryCode);
+  Future<CameraDao> updatePack(String countryCode, {void Function(double)? onProgress});
+  List<InstalledPack> getInstalledPacks();
+  Future<void> deleteInstalledPack(String countryCode);
+  String? getActiveCountry();
 }
 ```
 
-### PackApiService (Retrofit)
+### PackApiClient (HTTP)
 
-```kotlin
-interface PackApiService {
-    @GET("api/v1/countries")
-    suspend fun getCountries(): List<CountryResponse>
+```dart
+class PackApiClient {
+  final http.Client _client;
+  final String _baseUrl;
 
-    @GET("api/v1/packs/{country}/meta")
-    suspend fun getPackMeta(@Path("country") code: String): PackMetaResponse
+  PackApiClient({http.Client? client, String? baseUrl})
+      : _client = client ?? http.Client(),
+        _baseUrl = baseUrl ?? 'https://buzzoff-api.onrender.com';
 
-    @GET("api/v1/packs/{country}/data")
-    @Streaming
-    suspend fun downloadPack(@Path("country") code: String): ResponseBody
+  Future<List<Country>> getCountries();
+  Future<PackMeta> getPackMeta(String countryCode);
+  Future<Uint8List> downloadPack(String countryCode, {void Function(double)? onProgress});
 }
 ```
 
-### PackUpdateWorker (WorkManager)
+### Pack Update Check (on app resume)
 
-```kotlin
-class PackUpdateWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
-    override suspend fun doWork(): Result {
-        // Only runs on WiFi (constraint set at scheduling time)
-        val activeCountry = packManager.getActiveCountry() ?: return Result.success()
-        val update = packManager.checkForUpdates(activeCountry) ?: return Result.success()
-
-        packManager.downloadPack(activeCountry) { progress -> setProgress(progress) }
-        packManager.installPack(activeCountry, update.version)
-
-        return Result.success()
+```dart
+// In main app widget, using WidgetsBindingObserver:
+class _AppState extends State<BuzzOffApp> with WidgetsBindingObserver {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkForUpdates();
     }
+  }
+
+  Future<void> _checkForUpdates() async {
+    // Only on WiFi (via connectivity_plus)
+    final connectivity = await Connectivity().checkConnectivity();
+    if (!connectivity.contains(ConnectivityResult.wifi)) return;
+
+    final activeCountry = packManager.getActiveCountry();
+    if (activeCountry == null) return;
+
+    final update = await packManager.checkForUpdate(activeCountry);
+    if (update == null) return;
+
+    await packManager.updatePack(activeCountry);
+  }
 }
-
-// Scheduled once on app start:
-val constraints = Constraints.Builder()
-    .setRequiredNetworkType(NetworkType.UNMETERED)  // WiFi only
-    .build()
-
-val updateWork = PeriodicWorkRequestBuilder<PackUpdateWorker>(7, TimeUnit.DAYS)
-    .setConstraints(constraints)
-    .build()
-
-WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-    "pack_update", ExistingPeriodicWorkPolicy.KEEP, updateWork
-)
 ```
 
 ### AutoCountrySwitcher
 
-```kotlin
-class AutoCountrySwitcher @Inject constructor(
-    private val packManager: PackManager,
-    private val preferences: UserPreferences
-) {
-    private var cachedCountries: List<CountryBounds>? = null
-    private var lastCheck: Long = 0
+```dart
+class AutoCountrySwitcher {
+  final PackStorage _storage;
+  List<Country>? _cachedCountries;
+  DateTime? _lastFetch;
 
-    fun checkLocation(lat: Double, lon: Double): CountrySwitchAction {
-        val active = packManager.getActiveCountry()
+  AutoCountrySwitcher(this._storage);
 
-        // Check active pack bounds
-        if (active != null && isInsideBounds(lat, lon, active)) {
-            return CountrySwitchAction.None
-        }
+  CountrySwitchAction checkLocation(double lat, double lon) {
+    final active = _storage.getActiveCountry();
 
-        // Check other installed packs
-        val installed = packManager.getInstalledPacks()
-        for (pack in installed) {
-            if (pack.countryCode != active && isInsideBounds(lat, lon, pack)) {
-                return CountrySwitchAction.AutoSwitch(pack.countryCode)
-            }
-        }
-
-        // Check available (not installed) countries - use cached list
-        val available = cachedCountries ?: return CountrySwitchAction.None
-        for (country in available) {
-            if (country.code !in installed.map { it.countryCode }) {
-                if (isInsideBounds(lat, lon, country)) {
-                    return CountrySwitchAction.PromptDownload(country)
-                }
-            }
-        }
-
-        return CountrySwitchAction.NoDataAvailable
+    // Check active pack bounds
+    if (active != null && _isInsideBounds(lat, lon, active)) {
+      return const CountrySwitchAction.none();
     }
+
+    // Check other installed packs
+    final installed = _storage.getInstalledPacks();
+    for (final pack in installed) {
+      if (pack.countryCode != active && _isInsideBounds(lat, lon, pack.countryCode)) {
+        return CountrySwitchAction.autoSwitch(pack.countryCode);
+      }
+    }
+
+    // Check available (not installed) countries — use cached list
+    final available = _cachedCountries;
+    if (available == null) return const CountrySwitchAction.none();
+
+    final installedCodes = installed.map((p) => p.countryCode).toSet();
+    for (final country in available) {
+      if (!installedCodes.contains(country.code)) {
+        if (_isInsideBoundsCountry(lat, lon, country)) {
+          return CountrySwitchAction.promptDownload(country);
+        }
+      }
+    }
+
+    return const CountrySwitchAction.noDataAvailable();
+  }
 }
 
 sealed class CountrySwitchAction {
-    object None : CountrySwitchAction()
-    data class AutoSwitch(val countryCode: String) : CountrySwitchAction()
-    data class PromptDownload(val country: CountryBounds) : CountrySwitchAction()
-    object NoDataAvailable : CountrySwitchAction()
+  const CountrySwitchAction();
+  const factory CountrySwitchAction.none() = CountrySwitchNone;
+  const factory CountrySwitchAction.autoSwitch(String countryCode) = CountrySwitchAutoSwitch;
+  const factory CountrySwitchAction.promptDownload(Country country) = CountrySwitchPromptDownload;
+  const factory CountrySwitchAction.noDataAvailable() = CountrySwitchNoData;
+}
+
+class CountrySwitchNone extends CountrySwitchAction {
+  const CountrySwitchNone();
+}
+
+class CountrySwitchAutoSwitch extends CountrySwitchAction {
+  final String countryCode;
+  const CountrySwitchAutoSwitch(this.countryCode);
+}
+
+class CountrySwitchPromptDownload extends CountrySwitchAction {
+  final Country country;
+  const CountrySwitchPromptDownload(this.country);
+}
+
+class CountrySwitchNoData extends CountrySwitchAction {
+  const CountrySwitchNoData();
 }
 ```
 
 ## Updated UI
 
-### First Launch Setup
+### First Launch Setup (Flutter)
 
 ```
 ┌─────────────────────────────────┐
-│ Welcome to BuzzOff           │
+│ Welcome to BuzzOff              │
 │                                 │
 │ Grant permissions:              │
 │ ☑ Location (required)           │
@@ -223,11 +244,11 @@ sealed class CountrySwitchAction {
 │ Select your country             │
 │                                 │
 │ ┌─────────────────────────┐     │
-│ │ 🇮🇱 Israel               │     │
+│ │ Israel                  │     │
 │ │    187 cameras · 45 KB   │     │
 │ └─────────────────────────┘     │
 │ ┌─────────────────────────┐     │
-│ │ 🇩🇪 Germany              │     │
+│ │ Germany                 │     │
 │ │    2,341 cameras · 380 KB│     │
 │ └─────────────────────────┘     │
 │                                 │
@@ -245,9 +266,9 @@ sealed class CountrySwitchAction {
           │
           ▼
 ┌─────────────────────────────────┐
-│ BuzzOff             [active] │
+│ BuzzOff                [active] │
 │                                 │
-│ Country: Israel 🇮🇱              │
+│ Country: Israel                 │
 │ Cameras: 187                    │
 │ Data version: 3                 │
 │ Last updated: 2026-03-10        │
@@ -260,16 +281,31 @@ sealed class CountrySwitchAction {
 
 ## Acceptance Criteria
 
-- [ ] App fetches country list from backend API on first launch
-- [ ] User can select a country and download its pack
-- [ ] Download shows progress indicator
-- [ ] Downloaded pack is verified via SHA-256 checksum
-- [ ] Proximity engine works with downloaded pack (not just bundled test data)
-- [ ] WorkManager checks for pack updates weekly on WiFi
-- [ ] Pack update downloads and swaps atomically (no downtime)
-- [ ] Country auto-detection works when crossing between installed packs
-- [ ] Country auto-detection prompts download for available but not installed packs
-- [ ] User can manually switch between installed country packs
-- [ ] User can delete a country pack to free space
-- [ ] App works fully offline after initial pack download
-- [ ] First launch setup flow completes cleanly (permissions → country → activate)
+- [x] App fetches country list from backend API on first launch (PackApiClient.getCountries, 6 tests)
+- [x] User can select a country and download its pack (SetupScreen → CountryPickerScreen → PackManager.downloadAndInstall)
+- [x] Download shows progress indicator (DownloadProgress widget)
+- [x] Downloaded pack is verified via SHA-256 checksum (PackStorage.verifyChecksum, 2 tests)
+- [x] Proximity engine works with downloaded pack (not just bundled test data) (PackManager opens CameraDao from downloaded file)
+- [x] App checks for pack updates on WiFi when resumed (PackManager.checkForUpdate, 2 tests)
+- [x] Pack update downloads and swaps atomically (no downtime) (PackStorage.savePack + setActivePack with copy)
+- [x] Country auto-detection works when crossing between installed packs (AutoCountrySwitcher, 6 tests)
+- [x] Country auto-detection prompts download for available but not installed packs (CountrySwitchPromptDownload action)
+- [x] User can manually switch between installed country packs (Settings → Change Country → PackManager.switchCountry)
+- [x] User can delete a country pack to free space (PackManager.deleteInstalledPack, tested)
+- [x] App works fully offline after initial pack download (PackLoader opens local SQLite, no network needed)
+- [x] First launch setup flow completes cleanly (permissions → country → activate) (SetupScreen → download → MapScreen)
+
+## Status: COMPLETE
+
+### Phase 3 Results
+
+- PackApiClient: HTTP client for backend API (getCountries, getPackMeta, downloadPack)
+- PackStorage: file system management with SHA-256 checksum verification
+- PackManager: orchestrates download → verify → save → install → open CameraDao
+- AutoCountrySwitcher: GPS-based country detection with sealed class actions
+- First-launch setup flow: country picker → download progress → map screen
+- Settings screen: country section with switch country support
+- Conditional routing: SetupScreen on first launch, MapScreen when pack installed
+- Startup loads active pack from disk into CameraDao provider
+- 31 new tests (6 API + 11 storage + 8 manager + 6 auto-switcher)
+- 79 total tests passing

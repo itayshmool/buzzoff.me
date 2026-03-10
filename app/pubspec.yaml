@@ -38,6 +38,13 @@ dependencies:
   # Preferences
   shared_preferences: ^2.3.4
 
+  # HTTP & networking
+  http: ^1.2.2
+  connectivity_plus: ^6.1.0
+
+  # Crypto (checksum verification)
+  crypto: ^3.0.6
+
   # Utilities
   cupertino_icons: ^1.0.8
 
