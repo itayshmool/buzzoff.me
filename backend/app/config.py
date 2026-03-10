@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     admin_password: str = "changeme"
     jwt_secret: str = "dev-secret-change-in-production"
 
+    admin_cors_origins: str = "http://localhost:5173"
+
     nominatim_user_agent: str = "buzzoff-app"
     google_geocoding_api_key: str = ""
 

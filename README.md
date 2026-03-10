@@ -47,7 +47,7 @@ Silent speed camera warning app. Detects driving, alerts via vibration when appr
 | 1 | Data Pipeline + Pack Generation | Done |
 | 2 | Flutter App Core Engine | Done |
 | 3 | Pack System in App | Done |
-| 4 | Admin Portal | Up Next |
+| 4 | Admin Portal | Done |
 | 5 | Multi-Country + Auto-Detect | - |
 | 6 | Hebrew + RTL + Community | - |
 
@@ -81,6 +81,16 @@ Silent speed camera warning app. Detects driving, alerts via vibration when appr
 - Conditional routing: setup screen on first launch, map when pack installed
 - 31 new tests (79 total passing)
 
+### Phase 4 Results
+
+- Admin API: 8 endpoint groups (auth, countries, sources, cameras, geocoding, packs, jobs, dashboard) — all JWT-protected
+- Admin SPA: 7 pages (dashboard, countries, country detail, source editor, geocoding queue, jobs, login)
+- Leaflet camera map with color-coded markers by type, auto-fit bounds
+- Geocoding queue with click-to-set-coords LocationPicker
+- 33 new backend tests (121 total passing)
+- Render Blueprint (`render.yaml`) for one-click infrastructure deployment
+- Build: 489KB JS / 30KB CSS gzipped
+
 ## Tech Stack
 
 | Component | Technology |
@@ -95,6 +105,7 @@ Silent speed camera warning app. Detects driving, alerts via vibration when appr
 | App Map | flutter_map (OSM tiles) |
 | App GPS | geolocator |
 | App Background | flutter_foreground_task |
+| Admin Frontend | React, Vite, TypeScript, Tailwind CSS, Leaflet |
 | Deployment | Render |
 
 ## Backend Setup (Local Dev)
@@ -126,6 +137,15 @@ uvicorn app.main:app --reload
 pytest -v
 ```
 
+## Admin Frontend Setup (Local Dev)
+
+```bash
+cd admin
+npm install
+npm run dev        # http://localhost:5173 — login with admin/changeme
+npm run build      # production build → dist/
+```
+
 ## Flutter App Setup (Local Dev)
 
 ```bash
@@ -138,10 +158,24 @@ flutter run         # requires Android emulator or device
 ## API Endpoints
 
 ```
-GET /api/v1/health              -> { "status": "ok" }
-GET /api/v1/countries           -> [{ code, name, pack_version, camera_count }]
-GET /api/v1/packs/{code}/meta   -> { version, camera_count, file_size_bytes, checksum_sha256 }
-GET /api/v1/packs/{code}/data   -> SQLite file download
+Public API:
+GET  /api/v1/health              -> { "status": "ok" }
+GET  /api/v1/countries           -> [{ code, name, pack_version, camera_count }]
+GET  /api/v1/packs/{code}/meta   -> { version, camera_count, file_size_bytes, checksum_sha256 }
+GET  /api/v1/packs/{code}/data   -> SQLite file download
+
+Admin API (JWT protected):
+POST /admin/api/auth/login                      -> { access_token }
+CRUD /admin/api/countries                        -> Country management
+CRUD /admin/api/countries/{code}/sources         -> Source management
+GET  /admin/api/countries/{code}/cameras         -> Paginated camera list
+GET  /admin/api/countries/{code}/cameras/stats   -> Camera stats by type
+GET  /admin/api/geocoding/queue                  -> Pending geocoding records
+GET  /admin/api/geocoding/failed                 -> Failed geocoding records
+PUT  /admin/api/geocoding/{id}/resolve           -> Manual lat/lon resolution
+GET  /admin/api/countries/{code}/packs           -> Pack version history
+GET  /admin/api/jobs                             -> Job run history
+GET  /admin/api/dashboard/stats                  -> Overview stats
 ```
 
 ## Repo Structure
@@ -151,8 +185,8 @@ buzzoff.me/
 ├── specs/           # Project specs (6 phases + deployment)
 ├── backend/
 │   ├── app/
-│   │   ├── api/routes/      # FastAPI endpoints
-│   │   ├── models/          # SQLAlchemy models (6 tables)
+│   │   ├── api/routes/      # FastAPI endpoints (public + admin)
+│   │   ├── models/          # SQLAlchemy models (7 tables)
 │   │   ├── schemas/         # Pydantic response schemas
 │   │   └── services/
 │   │       ├── adapters/    # OSM, CSV, Excel + registry
@@ -161,15 +195,24 @@ buzzoff.me/
 │   │       └── pack_generator.py  # SQLite + R-tree
 │   ├── jobs/                # Pipeline scripts
 │   ├── migrations/          # Alembic
-│   ├── tests/               # 88 tests
+│   ├── tests/               # 121 tests
 │   └── packs/               # Generated pack files
-└── app/                     # Flutter mobile app
-    ├── lib/
-    │   ├── core/            # Pure Dart engine (geo, proximity, models)
-    │   ├── data/            # SQLite DAO, preferences
-    │   ├── services/        # Location, alert, orchestrator, pack system
-    │   ├── providers/       # Riverpod state management
-    │   └── ui/              # Map screen, settings screen, widgets
-    ├── test/                # 79 tests
-    └── assets/              # Test camera dataset
+├── admin/                   # React admin SPA
+│   ├── src/
+│   │   ├── api/             # Axios API client (9 modules)
+│   │   ├── components/      # Reusable UI (DataTable, maps, etc.)
+│   │   ├── contexts/        # AuthContext
+│   │   ├── pages/           # 7 page components
+│   │   └── types/           # TypeScript interfaces
+│   └── dist/                # Production build output
+├── app/                     # Flutter mobile app
+│   ├── lib/
+│   │   ├── core/            # Pure Dart engine (geo, proximity, models)
+│   │   ├── data/            # SQLite DAO, preferences
+│   │   ├── services/        # Location, alert, orchestrator, pack system
+│   │   ├── providers/       # Riverpod state management
+│   │   └── ui/              # Map screen, settings screen, widgets
+│   ├── test/                # 79 tests
+│   └── assets/              # Test camera dataset
+└── render.yaml              # Render Blueprint (API + admin + DB)
 ```
