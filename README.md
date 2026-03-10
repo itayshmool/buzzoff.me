@@ -1,6 +1,6 @@
 # BuzzOff
 
-Silent speed camera warning app for Android. Detects driving, alerts via vibration when approaching cameras. Offline-first, lightweight, no navigation.
+Silent speed camera warning app. Detects driving, alerts via vibration when approaching cameras. Offline-first, lightweight, no navigation. Built with Flutter for Android + iOS (iOS post-launch).
 
 ## What it does
 
@@ -14,7 +14,7 @@ Silent speed camera warning app for Android. Detects driving, alerts via vibrati
 
 ```
                     +-----------+
-                    |  Android  |
+                    | Flutter   |
                     |   App     |
                     +-----+-----+
                           |
@@ -45,7 +45,7 @@ Silent speed camera warning app for Android. Detects driving, alerts via vibrati
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 1 | Data Pipeline + Pack Generation | Done |
-| 2 | Android Core Engine | Up Next |
+| 2 | Flutter App Core Engine | Up Next |
 | 3 | Pack System in App | - |
 | 4 | Admin Portal | - |
 | 5 | Multi-Country + Auto-Detect | - |
@@ -68,7 +68,12 @@ Silent speed camera warning app for Android. Detects driving, alerts via vibrati
 | Pack Format | SQLite with R-tree spatial index |
 | Data Sources | OSM Overpass, CSV, Excel (pluggable adapter system) |
 | Geocoding | Nominatim (OSM) with DB caching |
-| Android | Kotlin, Jetpack Compose (Phase 2) |
+| Mobile App | Flutter (Dart) — Android + iOS |
+| App State | Riverpod |
+| App Database | Drift + sqlite3 (R-tree enabled) |
+| App Map | flutter_map (OSM tiles) |
+| App GPS | geolocator |
+| App Background | flutter_foreground_task |
 | Deployment | Render |
 
 ## Backend Setup (Local Dev)
@@ -128,5 +133,5 @@ buzzoff.me/
 │   ├── migrations/          # Alembic
 │   ├── tests/               # 88 tests
 │   └── packs/               # Generated pack files
-└── android/                 # Phase 2 (coming next)
+└── app/                     # Flutter mobile app (Phase 2)
 ```

@@ -2,8 +2,8 @@
 
 ## Product
 
-A silent, lightweight Android app that warns drivers about speed cameras.
-Install it, grant permissions, forget about it. It detects driving, checks proximity to known cameras, and vibrates your phone. No navigation, no account, no internet required while driving.
+A silent, lightweight mobile app that warns drivers about speed cameras.
+Install it, grant permissions, forget about it. It detects driving, checks proximity to known cameras, and vibrates your phone. No navigation, no account, no internet required while driving. Android first, iOS post-launch.
 
 When opened, the app shows a live map centered on your position with camera markers around you. The map follows your movement in real-time with zoom in/out. This is NOT a navigation app — no routes, no directions. Just a radar-like view of you and the cameras nearby.
 
@@ -17,17 +17,20 @@ The app is a generic proximity alert engine. Camera data is decoupled into downl
 - **Offline-first**: App works without internet while driving.
 - **Multi-country**: GPS-based auto-detection or manual country selection.
 - **Multi-language**: English first. RTL-ready structure from day one.
-- **Minimal footprint**: Tiny APK, data downloaded on demand.
+- **Cross-platform**: Flutter (Dart) for Android + iOS from a single codebase.
+- **Minimal footprint**: Tiny app, data downloaded on demand.
 - **Battery-conscious**: GPS only while driving. Activity Recognition when idle.
 
 ## Tech Stack
 
 | Component           | Technology                  |
 |---------------------|-----------------------------|
-| Android App         | Kotlin, Jetpack Compose     |
-| App Database        | Room + SQLite R-tree        |
-| App Networking      | Retrofit + OkHttp           |
-| App Background      | WorkManager, FusedLocation  |
+| Mobile App          | Flutter (Dart) — Android + iOS |
+| App State           | Riverpod                    |
+| App Database        | Drift + sqlite3 (R-tree enabled) |
+| App Map             | flutter_map (OSM tiles)     |
+| App GPS             | geolocator                  |
+| App Background      | flutter_foreground_task     |
 | Admin Backend       | Python, FastAPI             |
 | Admin Frontend      | React (Vite)                |
 | Database            | PostgreSQL + PostGIS        |
@@ -42,7 +45,7 @@ The app is a generic proximity alert engine. Camera data is decoupled into downl
 | Phase | Name                          | Depends On | Status |
 |-------|-------------------------------|------------|--------|
 | 1     | Data Pipeline + Pack Gen      | —          | DONE   |
-| 2     | Android Core Engine           | —          | UP NEXT |
+| 2     | Flutter App Core Engine       | —          | UP NEXT |
 | 3     | Pack System in App            | 1, 2       | —      |
 | 4     | Admin Portal                  | 1          | —      |
 | 5     | Multi-Country + Auto-Detect   | 3, 4       | —      |
@@ -106,9 +109,11 @@ buzzoff/
 │   ├── src/
 │   ├── package.json
 │   └── vite.config.ts
-├── android/                # Android app
-│   ├── app/
-│   └── build.gradle.kts
+├── app/                    # Flutter mobile app (Android + iOS)
+│   ├── lib/
+│   ├── android/
+│   ├── ios/
+│   └── pubspec.yaml
 ├── .github/
 │   └── workflows/
 └── render.yaml             # Render blueprint

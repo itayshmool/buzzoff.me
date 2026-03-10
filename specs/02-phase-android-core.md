@@ -1,14 +1,18 @@
-# Phase 2: Android Core Engine
+# Phase 2: Flutter App Core Engine
 
 ## Goal
 
-Build the core driving detection and proximity alert engine. This phase uses a hardcoded test dataset (a small SQLite file with a few cameras) to validate the full loop: detect driving → GPS tracking → proximity check → vibration alert. No network, no pack downloads — just the engine.
+Build the core driving detection and proximity alert engine using **Flutter (Dart)** for cross-platform support (Android first, iOS post-launch). This phase uses a hardcoded test dataset (a small SQLite file with a few cameras) to validate the full loop: detect driving → GPS tracking → proximity check → vibration alert. No network, no pack downloads — just the engine.
+
+## Framework Decision
+
+**Flutter** was chosen over native Kotlin to enable iOS support from the same codebase post-launch. Key packages: `flutter_map` (OSM tiles), `geolocator` (GPS), `flutter_foreground_task` (background service), `drift` + `sqlite3` (R-tree spatial queries), `riverpod` (state management).
 
 ## Deliverables
 
 1. Activity Recognition (detect driving)
 2. Foreground location service (GPS tracking while driving)
-3. Proximity engine (spatial queries against camera DB)
+3. Proximity engine (pure Dart, spatial queries against camera DB)
 4. Alert manager (vibration patterns)
 5. Boot receiver (survive reboots)
 6. Live map screen (OSM tiles, centered on user, camera markers)
@@ -118,96 +122,105 @@ On each location update:
 
 ### 3. ProximityEngine
 
-The brains of the app. Pure Kotlin, no Android dependencies — fully testable.
+The brains of the app. Pure Dart, no Flutter/platform dependencies — fully testable.
 
-```kotlin
-class ProximityEngine(private val cameraDao: CameraDao) {
+```dart
+abstract class CameraQueryPort {
+  List<Camera> getCamerasInBounds(double minLat, double maxLat, double minLon, double maxLon);
+}
 
-    private val alertedCameras = mutableSetOf<String>() // IDs already alerted
-    private val APPROACH_DISTANCE = 800.0  // meters
-    private val CLOSE_DISTANCE = 400.0     // meters
-    private val HEADING_TOLERANCE = 45.0   // degrees
-    private val COOLDOWN_DISTANCE = 200.0  // meters past camera, reset
+class ProximityEngine {
+  final CameraQueryPort _cameraQuery;
+  final Set<int> _alertedApproaching = {};
+  final Set<int> _alertedClose = {};
 
-    fun check(lat: Double, lon: Double, heading: Float, speed: Float): List<AlertEvent> {
-        // 1. Query R-tree for cameras within 2km bounding box
-        val nearby = cameraDao.getCamerasInBounds(
-            minLat = lat - 0.018,  // ~2km
-            maxLat = lat + 0.018,
-            minLon = lon - 0.025,
-            maxLon = lon + 0.025
-        )
+  static const approachDistance = 800.0;  // meters
+  static const closeDistance = 400.0;
+  static const headingTolerance = 45.0;   // degrees
+  static const cooldownDistance = 200.0;
 
-        // 2. For each camera, calculate exact distance and bearing
-        val alerts = mutableListOf<AlertEvent>()
-        for (camera in nearby) {
-            val distance = haversine(lat, lon, camera.lat, camera.lon)
-            val bearing = bearing(lat, lon, camera.lat, camera.lon)
+  ProximityEngine(this._cameraQuery);
 
-            // 3. Is camera ahead of us? (within heading cone)
-            if (!isAhead(heading, bearing, HEADING_TOLERANCE)) continue
+  List<AlertEvent> check(double lat, double lon, double heading, double speed) {
+    // 1. Query R-tree for cameras within ~2km bounding box
+    final nearby = _cameraQuery.getCamerasInBounds(
+      lat - 0.018, lat + 0.018, lon - 0.025, lon + 0.025,
+    );
 
-            // 4. Check alert thresholds
-            val cameraKey = camera.id
-            when {
-                distance <= CLOSE_DISTANCE && cameraKey !in alertedCameras -> {
-                    alerts.add(AlertEvent(camera, AlertLevel.CLOSE, distance))
-                    alertedCameras.add(cameraKey)
-                }
-                distance <= APPROACH_DISTANCE && cameraKey !in alertedCameras -> {
-                    alerts.add(AlertEvent(camera, AlertLevel.APPROACHING, distance))
-                    // don't add to alertedCameras yet — will alert again at CLOSE
-                }
-            }
+    final alerts = <AlertEvent>[];
+    for (final camera in nearby) {
+      final distance = GeoUtils.haversine(lat, lon, camera.lat, camera.lon);
+      final bearing = GeoUtils.bearing(lat, lon, camera.lat, camera.lon);
 
-            // 5. Reset if we've passed the camera
-            if (distance > COOLDOWN_DISTANCE && cameraKey in alertedCameras) {
-                // Check if camera is now behind us
-                if (!isAhead(heading, bearing, 90.0)) {
-                    alertedCameras.remove(cameraKey)
-                }
-            }
+      // 2. Is camera ahead of us? (within heading cone)
+      if (!GeoUtils.isAhead(heading, bearing, headingTolerance)) continue;
+
+      // 3. Check alert thresholds
+      if (distance <= closeDistance && !_alertedClose.contains(camera.id)) {
+        alerts.add(AlertEvent(camera, AlertLevel.close, distance));
+        _alertedClose.add(camera.id);
+      } else if (distance <= approachDistance && !_alertedApproaching.contains(camera.id)) {
+        alerts.add(AlertEvent(camera, AlertLevel.approaching, distance));
+        _alertedApproaching.add(camera.id);
+      }
+
+      // 4. Reset if camera is behind us past cooldown
+      if (distance > cooldownDistance && _alertedClose.contains(camera.id)) {
+        if (!GeoUtils.isAhead(heading, bearing, 90.0)) {
+          _alertedClose.remove(camera.id);
+          _alertedApproaching.remove(camera.id);
         }
-        return alerts
+      }
     }
+    return alerts;
+  }
 }
 ```
 
 ### 4. AlertManager
 
-```kotlin
-object VibrationPatterns {
-    // Alert levels
-    val APPROACHING = longArrayOf(0, 100, 200, 100)       // ∙∙
-    val CLOSE       = longArrayOf(0, 500)                  // ———
-    val AVG_ZONE_ENTER = longArrayOf(0, 100, 150, 100, 150, 100) // ∙∙∙
-    val AVG_ZONE_WARN  = longArrayOf(0, 200)               // ∙
+```dart
+class VibrationPatterns {
+  // Pattern format: [pause, vibrate, pause, vibrate, ...]
+  // Alert levels
+  static const approaching = [0, 100, 200, 100];        // ∙∙
+  static const close       = [0, 500];                   // ———
+  static const avgZoneEnter = [0, 100, 150, 100, 150, 100]; // ∙∙∙
+  static const avgZoneWarn  = [0, 200];                  // ∙
 
-    // Amplitudes (0-255, -1 for default)
-    val APPROACHING_AMP = intArrayOf(0, 180, 0, 180)
-    val CLOSE_AMP       = intArrayOf(0, 255)
+  // Amplitudes (0-255, -1 for default)
+  static const approachingAmp = [0, 180, 0, 180];
+  static const closeAmp       = [0, 255];
 }
 ```
 
 AlertManager reads user preferences and dispatches:
-- Vibration (always available)
-- Sound (optional, uses AudioManager with STREAM_NOTIFICATION)
+- Vibration (always available, uses `vibration` package)
+- Sound (optional, uses `audioplayers` package)
 - The alert respects Do Not Disturb if user has system DND on — vibration still works
 
-### 5. BootReceiver
+### 5. Boot / App Restart Handling
 
-```kotlin
-class BootReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
-            // Re-register activity recognition
-            ActivityRecognitionService.register(context)
-        }
-    }
-}
+On Android, a native `BroadcastReceiver` in Kotlin handles `BOOT_COMPLETED` to restart the foreground task. Flutter's `flutter_foreground_task` package provides this via configuration:
+
+```dart
+FlutterForegroundTask.init(
+  androidNotificationOptions: AndroidNotificationOptions(
+    channelId: 'buzzoff_location',
+    channelName: 'BuzzOff Location',
+    channelImportance: NotificationChannelImportance.LOW,
+  ),
+  iosNotificationOptions: const IOSNotificationOptions(),
+  foregroundTaskOptions: const ForegroundTaskOptions(
+    autoRunOnBoot: true,  // re-register after reboot
+    allowWakeLock: true,
+  ),
+);
 ```
 
-### 6. Main UI (Jetpack Compose)
+On iOS (post-launch), background location updates are handled via `CLLocationManager` significant-change monitoring, which the OS restarts automatically after reboot.
+
+### 6. Main UI (Flutter)
 
 The app has two screens: **Map** (main) and **Settings**.
 
@@ -265,83 +278,87 @@ A live map centered on the user's current position. NOT a navigation app — no 
 └─────────────────────────────────┘
 ```
 
-## Project Structure (Android)
+## Project Structure (Flutter)
 
 ```
-android/
-├── app/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/buzzoff/
-│   │   │   │   ├── BuzzOffApp.kt           # Application class, Hilt
-│   │   │   │   │
-│   │   │   │   ├── core/                       # pure logic, no Android
-│   │   │   │   │   ├── proximity/
-│   │   │   │   │   │   ├── ProximityEngine.kt
-│   │   │   │   │   │   └── HeadingFilter.kt
-│   │   │   │   │   ├── geo/
-│   │   │   │   │   │   └── GeoUtils.kt         # haversine, bearing
-│   │   │   │   │   └── model/
-│   │   │   │   │       ├── Camera.kt
-│   │   │   │   │       ├── AlertEvent.kt
-│   │   │   │   │       └── AlertLevel.kt
-│   │   │   │   │
-│   │   │   │   ├── data/
-│   │   │   │   │   ├── local/
-│   │   │   │   │   │   ├── CameraDatabase.kt   # Room DB
-│   │   │   │   │   │   ├── CameraDao.kt        # spatial queries
-│   │   │   │   │   │   └── CameraEntity.kt
-│   │   │   │   │   └── prefs/
-│   │   │   │   │       └── UserPreferences.kt   # DataStore
-│   │   │   │   │
-│   │   │   │   ├── service/
-│   │   │   │   │   ├── ActivityRecognitionService.kt
-│   │   │   │   │   ├── LocationTrackingService.kt
-│   │   │   │   │   └── BuzzOffOrchestrator.kt
-│   │   │   │   │
-│   │   │   │   ├── alert/
-│   │   │   │   │   ├── AlertManager.kt
-│   │   │   │   │   └── VibrationPatterns.kt
-│   │   │   │   │
-│   │   │   │   ├── receiver/
-│   │   │   │   │   ├── BootReceiver.kt
-│   │   │   │   │   └── ActivityTransitionReceiver.kt
-│   │   │   │   │
-│   │   │   │   ├── ui/
-│   │   │   │   │   ├── MainActivity.kt
-│   │   │   │   │   ├── screens/
-│   │   │   │   │   │   └── SettingsScreen.kt
-│   │   │   │   │   └── theme/
-│   │   │   │   │       └── Theme.kt             # RTL-ready
-│   │   │   │   │
-│   │   │   │   └── di/
-│   │   │   │       ├── AppModule.kt
-│   │   │   │       └── DatabaseModule.kt
-│   │   │   │
-│   │   │   ├── res/
-│   │   │   │   ├── values/
-│   │   │   │   │   └── strings.xml              # English
-│   │   │   │   └── xml/
-│   │   │   │       └── backup_rules.xml
-│   │   │   │
-│   │   │   ├── assets/
-│   │   │   │   └── test_cameras.db              # small test dataset
-│   │   │   │
-│   │   │   └── AndroidManifest.xml
-│   │   │
-│   │   └── test/                                # unit tests
-│   │       └── java/com/buzzoff/
-│   │           ├── core/
-│   │           │   ├── ProximityEngineTest.kt
-│   │           │   └── GeoUtilsTest.kt
-│   │           └── alert/
-│   │               └── AlertManagerTest.kt
-│   │
-│   └── build.gradle.kts
+app/
+├── pubspec.yaml
+├── analysis_options.yaml
 │
-├── build.gradle.kts                             # project-level
-├── settings.gradle.kts
-└── gradle.properties
+├── assets/
+│   └── test_cameras.db              # bundled test dataset (~10 cameras)
+│
+├── android/
+│   └── app/src/main/
+│       └── AndroidManifest.xml      # permissions, foreground service, boot receiver
+│
+├── ios/                             # iOS support (post-launch)
+│
+├── lib/
+│   ├── main.dart                    # entry point, ProviderScope
+│   ├── app.dart                     # MaterialApp.router, theme, routing
+│   │
+│   ├── core/                        # Pure Dart — zero platform dependency, fully testable
+│   │   ├── geo/
+│   │   │   ├── geo_utils.dart       # haversine, bearing, isAhead
+│   │   │   └── bounding_box.dart    # lat/lon offset calculations
+│   │   ├── proximity/
+│   │   │   ├── proximity_engine.dart # check(lat, lon, heading, speed) → alerts
+│   │   │   ├── heading_filter.dart  # heading cone logic
+│   │   │   └── alert_event.dart     # AlertEvent, AlertLevel enum
+│   │   └── model/
+│   │       ├── camera.dart          # Camera data class
+│   │       └── app_settings.dart    # Settings value object
+│   │
+│   ├── data/
+│   │   ├── database/
+│   │   │   ├── camera_database.dart # Drift database definition
+│   │   │   ├── camera_dao.dart      # DAO with R-tree spatial queries
+│   │   │   └── pack_loader.dart     # open .db from assets or downloads
+│   │   └── preferences/
+│   │       └── user_preferences.dart # SharedPreferences wrapper
+│   │
+│   ├── services/
+│   │   ├── location_service.dart    # geolocator wrapper, GPS stream
+│   │   ├── activity_service.dart    # activity recognition wrapper
+│   │   ├── foreground_task.dart     # flutter_foreground_task handler
+│   │   ├── alert_service.dart       # vibration/sound dispatch
+│   │   └── orchestrator.dart        # activity → location → proximity → alert
+│   │
+│   ├── providers/                   # Riverpod state management
+│   │   ├── database_provider.dart
+│   │   ├── settings_provider.dart
+│   │   ├── location_provider.dart
+│   │   ├── driving_state_provider.dart
+│   │   └── nearby_cameras_provider.dart
+│   │
+│   ├── ui/
+│   │   ├── screens/
+│   │   │   ├── map_screen.dart      # flutter_map, centered on user, camera dots
+│   │   │   └── settings_screen.dart # alert preferences
+│   │   ├── widgets/
+│   │   │   ├── camera_marker.dart   # colored dot by camera type
+│   │   │   ├── status_bar.dart      # "Active" / "Waiting..."
+│   │   │   └── zoom_controls.dart   # +/- buttons, settings gear
+│   │   └── theme/
+│   │       └── app_theme.dart       # dark theme, RTL-ready
+│   │
+│   └── util/
+│       └── constants.dart           # distances, intervals, thresholds
+│
+├── test/
+│   ├── core/
+│   │   ├── proximity_engine_test.dart
+│   │   ├── geo_utils_test.dart
+│   │   └── heading_filter_test.dart
+│   ├── data/
+│   │   └── camera_dao_test.dart
+│   └── ui/
+│       ├── map_screen_test.dart
+│       └── settings_screen_test.dart
+│
+└── integration_test/
+    └── driving_loop_test.dart
 ```
 
 ## Battery Optimization Details
