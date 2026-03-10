@@ -1,0 +1,63 @@
+name: buzzoff
+description: Silent speed camera warning app. Detects driving, alerts via vibration.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # Database (SQLite with R-tree)
+  drift: ^2.22.1
+  sqlite3_flutter_libs: ^0.5.28
+  sqlite3: ^2.7.3
+  path_provider: ^2.1.5
+  path: ^1.9.1
+
+  # Map
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+
+  # GPS & Location
+  geolocator: ^13.0.2
+
+  # Background service
+  flutter_foreground_task: ^8.13.4
+
+  # Alerts
+  vibration: ^2.0.0
+
+  # Preferences
+  shared_preferences: ^2.3.4
+
+  # Utilities
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+  # Drift code generation
+  drift_dev: ^2.22.1
+  build_runner: ^2.4.14
+
+  # Riverpod code generation
+  riverpod_generator: ^2.6.3
+
+  # Testing
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/
