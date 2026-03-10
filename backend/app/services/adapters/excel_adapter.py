@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from pathlib import Path
 
 from openpyxl import load_workbook
@@ -50,7 +51,7 @@ class ExcelAdapter(SourceAdapter):
             heading=heading,
             address=address,
             external_id=str(external_id) if external_id is not None else None,
-            raw_data={k: v for k, v in row.items()},
+            raw_data={k: self._json_safe(v) for k, v in row.items()},
         )
 
     def _map_type(self, raw_type: str, type_mapping: dict | None) -> str:
@@ -77,6 +78,14 @@ class ExcelAdapter(SourceAdapter):
             return int(value)
         except (ValueError, TypeError):
             return None
+
+    @staticmethod
+    def _json_safe(value):
+        if isinstance(value, datetime):
+            return value.isoformat()
+        if isinstance(value, date):
+            return value.isoformat()
+        return value
 
     def _parse_float(self, value) -> float | None:
         if value is None:
