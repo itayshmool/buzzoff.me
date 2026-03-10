@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     database_url_sync: str = "postgresql://postgres:postgres@localhost:5432/buzzoff"
 
     pack_storage_path: str = "./packs"
+    upload_storage_path: str = "./uploads"
 
     admin_username: str = "admin"
     admin_password: str = "changeme"

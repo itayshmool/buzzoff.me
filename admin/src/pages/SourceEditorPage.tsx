@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getSources, createSource, updateSource } from '../api/sources';
+import { getSources, createSource, updateSource, uploadSourceFile } from '../api/sources';
 import type { SourceCreate, SourceUpdate } from '../types';
 
 export default function SourceEditorPage() {
@@ -26,6 +26,8 @@ export default function SourceEditorPage() {
     enabled: true,
   });
   const [configError, setConfigError] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = useState('');
 
   useEffect(() => {
     if (existing) {
@@ -42,7 +44,12 @@ export default function SourceEditorPage() {
 
   const createMutation = useMutation({
     mutationFn: (data: SourceCreate) => createSource(code!, data),
-    onSuccess: () => {
+    onSuccess: async (source) => {
+      if (file) {
+        setUploadStatus('Uploading file...');
+        await uploadSourceFile(source.id, file);
+        setUploadStatus('');
+      }
       queryClient.invalidateQueries({ queryKey: ['sources', code] });
       navigate(`/countries/${code}`);
     },
@@ -50,7 +57,12 @@ export default function SourceEditorPage() {
 
   const updateMutation = useMutation({
     mutationFn: (data: SourceUpdate) => updateSource(id!, data),
-    onSuccess: () => {
+    onSuccess: async () => {
+      if (file) {
+        setUploadStatus('Uploading file...');
+        await uploadSourceFile(id!, file);
+        setUploadStatus('');
+      }
       queryClient.invalidateQueries({ queryKey: ['sources', code] });
       navigate(`/countries/${code}`);
     },
@@ -142,6 +154,25 @@ export default function SourceEditorPage() {
             <span className="text-xs text-red-600 mt-1">{configError}</span>
           )}
         </label>
+
+        {(form.adapter === 'excel' || form.adapter === 'csv') && (
+          <label className="block">
+            <span className="text-sm font-medium text-slate-700">Data File</span>
+            <input
+              type="file"
+              accept={form.adapter === 'excel' ? '.xlsx,.xls' : '.csv,.tsv'}
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              className="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
+            {file && <span className="text-xs text-green-600 mt-1">{file.name}</span>}
+            {uploadStatus && <span className="text-xs text-blue-600 mt-1">{uploadStatus}</span>}
+            {existing?.config?.file_path && !file && (
+              <span className="text-xs text-slate-500 mt-1">
+                Current: {String(existing.config.file_path).split('/').pop()}
+              </span>
+            )}
+          </label>
+        )}
 
         <label className="block">
           <span className="text-sm font-medium text-slate-700">Schedule (cron)</span>

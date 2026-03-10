@@ -1,10 +1,12 @@
 import uuid
+from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_admin, get_db
+from app.config import settings
 from app.models.country import Country
 from app.models.source import Source
 from app.schemas.admin import AdminSourceResponse, SourceCreate, SourceUpdate
@@ -127,3 +129,39 @@ async def delete_source(
     await db.delete(source)
     await db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post("/sources/{source_id}/upload", response_model=AdminSourceResponse)
+async def upload_source_file(
+    source_id: uuid.UUID,
+    file: UploadFile,
+    _admin: str = Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(Source).where(Source.id == source_id))
+    source = result.scalar_one_or_none()
+    if source is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Source not found")
+
+    upload_dir = Path(settings.upload_storage_path) / str(source_id)
+    upload_dir.mkdir(parents=True, exist_ok=True)
+
+    file_path = upload_dir / file.filename
+    content = await file.read()
+    file_path.write_bytes(content)
+
+    config = dict(source.config) if source.config else {}
+    config["file_path"] = str(file_path)
+    source.config = config
+
+    await db.commit()
+    return AdminSourceResponse(
+        id=source.id,
+        country_code=source.country_code,
+        name=source.name,
+        adapter=source.adapter,
+        config=source.config,
+        schedule=source.schedule,
+        confidence=source.confidence,
+        enabled=source.enabled,
+    )
