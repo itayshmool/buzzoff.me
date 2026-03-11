@@ -477,6 +477,29 @@ Add Cloudflare when pack downloads exceed what a single Render instance handles.
 - Deploy from `main` branch
 - Auto-deploy on push
 
+## Deployment Gotchas & Lessons Learned
+
+### 1. `render.yaml` does NOT update existing env vars
+Changing env vars in `render.yaml` only affects **initial provisioning** of new services. To update env vars on an already-running service, use the Render Dashboard or API directly.
+
+**Example:** Adding `https://admin.buzzoff.me` to `ADMIN_CORS_ORIGINS` in `render.yaml` did not update the live service. The env var had to be updated via the Render API.
+
+### 2. Android INTERNET permission required in release builds
+Flutter debug builds auto-inject the `INTERNET` permission via the debug `AndroidManifest.xml`. **Release builds do not.** The main `AndroidManifest.xml` must explicitly include:
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+```
+Without it, all HTTP requests silently fail — no error, just connection timeouts.
+
+### 3. Pack files must be regenerated after disk changes
+Pack `.sqlite` files live on Render's persistent disk at `/data/packs`. If the disk is recreated or the service is reprovisioned, the DB still has pack records but the files are gone. Fix: trigger `generate_packs` via the admin API:
+```
+POST /admin/api/jobs/run/generate_packs
+```
+
+### 4. CORS preflight returns 400 for disallowed origins
+Starlette's CORS middleware returns HTTP 400 (not 403) when a preflight `OPTIONS` request comes from a disallowed origin. This can be confusing — the browser shows a CORS error, but the server logs show `400 Bad Request` on `OPTIONS`.
+
 ## Monitoring
 
 Render provides:

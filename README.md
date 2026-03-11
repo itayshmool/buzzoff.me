@@ -53,10 +53,9 @@ Silent speed camera warning app. Detects driving, alerts via vibration when appr
 
 ### Phase 1 Results
 
-- 148 speed cameras fetched from OpenStreetMap Overpass API for Israel
-- Merged into 147 unique cameras (1 duplicate within 50m)
+- 184 speed cameras fetched from OpenStreetMap Overpass API for Israel
+- Merged and deduplicated (50m threshold)
 - Packed into 48KB SQLite file with R-tree spatial index
-- 69 fixed speed + 78 red light cameras
 - API serving country list, pack metadata, and pack downloads
 - 88 tests passing
 
@@ -158,6 +157,14 @@ flutter run         # requires Android emulator or device
 ## Publishing to Google Play
 
 To build a release App Bundle and publish to the Play Store, see **[docs/PUBLISH_GOOGLE_PLAY.md](docs/PUBLISH_GOOGLE_PLAY.md)**. Summary: create an upload keystore, configure `app/android/key.properties`, then run `flutter build appbundle --release` and upload the AAB in [Play Console](https://play.google.com/console).
+
+## Live URLs
+
+| Service | URL |
+|---------|-----|
+| Admin Dashboard | https://admin.buzzoff.me |
+| Backend API | https://api.buzzoff.me |
+| APK Download | https://admin.buzzoff.me/buzzoff.apk |
 
 ## API Endpoints
 
