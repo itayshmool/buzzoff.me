@@ -173,6 +173,16 @@ img{max-width:100%;display:block}
 .btn-boost.red:hover{background:var(--red-dim);box-shadow:0 0 30px rgba(229,37,33,0.5)}
 .btn-boost.green{background:var(--green);color:#fff}
 .btn-boost.green:hover{background:var(--green-dim);box-shadow:0 0 30px rgba(67,176,71,0.5)}
+.btn-boost.disabled{opacity:.45;cursor:not-allowed;pointer-events:none;position:relative}
+.btn-badge{
+  position:absolute;top:-10px;right:-10px;
+  font-family:var(--font-head);font-size:6px;letter-spacing:1px;
+  background:var(--gold);color:var(--bg);
+  padding:3px 8px;border-radius:8px;
+  transform:skewX(4deg) rotate(3deg);
+  white-space:nowrap;
+  box-shadow:0 2px 8px rgba(251,208,0,0.4);
+}
 .btn-boost .btn-icon{font-size:18px}
 .hero-rainbow{
   width:200px;height:3px;margin:48px auto 0;
@@ -566,10 +576,11 @@ img{max-width:100%;display:block}
     <h1>Never Get<br>Flashed Again</h1>
     <p class="hero-sub">Speed camera alerts that ride with you. Silent. Offline. Always watching the road ahead.</p>
     <div class="hero-cta">
-      <a href="#" class="btn-boost red">
+      <span class="btn-boost red disabled">
         <span class="btn-icon">&#xF8FF;</span>
         <span>App Store</span>
-      </a>
+        <span class="btn-badge">COMING SOON</span>
+      </span>
       <a href="https://buzzoff-admin.onrender.com/buzzoff.apk" class="btn-boost green">
         <span class="btn-icon">&#9654;</span>
         <span>Android APK</span>
@@ -840,10 +851,11 @@ img{max-width:100%;display:block}
   <h2>READY TO <span class="accent">RACE?</span></h2>
   <p class="cta-sub">Free. No account needed. No ads.</p>
   <div class="cta-buttons">
-    <a href="#" class="btn-boost red">
+    <span class="btn-boost red disabled">
       <span class="btn-icon">&#xF8FF;</span>
       <span>App Store</span>
-    </a>
+      <span class="btn-badge">COMING SOON</span>
+    </span>
     <a href="https://buzzoff-admin.onrender.com/buzzoff.apk" class="btn-boost green">
       <span class="btn-icon">&#9654;</span>
       <span>Android APK</span>
