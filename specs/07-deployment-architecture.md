@@ -1,68 +1,118 @@
 # Deployment Architecture — Render
 
+## Domain & DNS
+
+### Primary Domain: `buzzoff.me`
+- **Registrar:** Namecheap
+- **Also owns:** `bazzoff.me` (typo variant, not in use)
+
+### DNS Records (Namecheap Advanced DNS)
+
+| Type | Host | Value | TTL |
+|------|------|-------|-----|
+| CNAME | `api` | `buzzoff-api.onrender.com.` | Automatic |
+| CNAME | `www` | `buzzoff-admin.onrender.com.` | Automatic |
+| URL Redirect | `@` | `https://www.buzzoff.me` | Permanent (301) |
+
+### Render Custom Domains
+
+| Render Service | Custom Domain | Purpose |
+|----------------|---------------|---------|
+| buzzoff-admin | `www.buzzoff.me` | Admin dashboard |
+| buzzoff-api | `api.buzzoff.me` | Backend API |
+
+- Root domain `buzzoff.me` → 301 redirect to `www.buzzoff.me` (handled by Namecheap URL redirect)
+- Render auto-provisions SSL via Let's Encrypt for both custom domains
+- `www.buzzoff.me` → Render redirects to `buzzoff.me` internally (Render's default behavior)
+
+### URL Map
+
+| URL | Service | Notes |
+|-----|---------|-------|
+| `https://www.buzzoff.me` | Admin dashboard (static site) | Also serves `/buzzoff.apk` |
+| `https://api.buzzoff.me` | FastAPI backend | Public + Admin APIs |
+| `https://api.buzzoff.me/api/v1/*` | Public API | Country list, pack downloads |
+| `https://api.buzzoff.me/admin/api/*` | Admin API | CRUD operations, jobs |
+| `https://buzzoff.me` | 301 → `www.buzzoff.me` | Namecheap redirect |
+
+### App API Base URLs
+
+| Client | Base URL | Config Location |
+|--------|----------|-----------------|
+| Admin dashboard | `https://api.buzzoff.me` | `admin/.env` → `VITE_API_URL` |
+| Flutter app | `https://api.buzzoff.me` | `app/lib/services/pack_api_client.dart` |
+| Fallback (Render) | `https://buzzoff-api.onrender.com` | Direct Render URL, always works |
+
+## Render Service IDs
+
+| Service | Render ID | Type |
+|---------|-----------|------|
+| buzzoff-admin | `srv-d6o8gah4tr6s73bkm73g` | Static Site |
+| buzzoff-api | `srv-d6o8ltia214c73enbs9g` | Web Service |
+| buzzoff-db | `dpg-d6o8rnqa214c73b5vhlg-a` | PostgreSQL |
+
 ## Overview
 
-All backend infrastructure runs on Render. The Android app is distributed via Google Play (or APK sideload during development).
+All backend infrastructure runs on Render. The Android app is distributed via APK download from the admin dashboard and eventually via Google Play.
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                         RENDER PLATFORM                           │
 │                                                                   │
 │  ┌──────────────────────┐    ┌─────────────────────────────────┐ │
-│  │  buzzoff-api      │    │  buzzoff-admin               │ │
+│  │  buzzoff-api          │    │  buzzoff-admin                  │ │
 │  │  Web Service (Python) │    │  Static Site (React)            │ │
-│  │                      │    │                                 │ │
-│  │  FastAPI app:        │    │  Admin dashboard SPA            │ │
-│  │  - Public API        │    │  - Talks to buzzoff-api      │ │
-│  │    /api/v1/*          │    │  - Protected by login           │ │
-│  │  - Admin API         │    │                                 │ │
-│  │    /admin/api/*       │    │  Build: npm run build           │ │
-│  │  - Pack file serving  │    │  Publish: dist/                 │ │
-│  │    /api/v1/packs/*/data│   │                                 │ │
-│  │                      │    │  URL: buzzoff-admin.onrender.com│
-│  │  URL: buzzoff-api │    └─────────────────────────────────┘ │
-│  │  .onrender.com        │                                       │
-│  └──────────┬───────────┘                                        │
+│  │  api.buzzoff.me       │    │  www.buzzoff.me                 │ │
+│  │                       │    │                                 │ │
+│  │  FastAPI app:         │    │  Admin dashboard SPA            │ │
+│  │  - Public API         │    │  - Talks to api.buzzoff.me      │ │
+│  │    /api/v1/*           │    │  - Protected by login           │ │
+│  │  - Admin API          │    │  - Serves buzzoff.apk           │ │
+│  │    /admin/api/*        │    │                                 │ │
+│  │  - Pack file serving   │    │  Build: npm run build           │ │
+│  │    /api/v1/packs/*/data│    │  Publish: dist/                 │ │
+│  │                       │    │                                 │ │
+│  └──────────┬───────────┘    └─────────────────────────────────┘ │
 │             │                                                    │
 │             │ connects to                                        │
 │             ▼                                                    │
 │  ┌──────────────────────┐                                        │
-│  │  buzzoff-db       │                                        │
-│  │  PostgreSQL + PostGIS │                                       │
-│  │                      │                                        │
-│  │  Tables:             │                                        │
-│  │  - countries          │                                       │
-│  │  - sources            │                                       │
-│  │  - raw_cameras        │                                       │
-│  │  - cameras            │                                       │
-│  │  - geocode_cache      │                                       │
-│  │  - packs              │                                       │
-│  │  - community_reports  │                                       │
-│  │                      │                                        │
-│  │  Plan: Starter ($7/mo)│                                       │
-│  │  PostGIS: via extension│                                      │
+│  │  buzzoff-db           │                                        │
+│  │  PostgreSQL + PostGIS │                                        │
+│  │                       │                                        │
+│  │  Tables:              │                                        │
+│  │  - countries           │                                       │
+│  │  - sources             │                                       │
+│  │  - raw_cameras         │                                       │
+│  │  - cameras             │                                       │
+│  │  - geocode_cache       │                                       │
+│  │  - packs               │                                       │
+│  │  - community_reports   │                                       │
+│  │                       │                                        │
+│  │  Plan: Starter ($7/mo)│                                        │
+│  │  PostGIS: via extension│                                       │
 │  └──────────────────────┘                                        │
 │                                                                   │
 │  ┌──────────────────────────────────────────────────────────────┐ │
 │  │  CRON JOBS                                                    │ │
 │  │                                                               │ │
-│  │  buzzoff-fetch    (Weekly: 0 0 * * 0)                      │ │
+│  │  buzzoff-fetch    (Weekly: 0 0 * * 0)                         │ │
 │  │  → python jobs/fetch_sources.py                               │ │
 │  │  → Fetches all enabled sources for all countries              │ │
 │  │                                                               │ │
-│  │  buzzoff-geocode  (Daily: 0 2 * * *)                       │ │
+│  │  buzzoff-geocode  (Daily: 0 2 * * *)                          │ │
 │  │  → python jobs/geocode_pending.py                             │ │
 │  │  → Geocodes raw records missing coordinates                   │ │
 │  │                                                               │ │
-│  │  buzzoff-merge    (Daily: 0 4 * * *)                       │ │
+│  │  buzzoff-merge    (Daily: 0 4 * * *)                          │ │
 │  │  → python jobs/merge_cameras.py                               │ │
 │  │  → Deduplicates and merges raw records into cameras table     │ │
 │  │                                                               │ │
-│  │  buzzoff-packgen  (Daily: 0 6 * * *)                       │ │
+│  │  buzzoff-packgen  (Daily: 0 6 * * *)                          │ │
 │  │  → python jobs/generate_packs.py                              │ │
 │  │  → Regenerates packs for countries with changed data          │ │
 │  │                                                               │ │
-│  │  All cron jobs share the same repo/codebase as buzzoff-api │ │
+│  │  All cron jobs share the same repo/codebase as buzzoff-api    │ │
 │  └──────────────────────────────────────────────────────────────┘ │
 │                                                                   │
 │  ┌──────────────────────┐                                        │
@@ -83,24 +133,27 @@ All backend infrastructure runs on Render. The Android app is distributed via Go
 ┌──────────────────────────────────────────────────────────────────┐
 │                      EXTERNAL SERVICES                            │
 │                                                                   │
-│  Nominatim (OSM)         — geocoding, free, 1 req/sec            │
-│  Overpass API (OSM)      — camera data, free                     │
-│  Google Geocoding API    — fallback geocoding, pay-per-use       │
-│  data.gov.il             — Israeli government camera data        │
-│  Google Play Console     — Android app distribution              │
-│  GitHub                  — source code, CI/CD                    │
+│  Namecheap              — domain registrar (buzzoff.me)           │
+│  Nominatim (OSM)        — geocoding, free, 1 req/sec             │
+│  Overpass API (OSM)     — camera data, free                      │
+│  Google Geocoding API   — fallback geocoding, pay-per-use        │
+│  data.gov.il            — Israeli government camera data         │
+│  Google Play Console    — Android app distribution (future)      │
+│  GitHub                 — source code, CI/CD                     │
 └──────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────┐
 │                      ANDROID APP                                  │
 │                                                                   │
+│  APK download: https://www.buzzoff.me/buzzoff.apk                │
+│                                                                   │
 │  On first launch:                                                │
-│  GET buzzoff-api.onrender.com/api/v1/countries                │
-│  GET buzzoff-api.onrender.com/api/v1/packs/IL/data            │
+│  GET api.buzzoff.me/api/v1/countries                             │
+│  GET api.buzzoff.me/api/v1/packs/IL/data                         │
 │                                                                   │
 │  Weekly (WiFi only):                                             │
-│  GET buzzoff-api.onrender.com/api/v1/packs/IL/meta            │
-│  GET buzzoff-api.onrender.com/api/v1/packs/IL/data (if new)   │
+│  GET api.buzzoff.me/api/v1/packs/IL/meta                         │
+│  GET api.buzzoff.me/api/v1/packs/IL/data (if new)                │
 │                                                                   │
 │  While driving: ZERO network calls. Fully offline.                │
 └──────────────────────────────────────────────────────────────────┘
@@ -115,12 +168,13 @@ name: buzzoff-api
 type: web
 runtime: python
 plan: starter             # $7/mo - always on, no sleep
-region: frankfurt          # closest to Israel + Europe
-repo: https://github.com/{you}/buzzoff
+region: oregon
+repo: https://github.com/itayshmool/buzzoff.me
 branch: main
-rootDir: backend
-buildCommand: pip install -r requirements.txt
-startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+buildCommand: cd backend && pip install -r requirements.txt && alembic upgrade head
+startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+customDomains:
+  - api.buzzoff.me
 envVars:
   - key: DATABASE_URL
     fromDatabase:
@@ -150,14 +204,15 @@ healthCheckPath: /api/v1/health
 ```yaml
 name: buzzoff-admin
 type: static
-repo: https://github.com/{you}/buzzoff
+repo: https://github.com/itayshmool/buzzoff.me
 branch: main
-rootDir: admin
-buildCommand: npm ci && npm run build
-publishPath: dist
+buildCommand: cd admin && npm ci && npm run build
+publishPath: admin/dist
+customDomains:
+  - www.buzzoff.me
 envVars:
   - key: VITE_API_URL
-    value: https://buzzoff-api.onrender.com
+    value: https://api.buzzoff.me
 headers:
   - path: /*
     name: X-Frame-Options
@@ -174,7 +229,7 @@ routes:
 name: buzzoff-db
 type: postgres
 plan: starter             # $7/mo - 1 GB, persistent
-region: frankfurt
+region: oregon
 version: 16
 postgresMajorVersion: 16
 ```
@@ -193,7 +248,7 @@ name: buzzoff-fetch
 type: cron
 runtime: python
 schedule: "0 0 * * 0"    # weekly, Sunday midnight
-repo: https://github.com/{you}/buzzoff
+repo: https://github.com/itayshmool/buzzoff.me
 branch: main
 rootDir: backend
 buildCommand: pip install -r requirements.txt
@@ -237,7 +292,7 @@ All services defined in a single file for one-click deploy:
 databases:
   - name: buzzoff-db
     plan: starter
-    region: frankfurt
+    region: oregon
     postgresMajorVersion: 16
 
 services:
@@ -245,10 +300,9 @@ services:
     name: buzzoff-api
     runtime: python
     plan: starter
-    region: frankfurt
-    rootDir: backend
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    region: oregon
+    buildCommand: cd backend && pip install -r requirements.txt && alembic upgrade head
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /api/v1/health
     disk:
       name: pack-storage
@@ -274,24 +328,20 @@ services:
 
   - type: static
     name: buzzoff-admin
-    rootDir: admin
-    buildCommand: npm ci && npm run build
-    publishPath: dist
+    buildCommand: cd admin && npm ci && npm run build
+    publishPath: admin/dist
     routes:
       - type: rewrite
         source: /*
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        fromService:
-          type: web
-          name: buzzoff-api
-          property: host
+        value: https://api.buzzoff.me
 
   - type: cron
     name: buzzoff-fetch
     runtime: python
-    region: frankfurt
+    region: oregon
     plan: starter
     rootDir: backend
     schedule: "0 0 * * 0"
@@ -308,7 +358,7 @@ services:
   - type: cron
     name: buzzoff-geocode
     runtime: python
-    region: frankfurt
+    region: oregon
     plan: starter
     rootDir: backend
     schedule: "0 2 * * *"
@@ -327,7 +377,7 @@ services:
   - type: cron
     name: buzzoff-merge
     runtime: python
-    region: frankfurt
+    region: oregon
     plan: starter
     rootDir: backend
     schedule: "0 4 * * *"
@@ -342,7 +392,7 @@ services:
   - type: cron
     name: buzzoff-packgen
     runtime: python
-    region: frankfurt
+    region: oregon
     plan: starter
     rootDir: backend
     schedule: "0 6 * * *"
@@ -402,7 +452,7 @@ This reduces to 1 cron job instead of 4. Estimated total: **~$15/mo**.
 ### CDN layer (when needed)
 
 ```
-Android App → Cloudflare (cache pack files) → Render API
+Android App → Cloudflare (cache pack files) → api.buzzoff.me
                     ↑
               Cache TTL: 1 hour for /packs/*/meta
               Cache TTL: 1 day for /packs/*/data
