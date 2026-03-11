@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuzzOff — Never Get Flashed Again</title>
+<meta name="description" content="Speed camera alerts that ride with you. Silent. Offline. Always watching the road ahead.">
+<meta property="og:title" content="BuzzOff — Never Get Flashed Again">
+<meta property="og:description" content="Speed camera alerts that ride with you. Silent. Offline. Always watching the road ahead.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://buzzoff.me">
+<meta property="og:image" content="https://buzzoff.me/assets/icon/buzzoff_icon.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BuzzOff — Never Get Flashed Again">
+<meta name="twitter:description" content="Speed camera alerts that ride with you. Silent. Offline. Always watching the road ahead.">
+<meta name="twitter:image" content="https://buzzoff.me/assets/icon/buzzoff_icon.png">
+<link rel="icon" href="assets/icon/buzzoff_icon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #000000;
+  --bg-deep: #0A0A0A;
+  --card: #111111;
+  --card-hover: #1A1A1A;
+  --accent: #FF8C00;
+  --accent-soft: rgba(255,140,0,0.12);
+  --accent-border: rgba(255,140,0,0.4);
+  --green: #4CAF50;
+  --blue: #1565C0;
+  --red: #C62828;
+  --text: #F0F0F0;
+  --muted: #888888;
+  --border: rgba(255,255,255,0.06);
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-body: 'DM Sans', -apple-system, sans-serif;
+  --phone-bg: #000;
+  --phone-border: #1A1A1A;
+  --phone-outer: #0A0A0A;
+  --notch-bg: #000;
+  --status-bar-text: #F0F0F0;
+  --pill-bg: rgba(0,0,0,0.8);
+  --pill-text: #F0F0F0;
+  --map-btn-bg: rgba(0,0,0,0.8);
+  --map-btn-text: #F0F0F0;
+  --alert-bg: rgba(10,10,10,0.95);
+  --alert-border: rgba(255,140,0,0.45);
+  --alert-title: #FF8C00;
+  --alert-sub: #BBB;
+  --notif-bg: rgba(0,0,0,0.95);
+  --notif-border: #222;
+  --notif-icon-bg: #FF8C00;
+  --notif-icon-fill: #000;
+  --notif-strong: #F0F0F0;
+  --notif-text: #BBB;
+  --progress-track: #222;
+  --dl-icon-bg: rgba(255,140,0,0.12);
+  --dl-icon-fill: #FF8C00;
+  --toggle-off: #333;
+  --toggle-on: #FF8C00;
+  --chip-bg: #1A1A1A;
+  --chip-text: #BBB;
+  --chip-active-bg: #FF8C00;
+  --chip-active-text: #000;
+  --back-bg: rgba(255,255,255,0.06);
+  --back-fill: #F0F0F0;
+  --section-title-color: #FF8C00;
+  --camera-border: #333;
+  --swap-fill: #999;
+  --leaflet-filter: none;
+}
+
+[data-theme="light"] {
+  --bg: #E8E8E8;
+  --bg-deep: #DEDEDE;
+  --card: #F0F0F0;
+  --card-hover: #E6E6E6;
+  --accent: #D35400;
+  --accent-soft: rgba(211,84,0,0.1);
+  --accent-border: rgba(211,84,0,0.35);
+  --green: #2E7D32;
+  --blue: #1565C0;
+  --red: #C62828;
+  --text: #000000;
+  --muted: #555555;
+  --border: rgba(0,0,0,0.08);
+  --phone-bg: #FFFFFF;
+  --phone-border: #D0D0D0;
+  --phone-outer: #B0B0B0;
+  --notch-bg: #222;
+  --status-bar-text: #000;
+  --pill-bg: rgba(255,255,255,0.9);
+  --pill-text: #000;
+  --map-btn-bg: rgba(255,255,255,0.92);
+  --map-btn-text: #000;
+  --alert-bg: rgba(255,255,255,0.96);
+  --alert-border: rgba(211,84,0,0.5);
+  --alert-title: #D35400;
+  --alert-sub: #333;
+  --notif-bg: rgba(255,255,255,0.96);
+  --notif-border: #DDD;
+  --notif-icon-bg: #D35400;
+  --notif-icon-fill: #FFF;
+  --notif-strong: #000;
+  --notif-text: #333;
+  --progress-track: #D8D8D8;
+  --dl-icon-bg: rgba(211,84,0,0.1);
+  --dl-icon-fill: #D35400;
+  --toggle-off: #C0C0C0;
+  --toggle-on: #D35400;
+  --chip-bg: #E0E0E0;
+  --chip-text: #333;
+  --chip-active-bg: #D35400;
+  --chip-active-text: #FFFFFF;
+  --back-bg: rgba(0,0,0,0.06);
+  --back-fill: #000;
+  --section-title-color: #D35400;
+  --camera-border: #fff;
+  --swap-fill: #555;
+  --leaflet-filter: none;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ============================================
+   THEME TOGGLE
+   ============================================ */
+.theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 6px 8px 6px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  font-family: var(--font-body);
+  transition: all 0.3s;
+  user-select: none;
+}
+.theme-toggle:hover { border-color: var(--accent); }
+.theme-toggle .icon {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+}
+.theme-toggle .icon svg { width: 16px; height: 16px; fill: #fff; }
+[data-theme="light"] .theme-toggle .icon svg { fill: #fff; }
+
+/* ============================================
+   STICKY NAV
+   ============================================ */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 0 24px;
+  transition: background 0.3s, backdrop-filter 0.3s;
+}
+.nav.scrolled {
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+[data-theme="light"] .nav.scrolled {
+  background: rgba(232, 232, 232, 0.88);
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text);
+}
+.nav-brand img { width: 36px; height: 36px; border-radius: 8px; }
+.nav-brand span {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
+  letter-spacing: 0.5px;
+}
+.nav-links a:hover { color: var(--text); }
+
+.nav-accent-line {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.nav.scrolled .nav-accent-line { opacity: 0.6; }
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
+}
+.hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 64px; left: 0; right: 0;
+  background: rgba(0, 0, 0, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 24px;
+  border-bottom: 2px solid var(--accent);
+}
+[data-theme="light"] .mobile-menu {
+  background: rgba(232, 232, 232, 0.96);
+}
+.mobile-menu.open { display: block; }
+.mobile-menu a {
+  display: block;
+  padding: 16px 0;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .theme-toggle { top: 12px; right: 70px; padding: 4px 6px 4px 12px; font-size: 12px; }
+  .theme-toggle .icon { width: 28px; height: 28px; }
+}
+
+/* ============================================
+   HERO
+   ============================================ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px 24px 60px;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 40px,
+    rgba(255, 140, 0, 0.03) 40px,
+    rgba(255, 140, 0, 0.03) 80px
+  );
+  animation: stripes-scroll 20s linear infinite;
+  pointer-events: none;
+}
+@keyframes stripes-scroll {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(113px, 113px); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+}
+.hero-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  box-shadow: 0 0 40px rgba(255, 140, 0, 0.4), 0 0 80px rgba(255, 140, 0, 0.15);
+  margin-bottom: 32px;
+  animation: icon-glow 3s ease-in-out infinite alternate;
+}
+@keyframes icon-glow {
+  0% { box-shadow: 0 0 30px rgba(255,140,0,0.3), 0 0 60px rgba(255,140,0,0.1); }
+  100% { box-shadow: 0 0 50px rgba(255,140,0,0.5), 0 0 100px rgba(255,140,0,0.2); }
+}
+.hero h1 {
+  font-family: var(--font-pixel);
+  font-size: clamp(20px, 5vw, 36px);
+  line-height: 1.4;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, var(--text), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-subtitle {
+  font-size: clamp(16px, 2.5vw, 20px);
+  color: var(--muted);
+  margin-bottom: 40px;
+  font-weight: 300;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* CTA Buttons */
+.cta-group {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.btn-boost {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  text-decoration: none;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transform: skewX(-3deg);
+  transition: transform 0.2s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.5px;
+  border-radius: 6px;
+}
+.btn-boost::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+  pointer-events: none;
+}
+.btn-boost:hover { transform: skewX(-3deg) translateY(-2px); }
+.btn-boost.orange {
+  background: linear-gradient(135deg, var(--accent), #E07800);
+  box-shadow: 0 4px 20px rgba(255, 140, 0, 0.4);
+}
+.btn-boost.orange:hover {
+  box-shadow: 0 6px 30px rgba(255,140,0,0.6), 0 0 60px rgba(255,140,0,0.2);
+}
+.btn-boost.dark {
+  background: linear-gradient(135deg, #333, #222);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+[data-theme="light"] .btn-boost.dark {
+  background: linear-gradient(135deg, #444, #333);
+}
+.btn-boost.dark:hover {
+  box-shadow: 0 6px 30px rgba(0,0,0,0.5);
+}
+.btn-boost-icon {
+  font-style: normal;
+  font-size: 16px;
+  transform: skewX(3deg);
+}
+.btn-boost-text { transform: skewX(3deg); }
+
+/* ============================================
+   SECTION SHARED
+   ============================================ */
+section {
+  padding: 100px 24px;
+  position: relative;
+}
+.section-heading {
+  font-family: var(--font-pixel);
+  font-size: clamp(14px, 3vw, 22px);
+  text-align: center;
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+  color: var(--text);
+}
+.section-subtitle {
+  text-align: center;
+  color: var(--muted);
+  margin-bottom: 60px;
+  font-size: 16px;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ============================================
+   HOW IT WORKS — RACE STAGES
+   ============================================ */
+.stages { background: var(--bg-deep); }
+.stages-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 48px;
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.track-line { display: none; }
+
+.stage-card {
+  text-align: center;
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+.stage-card.visible { opacity: 1; transform: translateY(0); }
+
+.stage-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  color: #fff;
+  margin-bottom: 16px;
+}
+.stage-card:nth-child(1) .stage-number { background: var(--accent); box-shadow: 0 0 24px rgba(255,140,0,0.4); color: #000; }
+.stage-card:nth-child(2) .stage-number { background: var(--green); box-shadow: 0 0 24px rgba(76,175,80,0.4); }
+.stage-card:nth-child(3) .stage-number { background: var(--blue); box-shadow: 0 0 24px rgba(21,101,192,0.4); }
+
+.stage-emoji { font-size: 32px; display: block; margin-bottom: 12px; }
+.stage-label {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+.stage-card h3 {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+.stage-card p {
+  color: var(--muted);
+  font-size: 15px;
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+@media (min-width: 769px) {
+  .stages-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    align-items: start;
+  }
+  .track-line {
+    display: block;
+    position: absolute;
+    top: 28px;
+    left: calc(16.66% + 28px);
+    right: calc(16.66% + 28px);
+    height: 3px;
+    z-index: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      rgba(255,140,0,0.4) 0px,
+      rgba(255,140,0,0.4) 8px,
+      transparent 8px,
+      transparent 16px
+    );
+    background-size: 200% 100%;
+    animation: dash-scroll 1.5s linear infinite;
+  }
+  @keyframes dash-scroll {
+    0% { background-position: 0 0; }
+    100% { background-position: 16px 0; }
+  }
+}
+
+/* ============================================
+   FEATURES — POWER-UPS
+   ============================================ */
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.feature-card {
+  background: var(--card);
+  border-radius: 8px;
+  padding: 24px 24px 24px 28px;
+  border-left: 4px solid var(--accent);
+  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+  opacity: 0;
+  transform: translateY(24px);
+  cursor: default;
+}
+.feature-card.visible { opacity: 1; transform: translateY(0); }
+.feature-card:hover {
+  transform: translateY(-4px);
+  background: var(--card-hover);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+.feature-card:nth-child(6n+1) { border-left-color: var(--accent); }
+.feature-card:nth-child(6n+2) { border-left-color: var(--green); }
+.feature-card:nth-child(6n+3) { border-left-color: var(--blue); }
+.feature-card:nth-child(6n+4) { border-left-color: var(--red); }
+.feature-card:nth-child(6n+5) { border-left-color: var(--accent); }
+.feature-card:nth-child(6n+6) { border-left-color: var(--green); }
+
+.feature-icon-emoji { font-size: 28px; margin-bottom: 12px; display: block; }
+.feature-card h3 {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+.feature-card p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+@media (min-width: 480px) {
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .features-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ============================================
+   APP SCREENSHOTS — RACE REPLAY
+   ============================================ */
+.screenshots { background: var(--bg-deep); }
+.screenshots-row {
+  display: flex;
+  gap: 32px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 20px 0 50px;
+  scrollbar-width: none;
+}
+.screenshots-row::-webkit-scrollbar { display: none; }
+
+/* Phone frames matching app-preview.html */
+.phone-wrap { position: relative; flex: 0 0 auto; scroll-snap-align: center; }
+.phone-frame-shell {
+  width: 280px;
+  height: 606px;
+  background: var(--phone-bg);
+  border-radius: 36px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 0 0 3px var(--phone-border),
+    0 0 0 6px var(--phone-outer),
+    0 20px 60px rgba(0,0,0,0.3);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+[data-theme="light"] .phone-frame-shell {
+  box-shadow:
+    0 0 0 3px var(--phone-border),
+    0 0 0 6px var(--phone-outer),
+    0 20px 60px rgba(0,0,0,0.12);
+}
+.phone-frame-shell::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 100px; height: 24px;
+  background: var(--notch-bg);
+  border-radius: 0 0 14px 14px;
+  z-index: 100;
+}
+
+.phone-status-bar {
+  height: 44px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 22px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  position: relative;
+  z-index: 90;
+  color: var(--status-bar-text);
+}
+.phone-status-bar .icons { display: flex; gap: 4px; font-size: 10px; }
+
+.phone-label {
+  text-align: center;
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 16px;
+  letter-spacing: 1px;
+}
+
+/* ===== Country Picker Screen ===== */
+.country-picker { height: 100%; display: flex; flex-direction: column; }
+.country-picker .app-bar {
+  padding: 14px 16px 12px;
+  font-size: 18px;
+  font-weight: 700;
+}
+.country-list { flex: 1; overflow: hidden; padding: 2px 12px; }
+.country-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.country-card .left { display: flex; align-items: center; }
+.country-card .flag { font-size: 22px; margin-right: 10px; }
+.country-card .info h3 { font-size: 13px; font-weight: 600; }
+.country-card .info p { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.country-card .dl-icon {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--dl-icon-bg);
+  display: flex; align-items: center; justify-content: center;
+}
+.country-card .dl-icon svg { width: 14px; height: 14px; fill: var(--dl-icon-fill); }
+
+/* ===== Download Screen ===== */
+.download-screen {
+  height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 32px;
+}
+.download-screen .icon-pulse {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+.download-screen .icon-pulse svg { width: 28px; height: 28px; fill: var(--accent); }
+.download-screen h2 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.download-screen .size { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+.progress-bar {
+  width: 100%; height: 6px;
+  background: var(--progress-track);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.progress-fill {
+  height: 100%; width: 68%;
+  background: var(--accent);
+  border-radius: 3px;
+  animation: loading 3s ease-in-out infinite;
+}
+@keyframes loading {
+  0% { width: 10%; } 50% { width: 75%; } 100% { width: 98%; }
+}
+.download-screen .pct { font-size: 13px; color: var(--text); font-weight: 600; }
+
+/* ===== Map Screens ===== */
+.map-screen { height: 100%; position: relative; }
+.map-container { width: 100%; height: 100%; }
+
+.status-pill {
+  position: absolute;
+  top: 52px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: var(--pill-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 6px 14px;
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12px; font-weight: 600;
+  color: var(--pill-text);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  white-space: nowrap;
+}
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  animation: blink 2s ease-in-out infinite;
+}
+.status-dot.green { background: var(--green); box-shadow: 0 0 6px rgba(76,175,80,0.6); }
+.status-dot.grey { background: #888; box-shadow: none; }
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.map-controls {
+  position: absolute;
+  right: 12px; bottom: 30px;
+  z-index: 1000;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.map-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--map-btn-bg);
+  backdrop-filter: blur(10px);
+  border: none;
+  color: var(--map-btn-text);
+  font-size: 16px; font-weight: 500;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.map-btn svg { fill: var(--map-btn-text); }
+.map-btn.settings-gap { margin-top: 4px; }
+
+.alert-popup {
+  position: absolute;
+  bottom: 80px;
+  left: 12px; right: 12px;
+  z-index: 1000;
+  background: var(--alert-bg);
+  backdrop-filter: blur(14px);
+  border: 2px solid var(--alert-border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex; align-items: center; gap: 10px;
+  animation: slideUp 0.4s ease-out;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+}
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.alert-icon {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.alert-icon svg { width: 16px; height: 16px; fill: var(--accent); }
+.alert-text h4 { font-size: 12px; font-weight: 700; color: var(--alert-title); }
+.alert-text p { font-size: 10px; color: var(--alert-sub); margin-top: 1px; }
+
+.notif-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  background: var(--notif-bg);
+  padding: 46px 16px 6px;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 10px;
+  border-bottom: 1px solid var(--notif-border);
+}
+.notif-icon-small {
+  width: 16px; height: 16px;
+  background: var(--notif-icon-bg);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.notif-icon-small svg { width: 9px; height: 9px; fill: var(--notif-icon-fill); }
+.notif-text { color: var(--notif-text); }
+.notif-text strong { color: var(--notif-strong); }
+
+.camera-dot-map {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--camera-border);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+.camera-dot-map.speed { background: #1565C0; }
+.camera-dot-map.redlight { background: #C62828; }
+.camera-dot-map.avg { background: #E65100; }
+.camera-dot-map.mobile { background: #F57F17; }
+.user-dot {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #1565C0;
+  border: 3px solid #fff;
+  box-shadow: 0 0 12px rgba(21,101,192,0.5);
+}
+
+/* ===== Settings Screen ===== */
+.settings-screen { height: 100%; display: flex; flex-direction: column; }
+.settings-screen .app-bar {
+  padding: 14px 16px 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.settings-screen .app-bar .back {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--back-bg);
+  display: flex; align-items: center; justify-content: center;
+}
+.settings-screen .app-bar .back svg { width: 14px; height: 14px; fill: var(--back-fill); }
+.settings-screen .app-bar h2 { font-size: 18px; font-weight: 700; }
+.settings-body { flex: 1; overflow: hidden; padding: 4px 16px 20px; }
+.settings-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--section-title-color);
+  margin: 14px 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.settings-section-title:first-child { margin-top: 2px; }
+.chip-row { display: flex; gap: 5px; margin-bottom: 2px; flex-wrap: wrap; }
+.chip {
+  padding: 6px 12px;
+  border-radius: 18px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+}
+.chip.active { background: var(--chip-active-bg); color: var(--chip-active-text); }
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.toggle-label { font-size: 13px; font-weight: 500; }
+.toggle {
+  width: 40px; height: 24px;
+  border-radius: 12px;
+  background: var(--toggle-off);
+  position: relative;
+  flex-shrink: 0;
+}
+.toggle.on { background: var(--toggle-on); }
+.toggle::after {
+  content: '';
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  position: absolute;
+  top: 3px; left: 3px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle.on::after { transform: translateX(16px); }
+
+.country-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0;
+}
+.country-row .left { display: flex; align-items: center; gap: 8px; }
+.country-row .flag-big { font-size: 20px; }
+.country-row .info h4 { font-size: 13px; font-weight: 600; }
+.country-row .info p { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.country-row .swap svg { width: 16px; height: 16px; fill: var(--swap-fill); }
+
+@media (min-width: 1100px) {
+  .screenshots-row {
+    justify-content: center;
+    overflow-x: visible;
+  }
+}
+
+/* Leaflet overrides */
+.leaflet-tile-pane { filter: var(--leaflet-filter); }
+.leaflet-control-zoom { display: none; }
+.leaflet-control-attribution { display: none; }
+
+/* ============================================
+   STATS — LEADERBOARD
+   ============================================ */
+.leaderboard-card {
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--card);
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  padding: 48px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px 24px;
+}
+.stat-item { text-align: center; }
+.stat-number {
+  font-family: var(--font-pixel);
+  font-size: clamp(18px, 4vw, 28px);
+  color: var(--accent);
+  display: block;
+  margin-bottom: 8px;
+}
+.stat-emoji { font-size: 24px; display: block; margin-bottom: 8px; }
+.stat-label { color: var(--muted); font-size: 13px; }
+.stat-item:last-child { grid-column: 1 / -1; }
+
+@media (min-width: 768px) {
+  .stats-grid { grid-template-columns: repeat(5, 1fr); gap: 24px; }
+  .stat-item:last-child { grid-column: auto; }
+}
+
+/* ============================================
+   FINAL CTA
+   ============================================ */
+.final-cta {
+  text-align: center;
+  background: var(--bg-deep);
+  padding: 100px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.final-cta::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 40px,
+    rgba(255,140,0,0.02) 40px,
+    rgba(255,140,0,0.02) 80px
+  );
+  animation: stripes-scroll 20s linear infinite;
+  pointer-events: none;
+}
+.final-cta .section-heading { margin-bottom: 12px; }
+.final-cta-sub {
+  color: var(--muted);
+  margin-bottom: 40px;
+  font-size: 15px;
+}
+.final-cta .cta-group {
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 2;
+}
+.final-cta-note {
+  color: var(--muted);
+  font-size: 13px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer {
+  padding: 40px 24px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+}
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.footer-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--text); }
+.footer-copy { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+.footer-made { font-size: 11px; color: #555; }
+
+/* ============================================
+   SCROLL ANIMATIONS
+   ============================================ */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ======================== THEME TOGGLE ======================== -->
+<div class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
+  <span class="label-text">Night</span>
+  <div class="icon">
+    <svg class="moon-icon" viewBox="0 0 24 24"><path d="M9.5 2c-1.82 0-3.53.5-5 1.35 2.99 1.73 5 4.95 5 8.65s-2.01 6.92-5 8.65A9.973 9.973 0 009.5 22c5.52 0 10-4.48 10-10S15.02 2 9.5 2z"/></svg>
+    <svg class="sun-icon" viewBox="0 0 24 24" style="display:none"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/></svg>
+  </div>
+</div>
+
+<!-- ======================== NAV ======================== -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">
+      <img src="assets/icon/buzzoff_icon.png" alt="BuzzOff" width="36" height="36">
+      <span>BUZZOFF</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#stages">How It Works</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#screenshots">Screenshots</a></li>
+      <li><a href="#download">Download</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-accent-line"></div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#stages" onclick="closeMobile()">How It Works</a>
+  <a href="#features" onclick="closeMobile()">Features</a>
+  <a href="#screenshots" onclick="closeMobile()">Screenshots</a>
+  <a href="#download" onclick="closeMobile()">Download</a>
+</div>
+
+<!-- ======================== HERO ======================== -->
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <img src="assets/icon/buzzoff_icon.png" alt="BuzzOff App Icon" class="hero-icon" width="80" height="80">
+    <h1>Never Get Flashed Again</h1>
+    <p class="hero-subtitle">Speed camera alerts that ride with you. Silent. Offline. Always watching the road ahead.</p>
+    <div class="cta-group">
+      <a href="#" class="btn-boost orange">
+        <i class="btn-boost-icon">&#127822;</i>
+        <span class="btn-boost-text">APP STORE</span>
+      </a>
+      <a href="#" class="btn-boost dark">
+        <i class="btn-boost-icon">&#9654;&#65039;</i>
+        <span class="btn-boost-text">GOOGLE PLAY</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== HOW IT WORKS ======================== -->
+<section class="stages" id="stages">
+  <div class="container">
+    <h2 class="section-heading"><span>&#127937;</span> START YOUR ENGINE <span>&#127937;</span></h2>
+    <p class="section-subtitle">Three laps to safer driving</p>
+    <div class="stages-grid">
+      <div class="track-line"></div>
+      <div class="stage-card fade-in">
+        <div class="stage-number">1</div>
+        <span class="stage-emoji">&#127987;&#65039;</span>
+        <div class="stage-label">LAP 1</div>
+        <h3>Pick Your Country</h3>
+        <p>Choose your track from the flag grid. Each country has its own camera database.</p>
+      </div>
+      <div class="stage-card fade-in">
+        <div class="stage-number">2</div>
+        <span class="stage-emoji">&#128230;</span>
+        <div class="stage-label">LAP 2</div>
+        <h3>Download Camera Pack</h3>
+        <p>Grab your power-ups. All camera data stored offline in one small download.</p>
+      </div>
+      <div class="stage-card fade-in">
+        <div class="stage-number">3</div>
+        <span class="stage-emoji">&#128663;</span>
+        <div class="stage-label">LAP 3</div>
+        <h3>Drive Safe</h3>
+        <p>Alerts activate automatically at speed. Silent vibrations keep you aware.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== FEATURES ======================== -->
+<section class="features" id="features">
+  <div class="container">
+    <h2 class="section-heading">&#128268; POWER-UPS</h2>
+    <p class="section-subtitle">Everything you need to stay ahead</p>
+    <div class="features-grid">
+      <div class="feature-card fade-in">
+        <span class="feature-icon-emoji">&#128225;</span>
+        <h3>Speed Camera Alerts</h3>
+        <p>Detects fixed, mobile, and average speed cameras ahead</p>
+      </div>
+      <div class="feature-card fade-in">
+        <span class="feature-icon-emoji">&#128243;</span>
+        <h3>Vibration Warning</h3>
+        <p>Silent haptic alerts. No distracting sounds needed</p>
+      </div>
+      <div class="feature-card fade-in">
+        <span class="feature-icon-emoji">&#128267;</span>
+        <h3>Background Mode</h3>
+        <p>Runs silently while you use Waze or Spotify</p>
+      </div>
+      <div class="feature-card fade-in">
+        <span class="feature-icon-emoji">&#128244;</span>
+        <h3>Offline Packs</h3>
+        <p>All camera data stored locally. No internet needed while driving</p>
+      </div>
+      <div class="feature-card fade-in">
+        <span class="feature-icon-emoji">&#127758;</span>
+        <h3>Multiple Countries</h3>
+        <p>Israel, UK, and more. Pick your track</p>
+      </div>
+      <div class="feature-card fade-in">
+        <span class="feature-icon-emoji">&#128164;</span>
+        <h3>Smart Sleep</h3>
+        <p>Configurable auto-sleep. Knows when you're at a red light</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== SCREENSHOTS ======================== -->
+<section class="screenshots" id="screenshots">
+  <div class="container">
+    <h2 class="section-heading">&#127910; RACE REPLAY</h2>
+    <p class="section-subtitle">See the app in action</p>
+    <div class="screenshots-row">
+
+      <!-- Screen 1: Country Picker -->
+      <div class="phone-wrap fade-in">
+        <div class="phone-frame-shell">
+          <div class="phone-status-bar"><span>12:05</span><span class="icons">LTE ▌▌▌ 84%</span></div>
+          <div class="country-picker">
+            <div class="app-bar">Select your country</div>
+            <div class="country-list">
+              <div class="country-card"><div class="left"><span class="flag">🇮🇱</span><div class="info"><h3>Israel</h3><p>184 cameras</p></div></div><div class="dl-icon"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div></div>
+              <div class="country-card"><div class="left"><span class="flag">🇩🇪</span><div class="info"><h3>Germany</h3><p>4,217 cameras</p></div></div><div class="dl-icon"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div></div>
+              <div class="country-card"><div class="left"><span class="flag">🇫🇷</span><div class="info"><h3>France</h3><p>3,892 cameras</p></div></div><div class="dl-icon"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div></div>
+              <div class="country-card"><div class="left"><span class="flag">🇬🇧</span><div class="info"><h3>United Kingdom</h3><p>7,341 cameras</p></div></div><div class="dl-icon"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div></div>
+              <div class="country-card"><div class="left"><span class="flag">🇳🇱</span><div class="info"><h3>Netherlands</h3><p>1,456 cameras</p></div></div><div class="dl-icon"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div></div>
+              <div class="country-card"><div class="left"><span class="flag">🇮🇹</span><div class="info"><h3>Italy</h3><p>2,103 cameras</p></div></div><div class="dl-icon"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-label">STAGE 1</div>
+      </div>
+
+      <!-- Screen 2: Download -->
+      <div class="phone-wrap fade-in">
+        <div class="phone-frame-shell">
+          <div class="phone-status-bar"><span>12:05</span><span class="icons">LTE ▌▌▌ 84%</span></div>
+          <div class="download-screen">
+            <div class="icon-pulse">
+              <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            </div>
+            <h2>Downloading Israel...</h2>
+            <div class="size">(1.2 MB)</div>
+            <div class="progress-bar"><div class="progress-fill"></div></div>
+            <div class="pct">68%</div>
+          </div>
+        </div>
+        <div class="phone-label">STAGE 2</div>
+      </div>
+
+      <!-- Screen 3: Map — Active Alert -->
+      <div class="phone-wrap fade-in">
+        <div class="phone-frame-shell">
+          <div class="notif-bar">
+            <div class="notif-icon-small"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></div>
+            <div class="notif-text"><strong>BuzzOff</strong> · Monitoring cameras</div>
+          </div>
+          <div class="map-screen">
+            <div id="map1" class="map-container"></div>
+            <div class="status-pill">
+              <div class="status-dot green"></div>
+              Active
+            </div>
+            <div class="alert-popup">
+              <div class="alert-icon"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div>
+              <div class="alert-text">
+                <h4>Speed camera — 420m</h4>
+                <p>Fixed speed · Rd 4 · 90 km/h</p>
+              </div>
+            </div>
+            <div class="map-controls">
+              <button class="map-btn">+</button>
+              <button class="map-btn">&minus;</button>
+              <button class="map-btn settings-gap"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="phone-label">STAGE 3</div>
+      </div>
+
+      <!-- Screen 4: Map — Idle -->
+      <div class="phone-wrap fade-in">
+        <div class="phone-frame-shell">
+          <div class="notif-bar">
+            <div class="notif-icon-small"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg></div>
+            <div class="notif-text"><strong>BuzzOff</strong> · Waiting for driving</div>
+          </div>
+          <div class="map-screen">
+            <div id="map2" class="map-container"></div>
+            <div class="status-pill">
+              <div class="status-dot grey"></div>
+              Waiting for driving...
+            </div>
+            <div class="map-controls">
+              <button class="map-btn">+</button>
+              <button class="map-btn">&minus;</button>
+              <button class="map-btn settings-gap"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="phone-label">STAGE 4</div>
+      </div>
+
+      <!-- Screen 5: Settings -->
+      <div class="phone-wrap fade-in">
+        <div class="phone-frame-shell">
+          <div class="phone-status-bar"><span>12:05</span><span class="icons">LTE ▌▌▌ 84%</span></div>
+          <div class="settings-screen">
+            <div class="app-bar">
+              <div class="back"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
+              <h2>Settings</h2>
+            </div>
+            <div class="settings-body">
+              <div class="settings-section-title">Alert Distance</div>
+              <div class="chip-row">
+                <div class="chip">500m</div>
+                <div class="chip active">800m</div>
+                <div class="chip">1200m</div>
+              </div>
+              <div class="settings-section-title">Alert Type</div>
+              <div class="toggle-row">
+                <span class="toggle-label">Vibration</span>
+                <div class="toggle on"></div>
+              </div>
+              <div class="toggle-row">
+                <span class="toggle-label">Sound</span>
+                <div class="toggle"></div>
+              </div>
+              <div class="settings-section-title">Activate at Speed</div>
+              <div class="chip-row">
+                <div class="chip">30 km/h</div>
+                <div class="chip active">40 km/h</div>
+                <div class="chip">50 km/h</div>
+              </div>
+              <div class="settings-section-title">Sleep When Stopped</div>
+              <div class="chip-row">
+                <div class="chip">3 min</div>
+                <div class="chip active">5 min</div>
+                <div class="chip">10 min</div>
+              </div>
+              <div class="settings-section-title">Country</div>
+              <div class="country-row">
+                <div class="left">
+                  <span class="flag-big">🇮🇱</span>
+                  <div class="info"><h4>Israel</h4><p>184 cameras loaded</p></div>
+                </div>
+                <div class="swap"><svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-label">STAGE 5</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ======================== STATS ======================== -->
+<section class="stats" id="stats">
+  <div class="container">
+    <h2 class="section-heading">&#127942; LEADERBOARD</h2>
+    <p class="section-subtitle">BuzzOff by the numbers</p>
+    <div class="leaderboard-card">
+      <div class="stats-grid">
+        <div class="stat-item fade-in">
+          <span class="stat-emoji">&#127942;</span>
+          <span class="stat-number" data-target="184" data-suffix="+">0</span>
+          <span class="stat-label">Cameras mapped in Israel</span>
+        </div>
+        <div class="stat-item fade-in">
+          <span class="stat-emoji">&#128506;&#65039;</span>
+          <span class="stat-number" data-target="5" data-suffix="">0</span>
+          <span class="stat-label">Countries supported</span>
+        </div>
+        <div class="stat-item fade-in">
+          <span class="stat-emoji">&#9889;</span>
+          <span class="stat-number" data-target="1" data-prefix="<" data-suffix="s">0</span>
+          <span class="stat-label">Alert time</span>
+        </div>
+        <div class="stat-item fade-in">
+          <span class="stat-emoji">&#128263;</span>
+          <span class="stat-number" data-target="100" data-suffix="%">0</span>
+          <span class="stat-label">Silent operation</span>
+        </div>
+        <div class="stat-item fade-in">
+          <span class="stat-emoji">&#128230;</span>
+          <span class="stat-number" data-target="5" data-prefix="<" data-suffix="MB">0</span>
+          <span class="stat-label">Per country pack</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== FINAL CTA ======================== -->
+<section class="final-cta" id="download">
+  <h2 class="section-heading">READY TO RACE?</h2>
+  <p class="final-cta-sub">Download BuzzOff and drive smarter.</p>
+  <div class="cta-group">
+    <a href="#" class="btn-boost orange">
+      <i class="btn-boost-icon">&#127822;</i>
+      <span class="btn-boost-text">APP STORE</span>
+    </a>
+    <a href="#" class="btn-boost dark">
+      <i class="btn-boost-icon">&#9654;&#65039;</i>
+      <span class="btn-boost-text">GOOGLE PLAY</span>
+    </a>
+  </div>
+  <p class="final-cta-note">Free. No account needed. No ads.</p>
+</section>
+
+<!-- ======================== FOOTER ======================== -->
+<footer class="footer">
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms</a>
+    <a href="#">Contact</a>
+  </div>
+  <p class="footer-copy">&copy; 2026 BuzzOff</p>
+  <p class="footer-made">Made with &#127950; in Tel Aviv</p>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ======================== THEME ========================
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  const label = document.querySelector('.theme-toggle .label-text');
+  const sun = document.querySelector('.sun-icon');
+  const moon = document.querySelector('.moon-icon');
+  label.textContent = isDark ? 'Day' : 'Night';
+  sun.style.display = isDark ? 'block' : 'none';
+  moon.style.display = isDark ? 'none' : 'block';
+  // Swap map tiles
+  const tileUrl = isDark
+    ? 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+    : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+  if (window._tileLayer1) window._tileLayer1.setUrl(tileUrl);
+  if (window._tileLayer2) window._tileLayer2.setUrl(tileUrl);
+}
+
+// ======================== NAV SCROLL ========================
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+
+// ======================== HAMBURGER ========================
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('active');
+  mobileMenu.classList.toggle('open');
+});
+function closeMobile() {
+  hamburger.classList.remove('active');
+  mobileMenu.classList.remove('open');
+}
+
+// ======================== SCROLL ANIMATIONS ========================
+const fadeEls = document.querySelectorAll('.fade-in');
+const fadeObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      const parent = entry.target.parentElement;
+      const siblings = Array.from(parent.querySelectorAll('.fade-in'));
+      const idx = siblings.indexOf(entry.target);
+      setTimeout(() => { entry.target.classList.add('visible'); }, idx * 100);
+      fadeObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+fadeEls.forEach(el => fadeObserver.observe(el));
+
+// ======================== STAT COUNT-UP ========================
+const statNumbers = document.querySelectorAll('.stat-number[data-target]');
+let statsCounted = false;
+const statsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !statsCounted) {
+      statsCounted = true;
+      statNumbers.forEach(el => {
+        const target = parseInt(el.dataset.target);
+        const prefix = el.dataset.prefix || '';
+        const suffix = el.dataset.suffix || '';
+        const duration = 1500;
+        const start = performance.now();
+        function update(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = Math.round(eased * target);
+          el.textContent = prefix + current + suffix;
+          if (progress < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+      });
+      statsObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+const leaderboard = document.querySelector('.leaderboard-card');
+if (leaderboard) statsObserver.observe(leaderboard);
+
+// ======================== LEAFLET MAPS ========================
+const cameras = [
+  { lat: 32.0890, lon: 34.7750, type: 'speed' },
+  { lat: 32.0830, lon: 34.7900, type: 'speed' },
+  { lat: 32.0780, lon: 34.7680, type: 'redlight' },
+  { lat: 32.0920, lon: 34.7850, type: 'speed' },
+  { lat: 32.0800, lon: 34.7830, type: 'redlight' },
+  { lat: 32.0870, lon: 34.7700, type: 'avg' },
+  { lat: 32.0750, lon: 34.7780, type: 'speed' },
+  { lat: 32.0910, lon: 34.7920, type: 'mobile' },
+  { lat: 32.0840, lon: 34.7650, type: 'speed' },
+  { lat: 32.0770, lon: 34.7900, type: 'redlight' },
+  { lat: 32.0950, lon: 34.7800, type: 'avg' },
+  { lat: 32.0810, lon: 34.7740, type: 'speed' },
+  { lat: 32.0860, lon: 34.7870, type: 'speed' },
+  { lat: 32.0730, lon: 34.7820, type: 'mobile' },
+  { lat: 32.0880, lon: 34.7960, type: 'redlight' },
+];
+
+function addMarkers(map) {
+  const userIcon = L.divIcon({ className: '', html: '<div class="user-dot"></div>', iconSize: [16, 16], iconAnchor: [8, 8] });
+  L.marker([32.0853, 34.7818], { icon: userIcon }).addTo(map);
+  cameras.forEach(cam => {
+    const icon = L.divIcon({ className: '', html: '<div class="camera-dot-map ' + cam.type + '"></div>', iconSize: [12, 12], iconAnchor: [6, 6] });
+    L.marker([cam.lat, cam.lon], { icon: icon }).addTo(map);
+  });
+}
+
+// Dark tile for dark theme (default)
+const darkTile = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+
+const map1 = L.map('map1', { center: [32.0853, 34.7818], zoom: 14, zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, touchZoom: false, doubleClickZoom: false });
+window._tileLayer1 = L.tileLayer(darkTile, { maxZoom: 19 }).addTo(map1);
+addMarkers(map1);
+
+const map2 = L.map('map2', { center: [32.0853, 34.7818], zoom: 14, zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, touchZoom: false, doubleClickZoom: false });
+window._tileLayer2 = L.tileLayer(darkTile, { maxZoom: 19 }).addTo(map2);
+addMarkers(map2);
+
+// Invalidate map size after scroll into view
+const screenshotSection = document.getElementById('screenshots');
+const mapObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      setTimeout(() => { map1.invalidateSize(); map2.invalidateSize(); }, 300);
+      mapObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+mapObserver.observe(screenshotSection);
+</script>
+</body>
+</html>
