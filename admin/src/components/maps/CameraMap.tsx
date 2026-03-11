@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import type { LatLngBoundsExpression } from 'leaflet';
 import type { Camera } from '../../types';
+import useGeolocation from '../../hooks/useGeolocation';
 
 const typeColors: Record<string, string> = {
   fixed_speed: '#ef4444',
@@ -39,6 +40,8 @@ interface CameraMapProps {
 }
 
 export default function CameraMap({ cameras, onMapClick, selectedId, onCameraClick, className }: CameraMapProps) {
+  const geo = useGeolocation();
+
   const bounds = useMemo(() => {
     if (cameras.length === 0) return null;
     const lats = cameras.map((c) => c.lat);
@@ -51,8 +54,8 @@ export default function CameraMap({ cameras, onMapClick, selectedId, onCameraCli
 
   return (
     <MapContainer
-      center={[48, 15]}
-      zoom={4}
+      center={[geo.lat, geo.lon]}
+      zoom={cameras.length === 0 ? 10 : 4}
       className={className ?? 'h-[400px] w-full rounded-lg'}
     >
       <TileLayer

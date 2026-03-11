@@ -1,4 +1,5 @@
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import useGeolocation from '../../hooks/useGeolocation';
 
 interface LocationPickerProps {
   lat: number | null;
@@ -16,10 +17,12 @@ function ClickHandler({ onChange }: { onChange: (lat: number, lon: number) => vo
 }
 
 export default function LocationPicker({ lat, lon, onChange }: LocationPickerProps) {
+  const geo = useGeolocation();
+
   return (
     <MapContainer
-      center={lat && lon ? [lat, lon] : [48, 15]}
-      zoom={lat && lon ? 14 : 4}
+      center={lat && lon ? [lat, lon] : [geo.lat, geo.lon]}
+      zoom={lat && lon ? 14 : 10}
       className="h-[200px] w-full leaflet-dark border border-border"
     >
       <TileLayer
