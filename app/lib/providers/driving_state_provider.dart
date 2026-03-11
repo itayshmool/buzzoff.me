@@ -21,7 +21,13 @@ class DrivingStateNotifier extends StateNotifier<DrivingState> {
 }
 
 final alertServiceProvider = Provider<AlertService>((ref) {
-  return AlertService();
+  final settings = ref.watch(settingsProvider);
+  final service = AlertService(
+    vibrationEnabled: settings.vibrationEnabled,
+    soundEnabled: settings.soundEnabled,
+    vibrationIntensity: settings.vibrationIntensity,
+  );
+  return service;
 });
 
 final orchestratorProvider = Provider<Orchestrator?>((ref) {

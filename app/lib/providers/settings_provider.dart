@@ -62,4 +62,9 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     state = state.copyWith(sleepAfterMinutes: minutes);
     _prefs.save(state);
   }
+
+  void updateVibrationIntensity(VibrationIntensity intensity) {
+    state = state.copyWith(vibrationIntensity: intensity);
+    _prefs.save(state);
+  }
 }

@@ -1,3 +1,5 @@
+enum VibrationIntensity { low, medium, high }
+
 class AppSettings {
   final double alertDistanceMeters;
   final bool vibrationEnabled;
@@ -7,6 +9,7 @@ class AppSettings {
   final bool redLightCamerasEnabled;
   final bool avgSpeedZonesEnabled;
   final int sleepAfterMinutes;
+  final VibrationIntensity vibrationIntensity;
 
   const AppSettings({
     this.alertDistanceMeters = 800.0,
@@ -17,6 +20,7 @@ class AppSettings {
     this.redLightCamerasEnabled = true,
     this.avgSpeedZonesEnabled = true,
     this.sleepAfterMinutes = 5,
+    this.vibrationIntensity = VibrationIntensity.high,
   });
 
   AppSettings copyWith({
@@ -28,6 +32,7 @@ class AppSettings {
     bool? redLightCamerasEnabled,
     bool? avgSpeedZonesEnabled,
     int? sleepAfterMinutes,
+    VibrationIntensity? vibrationIntensity,
   }) {
     return AppSettings(
       alertDistanceMeters: alertDistanceMeters ?? this.alertDistanceMeters,
@@ -40,6 +45,7 @@ class AppSettings {
       avgSpeedZonesEnabled:
           avgSpeedZonesEnabled ?? this.avgSpeedZonesEnabled,
       sleepAfterMinutes: sleepAfterMinutes ?? this.sleepAfterMinutes,
+      vibrationIntensity: vibrationIntensity ?? this.vibrationIntensity,
     );
   }
 }

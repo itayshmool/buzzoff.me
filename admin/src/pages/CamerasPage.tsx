@@ -109,7 +109,7 @@ export default function CamerasPage() {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
         <div>
           <Link
             to={`/countries/${code}`}
@@ -117,13 +117,13 @@ export default function CamerasPage() {
           >
             &larr; BACK TO ZONE
           </Link>
-          <h1 className="font-heading text-2xl font-bold tracking-wider text-text-primary mt-1">
+          <h1 className="font-heading text-xl md:text-2xl font-bold tracking-wider text-text-primary mt-1">
             SURVEILLANCE <span className="text-hot text-glow-hot">GRID</span>
             <span className="text-neon text-glow-neon ml-2">({code})</span>
           </h1>
         </div>
         {stats && (
-          <div className="flex items-center gap-3 text-sm">
+          <div className="flex flex-wrap items-center gap-2 text-sm">
             <span className="font-heading font-bold tracking-wider text-text-primary">{stats.total} units</span>
             {Object.entries(stats.by_type).map(([type, count]) => (
               <span
@@ -138,9 +138,9 @@ export default function CamerasPage() {
       </div>
 
       {/* Split view */}
-      <div className="flex-1 flex gap-4 min-h-0">
+      <div className="flex-1 flex flex-col md:flex-row gap-4 min-h-0">
         {/* Map panel */}
-        <div className="w-3/5 flex flex-col">
+        <div className="w-full md:w-3/5 flex flex-col min-h-[300px] md:min-h-0">
           <div className="text-xs text-text-muted font-mono mb-1">Click on the map to deploy a new unit</div>
           <div className="flex-1">
             <CameraMap
@@ -154,7 +154,7 @@ export default function CamerasPage() {
         </div>
 
         {/* Right panel */}
-        <div className="w-2/5 flex flex-col min-h-0">
+        <div className="w-full md:w-2/5 flex flex-col min-h-0">
           {/* Add form */}
           {showAddForm && (
             <div className="bg-surface-card border border-neon/30 p-4 mb-3 clip-angular">

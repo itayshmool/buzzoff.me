@@ -25,6 +25,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   final MapController _mapController = MapController();
   double _zoom = 14.0;
   bool _serviceStarted = false;
+  bool _hasInitialFix = false;
 
   // Default to Tel Aviv until GPS provides a position
   static const _defaultCenter = LatLng(32.0853, 34.7818);
@@ -58,7 +59,18 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     final cameras = ref.watch(nearbyCamerasProvider);
 
     final center = locationAsync.when(
-      data: (loc) => LatLng(loc.latitude, loc.longitude),
+      data: (loc) {
+        final pos = LatLng(loc.latitude, loc.longitude);
+        if (!_hasInitialFix) {
+          _hasInitialFix = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              _mapController.move(pos, _zoom);
+            }
+          });
+        }
+        return pos;
+      },
       loading: () => _defaultCenter,
       error: (_, __) => _defaultCenter,
     );

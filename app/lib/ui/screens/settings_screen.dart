@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/model/app_settings.dart';
+import '../../providers/driving_state_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../providers/database_provider.dart';
 import '../../providers/pack_provider.dart';
@@ -37,15 +39,59 @@ class SettingsScreen extends ConsumerWidget {
 
           // Alert Type
           _SectionTitle('Alert Type'),
-          SwitchListTile(
-            title: const Text('Vibration'),
-            value: settings.vibrationEnabled,
-            onChanged: notifier.toggleVibration,
+          Row(
+            children: [
+              Expanded(
+                child: SwitchListTile(
+                  title: const Text('Vibration'),
+                  value: settings.vibrationEnabled,
+                  onChanged: notifier.toggleVibration,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: TextButton(
+                  onPressed: settings.vibrationEnabled
+                      ? () => ref.read(alertServiceProvider).testVibration()
+                      : null,
+                  child: const Text('Test'),
+                ),
+              ),
+            ],
           ),
-          SwitchListTile(
-            title: const Text('Sound'),
-            value: settings.soundEnabled,
-            onChanged: notifier.toggleSound,
+          if (settings.vibrationEnabled) ...[
+            Padding(
+              padding: const EdgeInsets.only(left: 16, bottom: 8),
+              child: _RadioGroup<VibrationIntensity>(
+                value: settings.vibrationIntensity,
+                options: const {
+                  VibrationIntensity.low: 'Low',
+                  VibrationIntensity.medium: 'Medium',
+                  VibrationIntensity.high: 'High',
+                },
+                onChanged: notifier.updateVibrationIntensity,
+              ),
+            ),
+          ],
+          Row(
+            children: [
+              Expanded(
+                child: SwitchListTile(
+                  title: const Text('Sound'),
+                  value: settings.soundEnabled,
+                  onChanged: notifier.toggleSound,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: TextButton(
+                  onPressed: settings.soundEnabled
+                      ? () => ref.read(alertServiceProvider).testSound()
+                      : null,
+                  child: const Text('Test'),
+                ),
+              ),
+            ],
           ),
 
           const SizedBox(height: 24),

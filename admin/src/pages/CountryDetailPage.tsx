@@ -96,12 +96,12 @@ export default function CountryDetailPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
         <div>
           <Link to="/countries" className="text-sm font-heading tracking-wider text-neon-dim hover:text-neon transition-colors">
             &larr; ZONES
           </Link>
-          <h1 className="font-heading text-2xl font-bold tracking-wider text-text-primary mt-1">
+          <h1 className="font-heading text-xl md:text-2xl font-bold tracking-wider text-text-primary mt-1">
             {country.name} <span className="text-neon text-glow-neon">({country.code})</span>
           </h1>
           <div className="flex items-center gap-3 mt-2">
@@ -129,7 +129,7 @@ export default function CountryDetailPage() {
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-3 gap-4 mb-8 stagger-children">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 stagger-children">
         <StatCard label="Sources" value={sources.length} />
         <StatCard label="Cameras" value={cameraStats?.total.toLocaleString() ?? '...'} />
         <StatCard label="Packs" value={packs.length} />
