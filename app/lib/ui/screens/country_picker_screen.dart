@@ -45,7 +45,9 @@ class CountryPickerScreen extends ConsumerWidget {
                 const Icon(Icons.cloud_off, size: 48),
                 const SizedBox(height: 16),
                 Text(
-                  'Could not load countries.\nCheck your internet connection.',
+                  'Could not load countries.\n'
+                  'If you just opened the app, the server may be starting—tap Retry in a few seconds.\n'
+                  'Otherwise check your internet connection.',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
