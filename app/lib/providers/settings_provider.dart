@@ -57,4 +57,9 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     state = state.copyWith(avgSpeedZonesEnabled: enabled);
     _prefs.save(state);
   }
+
+  void updateSleepAfterMinutes(int minutes) {
+    state = state.copyWith(sleepAfterMinutes: minutes);
+    _prefs.save(state);
+  }
 }

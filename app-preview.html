@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuzzOff — App Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root {
+    /* Light mode — maximum contrast for direct sunlight */
+    --bg-page: #E8E8E8;
+    --bg-phone: #FFFFFF;
+    --bg-phone-border: #D0D0D0;
+    --bg-phone-outer: #B0B0B0;
+    --bg-notch: #222;
+    --text-primary: #000000;
+    --text-secondary: #222222;
+    --text-tertiary: #555555;
+    --bg-card: #F0F0F0;
+    --bg-card-hover: #E6E6E6;
+    --accent: #D35400;
+    --accent-bg: rgba(211,84,0,0.1);
+    --accent-border: rgba(211,84,0,0.35);
+    --border-subtle: rgba(0,0,0,0.08);
+    --bg-chip: #E0E0E0;
+    --chip-text: #333;
+    --chip-active-bg: #D35400;
+    --chip-active-text: #FFFFFF;
+    --toggle-off: #C0C0C0;
+    --toggle-on: #D35400;
+    --status-bar-text: #000;
+    --pill-bg: rgba(255,255,255,0.9);
+    --pill-text: #000;
+    --map-btn-bg: rgba(255,255,255,0.92);
+    --map-btn-text: #000;
+    --alert-bg: rgba(255,255,255,0.96);
+    --alert-border: rgba(211,84,0,0.5);
+    --alert-title: #D35400;
+    --alert-sub: #333;
+    --notif-bg: rgba(255,255,255,0.96);
+    --notif-border: #DDD;
+    --notif-icon-bg: #D35400;
+    --notif-icon-fill: #FFF;
+    --notif-strong: #000;
+    --notif-text: #333;
+    --progress-track: #D8D8D8;
+    --section-title: #D35400;
+    --screen-label-color: #666;
+    --page-title-color: #555;
+    --page-title-accent: #D35400;
+    --dl-icon-bg: rgba(211,84,0,0.1);
+    --dl-icon-fill: #D35400;
+    --swap-fill: #555;
+    --back-bg: rgba(0,0,0,0.06);
+    --back-fill: #000;
+    --leaflet-filter: none;
+    --camera-border: #fff;
+    --status-dot-color: #2E7D32;
+    --status-dot-glow: rgba(46,125,50,0.6);
+  }
+
+  [data-theme="dark"] {
+    --bg-page: #000000;
+    --bg-phone: #000000;
+    --bg-phone-border: #1A1A1A;
+    --bg-phone-outer: #0A0A0A;
+    --bg-notch: #000;
+    --text-primary: #F0F0F0;
+    --text-secondary: #CCCCCC;
+    --text-tertiary: #999999;
+    --bg-card: #111111;
+    --bg-card-hover: #1A1A1A;
+    --accent: #FF8C00;
+    --accent-bg: rgba(255,140,0,0.12);
+    --accent-border: rgba(255,140,0,0.4);
+    --border-subtle: rgba(255,255,255,0.06);
+    --bg-chip: #1A1A1A;
+    --chip-text: #BBB;
+    --chip-active-bg: #FF8C00;
+    --chip-active-text: #000;
+    --toggle-off: #333;
+    --toggle-on: #FF8C00;
+    --status-bar-text: #F0F0F0;
+    --pill-bg: rgba(0,0,0,0.8);
+    --pill-text: #F0F0F0;
+    --map-btn-bg: rgba(0,0,0,0.8);
+    --map-btn-text: #F0F0F0;
+    --alert-bg: rgba(10,10,10,0.95);
+    --alert-border: rgba(255,140,0,0.45);
+    --alert-title: #FF8C00;
+    --alert-sub: #BBB;
+    --notif-bg: rgba(0,0,0,0.95);
+    --notif-border: #222;
+    --notif-icon-bg: #FF8C00;
+    --notif-icon-fill: #000;
+    --notif-strong: #F0F0F0;
+    --notif-text: #BBB;
+    --progress-track: #222;
+    --section-title: #FF8C00;
+    --screen-label-color: #888;
+    --page-title-color: #888;
+    --page-title-accent: #FF8C00;
+    --dl-icon-bg: rgba(255,140,0,0.12);
+    --dl-icon-fill: #FF8C00;
+    --swap-fill: #999;
+    --back-bg: rgba(255,255,255,0.06);
+    --back-fill: #F0F0F0;
+    --leaflet-filter: brightness(0.55) invert(1) contrast(1.4) hue-rotate(200deg) saturate(0.25);
+    --camera-border: #333;
+    --status-dot-color: #4CAF50;
+    --status-dot-glow: rgba(76,175,80,0.6);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-page);
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+    gap: 32px;
+    flex-wrap: wrap;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* Theme toggle */
+  .theme-switch {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 28px;
+    padding: 6px 8px 6px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.3s;
+    user-select: none;
+  }
+  .theme-switch:hover { border-color: var(--accent); }
+  .theme-switch .icon {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.3s;
+  }
+  .theme-switch .icon svg { width: 16px; height: 16px; fill: #fff; }
+  [data-theme="dark"] .theme-switch .icon svg { fill: #000; }
+
+  h1.page-title {
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--page-title-color);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  h1.page-title span { color: var(--page-title-accent); font-weight: 700; }
+
+  .phone-frame {
+    width: 375px;
+    height: 812px;
+    background: var(--bg-phone);
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+      0 0 0 3px var(--bg-phone-border),
+      0 0 0 6px var(--bg-phone-outer),
+      0 25px 80px rgba(0,0,0,0.15);
+    flex-shrink: 0;
+    transition: background 0.3s, box-shadow 0.3s;
+  }
+  [data-theme="dark"] .phone-frame {
+    box-shadow:
+      0 0 0 3px var(--bg-phone-border),
+      0 0 0 6px var(--bg-phone-outer),
+      0 25px 80px rgba(0,0,0,0.6);
+  }
+
+  .phone-frame::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 30px;
+    background: var(--bg-notch);
+    border-radius: 0 0 18px 18px;
+    z-index: 100;
+  }
+
+  .status-bar {
+    height: 50px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 28px 6px;
+    font-size: 12px;
+    font-weight: 600;
+    position: relative;
+    z-index: 90;
+    background: transparent;
+    color: var(--status-bar-text);
+  }
+  .status-bar .time { margin-left: 4px; }
+  .status-bar .icons { display: flex; gap: 4px; font-size: 11px; }
+
+  .screen-label {
+    position: absolute;
+    bottom: -32px;
+    left: 0; right: 0;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--screen-label-color);
+    font-weight: 500;
+  }
+
+  /* ===== SCREEN 1: Country Picker ===== */
+  .country-picker { height: 100%; display: flex; flex-direction: column; }
+  .country-picker .app-bar {
+    padding: 16px 20px 14px;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .country-list { flex: 1; overflow-y: auto; padding: 4px 16px; }
+  .country-card {
+    background: var(--bg-card);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .country-card:hover { background: var(--bg-card-hover); }
+  .country-card .info h3 { font-size: 16px; font-weight: 600; }
+  .country-card .info p { font-size: 13px; color: var(--text-tertiary); margin-top: 2px; }
+  .country-card .flag { font-size: 28px; margin-right: 14px; }
+  .country-card .left { display: flex; align-items: center; }
+  .country-card .dl-icon {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--dl-icon-bg);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .country-card .dl-icon svg { width: 18px; height: 18px; fill: var(--dl-icon-fill); }
+
+  /* ===== SCREEN 2: Download ===== */
+  .download-screen {
+    height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 40px;
+  }
+  .download-screen .icon-pulse {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: var(--accent-bg);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.08); opacity: 1; }
+  }
+  .download-screen .icon-pulse svg { width: 36px; height: 36px; fill: var(--accent); }
+  .download-screen h2 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+  .download-screen .size { font-size: 13px; color: var(--text-tertiary); margin-bottom: 24px; }
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--progress-track);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 68%;
+    background: var(--accent);
+    border-radius: 3px;
+    animation: loading 3s ease-in-out infinite;
+  }
+  @keyframes loading {
+    0% { width: 10%; }
+    50% { width: 75%; }
+    100% { width: 98%; }
+  }
+  .download-screen .pct { font-size: 14px; color: var(--text-secondary); font-weight: 600; }
+
+  /* ===== SCREEN 3: Map ===== */
+  .map-screen { height: 100%; position: relative; }
+  #map { width: 100%; height: 100%; }
+
+  .status-pill {
+    position: absolute;
+    top: 58px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: var(--pill-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 8px 18px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 600;
+    color: var(--pill-text);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  }
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--status-dot-color);
+    box-shadow: 0 0 6px var(--status-dot-glow);
+    animation: blink 2s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .map-controls {
+    position: absolute;
+    right: 16px; bottom: 40px;
+    z-index: 1000;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .map-btn {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--map-btn-bg);
+    backdrop-filter: blur(10px);
+    border: none;
+    color: var(--map-btn-text);
+    font-size: 20px; font-weight: 500;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .map-btn:hover { opacity: 0.85; }
+  .map-btn.settings-gap { margin-top: 8px; }
+  .map-btn svg { fill: var(--map-btn-text); }
+
+  .alert-popup {
+    position: absolute;
+    bottom: 100px;
+    left: 16px; right: 16px;
+    z-index: 1000;
+    background: var(--alert-bg);
+    backdrop-filter: blur(14px);
+    border: 2px solid var(--alert-border);
+    border-radius: 16px;
+    padding: 14px 18px;
+    display: flex; align-items: center; gap: 14px;
+    animation: slideUp 0.4s ease-out;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  }
+  @keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .alert-icon {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: var(--accent-bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .alert-icon svg { width: 20px; height: 20px; fill: var(--accent); }
+  .alert-text h4 { font-size: 15px; font-weight: 700; color: var(--alert-title); }
+  .alert-text p { font-size: 12px; color: var(--alert-sub); margin-top: 2px; }
+
+  .notif-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 200;
+    background: var(--notif-bg);
+    padding: 54px 20px 10px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px;
+    border-bottom: 1px solid var(--notif-border);
+  }
+  .notif-icon-small {
+    width: 20px; height: 20px;
+    background: var(--notif-icon-bg);
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .notif-icon-small svg { width: 12px; height: 12px; fill: var(--notif-icon-fill); }
+  .notif-text { color: var(--notif-text); }
+  .notif-text strong { color: var(--notif-strong); }
+
+  .camera-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--camera-border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  }
+  .camera-dot.speed { background: #1565C0; }
+  .camera-dot.redlight { background: #C62828; }
+  .camera-dot.avg { background: #E65100; }
+  .camera-dot.mobile { background: #F57F17; }
+
+  .user-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #1565C0;
+    border: 3px solid #fff;
+    box-shadow: 0 0 12px rgba(21,101,192,0.5);
+  }
+
+  /* ===== SCREEN 4: Settings ===== */
+  .settings-screen { height: 100%; display: flex; flex-direction: column; }
+  .settings-screen .app-bar {
+    padding: 16px 20px 14px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .settings-screen .app-bar .back {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--back-bg);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .settings-screen .app-bar .back svg { width: 18px; height: 18px; fill: var(--back-fill); }
+  .settings-screen .app-bar h2 { font-size: 22px; font-weight: 700; }
+
+  .settings-body { flex: 1; overflow-y: auto; padding: 8px 20px 32px; }
+  .section-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--section-title);
+    margin: 22px 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .section-title:first-child { margin-top: 4px; }
+
+  .chip-row { display: flex; gap: 8px; margin-bottom: 4px; }
+  .chip {
+    padding: 9px 18px;
+    border-radius: 22px;
+    font-size: 14px;
+    font-weight: 600;
+    background: var(--bg-chip);
+    color: var(--chip-text);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .chip.active {
+    background: var(--chip-active-bg);
+    color: var(--chip-active-text);
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .toggle-label { font-size: 15px; font-weight: 500; }
+  .toggle {
+    width: 48px; height: 28px;
+    border-radius: 14px;
+    background: var(--toggle-off);
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle.on { background: var(--toggle-on); }
+  .toggle::after {
+    content: '';
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    position: absolute;
+    top: 3px; left: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle.on::after { transform: translateX(20px); }
+
+  .country-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    cursor: pointer;
+  }
+  .country-row .left { display: flex; align-items: center; gap: 12px; }
+  .country-row .flag-big { font-size: 24px; }
+  .country-row .info h4 { font-size: 15px; font-weight: 600; }
+  .country-row .info p { font-size: 12px; color: var(--text-tertiary); margin-top: 1px; }
+  .country-row .swap svg { width: 20px; height: 20px; fill: var(--swap-fill); }
+
+  .camera-count-footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    padding: 20px 0 8px;
+  }
+
+  /* Leaflet overrides */
+  .leaflet-tile-pane { filter: var(--leaflet-filter); }
+  .leaflet-control-zoom { display: none; }
+  .leaflet-control-attribution { display: none; }
+
+  /* Responsive */
+  @media (max-width: 800px) {
+    body { padding: 20px 10px; gap: 50px; }
+    .phone-frame { transform: scale(0.85); transform-origin: top center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Theme toggle -->
+<div class="theme-switch" onclick="toggleTheme()" title="Toggle light/dark mode">
+  <span class="label-text">Day</span>
+  <div class="icon">
+    <svg class="sun-icon" viewBox="0 0 24 24"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/></svg>
+    <svg class="moon-icon" viewBox="0 0 24 24" style="display:none"><path d="M9.5 2c-1.82 0-3.53.5-5 1.35 2.99 1.73 5 4.95 5 8.65s-2.01 6.92-5 8.65A9.973 9.973 0 009.5 22c5.52 0 10-4.48 10-10S15.02 2 9.5 2z"/></svg>
+  </div>
+</div>
+
+<h1 class="page-title">BuzzOff <span>App Preview</span></h1>
+
+<!-- ===== SCREEN 1: Country Picker ===== -->
+<div style="position:relative;">
+<div class="phone-frame">
+  <div class="status-bar"><span class="time">12:05</span><span class="icons">LTE ▌▌▌ 84%</span></div>
+  <div class="country-picker">
+    <div class="app-bar">Select your country</div>
+    <div class="country-list">
+      <div class="country-card">
+        <div class="left">
+          <span class="flag">🇮🇱</span>
+          <div class="info"><h3>Israel</h3><p>184 cameras</p></div>
+        </div>
+        <div class="dl-icon"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div>
+      </div>
+      <div class="country-card">
+        <div class="left">
+          <span class="flag">🇩🇪</span>
+          <div class="info"><h3>Germany</h3><p>4,217 cameras</p></div>
+        </div>
+        <div class="dl-icon"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div>
+      </div>
+      <div class="country-card">
+        <div class="left">
+          <span class="flag">🇫🇷</span>
+          <div class="info"><h3>France</h3><p>3,892 cameras</p></div>
+        </div>
+        <div class="dl-icon"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div>
+      </div>
+      <div class="country-card">
+        <div class="left">
+          <span class="flag">🇬🇧</span>
+          <div class="info"><h3>United Kingdom</h3><p>7,341 cameras</p></div>
+        </div>
+        <div class="dl-icon"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div>
+      </div>
+      <div class="country-card">
+        <div class="left">
+          <span class="flag">🇳🇱</span>
+          <div class="info"><h3>Netherlands</h3><p>1,456 cameras</p></div>
+        </div>
+        <div class="dl-icon"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div>
+      </div>
+      <div class="country-card">
+        <div class="left">
+          <span class="flag">🇮🇹</span>
+          <div class="info"><h3>Italy</h3><p>2,103 cameras</p></div>
+        </div>
+        <div class="dl-icon"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-label">Country Picker</div>
+</div>
+</div>
+
+<!-- ===== SCREEN 2: Download ===== -->
+<div style="position:relative;">
+<div class="phone-frame">
+  <div class="status-bar"><span class="time">12:05</span><span class="icons">LTE ▌▌▌ 84%</span></div>
+  <div class="download-screen">
+    <div class="icon-pulse">
+      <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+    </div>
+    <h2>Downloading Israel...</h2>
+    <div class="size">(1.2 MB)</div>
+    <div class="progress-bar"><div class="progress-fill"></div></div>
+    <div class="pct">68%</div>
+  </div>
+  <div class="screen-label">Download Progress</div>
+</div>
+</div>
+
+<!-- ===== SCREEN 3: Map (Main) ===== -->
+<div style="position:relative;">
+<div class="phone-frame">
+  <!-- Notification bar -->
+  <div class="notif-bar">
+    <div class="notif-icon-small">
+      <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2zM12 4a8 8 0 0 1 8 8 8 8 0 0 1-8 8 8 8 0 0 1-8-8 8 8 0 0 1 8-8z"/></svg>
+    </div>
+    <div class="notif-text"><strong>BuzzOff — Active</strong> · Monitoring cameras ahead</div>
+  </div>
+
+  <div class="map-screen">
+    <div id="map"></div>
+
+    <!-- Status pill -->
+    <div class="status-pill">
+      <div class="status-dot"></div>
+      Active
+    </div>
+
+    <!-- Alert popup -->
+    <div class="alert-popup">
+      <div class="alert-icon">
+        <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+      </div>
+      <div class="alert-text">
+        <h4>Speed camera ahead — 420m</h4>
+        <p>Fixed speed · Rd 4 · Limit 90 km/h</p>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="map-controls">
+      <button class="map-btn">+</button>
+      <button class="map-btn">−</button>
+      <button class="map-btn settings-gap">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="screen-label">Map — Driving</div>
+</div>
+</div>
+
+<!-- ===== SCREEN 4: Settings ===== -->
+<div style="position:relative;">
+<div class="phone-frame">
+  <div class="status-bar"><span class="time">12:05</span><span class="icons">LTE ▌▌▌ 84%</span></div>
+  <div class="settings-screen">
+    <div class="app-bar">
+      <div class="back"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></div>
+      <h2>Settings</h2>
+    </div>
+    <div class="settings-body">
+      <div class="section-title">Alert Distance</div>
+      <div class="chip-row">
+        <div class="chip">500m</div>
+        <div class="chip active">800m</div>
+        <div class="chip">1200m</div>
+      </div>
+
+      <div class="section-title">Alert Type</div>
+      <div class="toggle-row">
+        <span class="toggle-label">Vibration</span>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-label">Sound</span>
+        <div class="toggle" onclick="this.classList.toggle('on')"></div>
+      </div>
+
+      <div class="section-title">Activate at Speed</div>
+      <div class="chip-row">
+        <div class="chip">30 km/h</div>
+        <div class="chip active">40 km/h</div>
+        <div class="chip">50 km/h</div>
+      </div>
+
+      <div class="section-title">Sleep When Stopped</div>
+      <div class="chip-row">
+        <div class="chip">3 min</div>
+        <div class="chip active">5 min</div>
+        <div class="chip">10 min</div>
+        <div class="chip">15 min</div>
+      </div>
+
+      <div class="section-title">Camera Types</div>
+      <div class="toggle-row">
+        <span class="toggle-label">Speed cameras</span>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-label">Red light cameras</span>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-label">Average speed zones</span>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+
+      <div class="section-title">Country</div>
+      <div class="country-row">
+        <div class="left">
+          <span class="flag-big">🇮🇱</span>
+          <div class="info">
+            <h4>Israel</h4>
+            <p>184 cameras loaded</p>
+          </div>
+        </div>
+        <div class="swap"><svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg></div>
+      </div>
+
+      <div class="camera-count-footer">Cameras loaded: 184</div>
+    </div>
+  </div>
+  <div class="screen-label">Settings</div>
+</div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Theme toggle
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  updateThemeUI(!isDark);
+  // Re-apply map tiles
+  if (window._tileLayer) {
+    window._tileLayer.setUrl(
+      !isDark
+        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+        : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+    );
+  }
+}
+
+function updateThemeUI(isDark) {
+  const label = document.querySelector('.theme-switch .label-text');
+  const sunIcon = document.querySelector('.sun-icon');
+  const moonIcon = document.querySelector('.moon-icon');
+  label.textContent = isDark ? 'Night' : 'Day';
+  sunIcon.style.display = isDark ? 'none' : 'block';
+  moonIcon.style.display = isDark ? 'block' : 'none';
+}
+
+// Default to light
+document.documentElement.setAttribute('data-theme', 'light');
+
+// Tel Aviv map
+const map = L.map('map', {
+  center: [32.0853, 34.7818],
+  zoom: 14,
+  zoomControl: false,
+  attributionControl: false,
+});
+
+window._tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+}).addTo(map);
+
+// User position
+const userIcon = L.divIcon({
+  className: '',
+  html: '<div class="user-dot"></div>',
+  iconSize: [18, 18],
+  iconAnchor: [9, 9],
+});
+L.marker([32.0853, 34.7818], { icon: userIcon }).addTo(map);
+
+// Camera markers
+const cameras = [
+  { lat: 32.0890, lon: 34.7750, type: 'speed' },
+  { lat: 32.0830, lon: 34.7900, type: 'speed' },
+  { lat: 32.0780, lon: 34.7680, type: 'redlight' },
+  { lat: 32.0920, lon: 34.7850, type: 'speed' },
+  { lat: 32.0800, lon: 34.7830, type: 'redlight' },
+  { lat: 32.0870, lon: 34.7700, type: 'avg' },
+  { lat: 32.0750, lon: 34.7780, type: 'speed' },
+  { lat: 32.0910, lon: 34.7920, type: 'mobile' },
+  { lat: 32.0840, lon: 34.7650, type: 'speed' },
+  { lat: 32.0770, lon: 34.7900, type: 'redlight' },
+  { lat: 32.0950, lon: 34.7800, type: 'avg' },
+  { lat: 32.0810, lon: 34.7740, type: 'speed' },
+  { lat: 32.0860, lon: 34.7870, type: 'speed' },
+  { lat: 32.0730, lon: 34.7820, type: 'mobile' },
+  { lat: 32.0880, lon: 34.7960, type: 'redlight' },
+];
+
+cameras.forEach(cam => {
+  const icon = L.divIcon({
+    className: '',
+    html: `<div class="camera-dot ${cam.type}"></div>`,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+  });
+  L.marker([cam.lat, cam.lon], { icon: icon }).addTo(map);
+});
+
+// Interactive chips
+document.querySelectorAll('.chip-row').forEach(row => {
+  row.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      row.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+});
+</script>
+</body>
+</html>

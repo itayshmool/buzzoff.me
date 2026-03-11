@@ -46,10 +46,27 @@ void main() {
     expect(find.text('Alert Distance'), findsOneWidget);
     expect(find.text('Alert Type'), findsOneWidget);
     expect(find.text('Activate at speed'), findsOneWidget);
-    expect(find.text('Camera types'), findsOneWidget);
     expect(find.text('Vibration'), findsOneWidget);
     expect(find.text('Sound'), findsOneWidget);
+
+    // Scroll to reveal sleep and camera sections
+    await tester.scrollUntilVisible(
+      find.text('Sleep when stopped'),
+      200,
+    );
+    expect(find.text('Sleep when stopped'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('Camera types'),
+      200,
+    );
+    expect(find.text('Camera types'), findsOneWidget);
     expect(find.text('Speed cameras'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('Average speed zones'),
+      200,
+    );
     expect(find.text('Red light cameras'), findsOneWidget);
     expect(find.text('Average speed zones'), findsOneWidget);
 

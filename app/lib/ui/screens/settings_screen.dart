@@ -60,6 +60,16 @@ class SettingsScreen extends ConsumerWidget {
 
           const SizedBox(height: 24),
 
+          // Sleep timeout
+          _SectionTitle('Sleep when stopped'),
+          _RadioGroup<int>(
+            value: settings.sleepAfterMinutes,
+            options: {3: '3 min', 5: '5 min', 10: '10 min', 15: '15 min'},
+            onChanged: notifier.updateSleepAfterMinutes,
+          ),
+
+          const SizedBox(height: 24),
+
           // Camera types
           _SectionTitle('Camera types'),
           SwitchListTile(

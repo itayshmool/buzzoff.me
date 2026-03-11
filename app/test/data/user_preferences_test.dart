@@ -19,6 +19,7 @@ void main() {
       expect(settings.speedCamerasEnabled, isTrue);
       expect(settings.redLightCamerasEnabled, isTrue);
       expect(settings.avgSpeedZonesEnabled, isTrue);
+      expect(settings.sleepAfterMinutes, 5);
     });
 
     test('saves and loads custom settings', () async {
@@ -34,6 +35,7 @@ void main() {
         speedCamerasEnabled: false,
         redLightCamerasEnabled: true,
         avgSpeedZonesEnabled: false,
+        sleepAfterMinutes: 10,
       );
 
       await userPrefs.save(custom);
@@ -46,6 +48,7 @@ void main() {
       expect(loaded.speedCamerasEnabled, isFalse);
       expect(loaded.redLightCamerasEnabled, isTrue);
       expect(loaded.avgSpeedZonesEnabled, isFalse);
+      expect(loaded.sleepAfterMinutes, 10);
     });
 
     test('preserves unchanged defaults when saving partial update', () async {

@@ -6,6 +6,7 @@ class AppSettings {
   final bool speedCamerasEnabled;
   final bool redLightCamerasEnabled;
   final bool avgSpeedZonesEnabled;
+  final int sleepAfterMinutes;
 
   const AppSettings({
     this.alertDistanceMeters = 800.0,
@@ -15,6 +16,7 @@ class AppSettings {
     this.speedCamerasEnabled = true,
     this.redLightCamerasEnabled = true,
     this.avgSpeedZonesEnabled = true,
+    this.sleepAfterMinutes = 5,
   });
 
   AppSettings copyWith({
@@ -25,6 +27,7 @@ class AppSettings {
     bool? speedCamerasEnabled,
     bool? redLightCamerasEnabled,
     bool? avgSpeedZonesEnabled,
+    int? sleepAfterMinutes,
   }) {
     return AppSettings(
       alertDistanceMeters: alertDistanceMeters ?? this.alertDistanceMeters,
@@ -36,6 +39,7 @@ class AppSettings {
           redLightCamerasEnabled ?? this.redLightCamerasEnabled,
       avgSpeedZonesEnabled:
           avgSpeedZonesEnabled ?? this.avgSpeedZonesEnabled,
+      sleepAfterMinutes: sleepAfterMinutes ?? this.sleepAfterMinutes,
     );
   }
 }

@@ -10,6 +10,7 @@ class UserPreferences {
   static const _keySpeedCameras = 'speed_cameras_enabled';
   static const _keyRedLightCameras = 'red_light_cameras_enabled';
   static const _keyAvgSpeedZones = 'avg_speed_zones_enabled';
+  static const _keySleepAfterMinutes = 'sleep_after_minutes';
 
   final SharedPreferences _prefs;
 
@@ -24,6 +25,7 @@ class UserPreferences {
       speedCamerasEnabled: _prefs.getBool(_keySpeedCameras) ?? true,
       redLightCamerasEnabled: _prefs.getBool(_keyRedLightCameras) ?? true,
       avgSpeedZonesEnabled: _prefs.getBool(_keyAvgSpeedZones) ?? true,
+      sleepAfterMinutes: _prefs.getInt(_keySleepAfterMinutes) ?? 5,
     );
   }
 
@@ -35,5 +37,6 @@ class UserPreferences {
     await _prefs.setBool(_keySpeedCameras, settings.speedCamerasEnabled);
     await _prefs.setBool(_keyRedLightCameras, settings.redLightCamerasEnabled);
     await _prefs.setBool(_keyAvgSpeedZones, settings.avgSpeedZonesEnabled);
+    await _prefs.setInt(_keySleepAfterMinutes, settings.sleepAfterMinutes);
   }
 }

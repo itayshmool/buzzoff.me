@@ -40,6 +40,7 @@ final orchestratorProvider = Provider<Orchestrator?>((ref) {
     locationService: locationService,
     alertService: alertService,
     minSpeedKmh: settings.activateAtSpeedKmh,
+    sleepAfterMinutes: settings.sleepAfterMinutes,
     onStateChange: (state) => drivingNotifier.update(state),
   );
 

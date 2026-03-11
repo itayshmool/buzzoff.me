@@ -16,6 +16,7 @@ class Orchestrator {
   final LocationService _locationService;
   final AlertService _alertService;
   final double _minSpeedKmh;
+  final int _sleepAfterMinutes;
   final void Function(DrivingState)? onStateChange;
 
   StreamSubscription<LocationData>? _locationSub;
@@ -30,11 +31,13 @@ class Orchestrator {
     required LocationService locationService,
     required AlertService alertService,
     double minSpeedKmh = 40.0,
+    int sleepAfterMinutes = 5,
     this.onStateChange,
   })  : _proximityEngine = proximityEngine,
         _locationService = locationService,
         _alertService = alertService,
-        _minSpeedKmh = minSpeedKmh;
+        _minSpeedKmh = minSpeedKmh,
+        _sleepAfterMinutes = sleepAfterMinutes;
 
   void _setState(DrivingState newState) {
     if (_state == newState) return;
@@ -66,7 +69,8 @@ class Orchestrator {
     if (_state != DrivingState.driving) return;
 
     _setState(DrivingState.stopping);
-    _stopTimer = Timer(const Duration(minutes: 2), () {
+    final remaining = _sleepAfterMinutes - (_sleepAfterMinutes ~/ 2);
+    _stopTimer = Timer(Duration(minutes: remaining), () {
       stopDriving();
     });
   }
@@ -97,10 +101,11 @@ class Orchestrator {
     if (loc.speedKmh < _minSpeedKmh) {
       _lowSpeedSince ??= DateTime.now();
       final lowDuration = DateTime.now().difference(_lowSpeedSince!);
-      if (lowDuration.inMinutes >= 5) {
+      final stoppingThreshold = _sleepAfterMinutes ~/ 2;
+      if (lowDuration.inMinutes >= _sleepAfterMinutes) {
         stopDriving();
       } else if (_state == DrivingState.driving &&
-          lowDuration.inSeconds >= 30) {
+          lowDuration.inMinutes >= stoppingThreshold) {
         scheduleStopping();
       }
       return;
