@@ -1,0 +1,40 @@
+================================================================================
+GOOGLE PLAY STORE LISTING — BuzzOff
+Use these in Play Console → Grow → Store presence → Main store listing
+================================================================================
+
+--- SHORT DESCRIPTION (max 80 characters) ---
+
+Speed camera alerts. Silent vibration warnings, offline maps. No ads, no account.
+
+
+--- FULL DESCRIPTION (paste into Full description field, max 4000 chars) ---
+
+Never get flashed again.
+
+BuzzOff gives you silent speed camera alerts so you can stay focused on the road. Pick your country, download a small offline camera pack, and drive. When you're moving, BuzzOff runs in the background and vibrates as you approach fixed, mobile, or average speed cameras—and red light cameras too. No sounds, no distractions. Works with Waze, Spotify, or your favourite navigation app.
+
+WHAT YOU GET
+
+• Speed camera alerts — Fixed, mobile, and average speed cameras ahead
+• Vibration warning — Silent haptic alerts. No beeps, no voice
+• Background mode — Runs while you use other apps (e.g. Waze, Spotify)
+• Offline packs — All camera data stored on your device. No internet needed while driving
+• Multiple countries — Israel, UK, Germany, France, Netherlands, Italy and more. Pick your track and download
+• Smart sleep — Configurable auto-sleep when you're stopped (e.g. at a red light)
+
+HOW IT WORKS
+
+1. Pick your country from the flag grid.
+2. Download the camera pack (one small file per country, stored locally).
+3. Drive. Alerts activate automatically at speed. Silent vibrations keep you aware.
+
+Free. No account needed. No ads.
+
+Data is used only on your device for alerts. See our privacy policy for details.
+
+================================================================================
+CHARACTER COUNTS (for reference)
+================================================================================
+Short: 72 characters
+Full:  ~1,150 characters (under 4000 limit)

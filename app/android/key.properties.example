@@ -1,0 +1,7 @@
+# Copy to key.properties and fill in. Do not commit key.properties or your keystore.
+# See docs/PUBLISH_GOOGLE_PLAY.md for how to create the keystore.
+
+storePassword=your-store-password
+keyPassword=your-key-password
+keyAlias=upload
+storeFile=upload-keystore.jks

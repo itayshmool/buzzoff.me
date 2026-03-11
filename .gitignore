@@ -50,3 +50,5 @@ backend/.pytest_cache/
 *.pem
 *.key
 credentials.json
+app/android/key.properties
+app/android/*.jks

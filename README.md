@@ -155,6 +155,10 @@ flutter test        # 79 tests
 flutter run         # requires Android emulator or device
 ```
 
+## Publishing to Google Play
+
+To build a release App Bundle and publish to the Play Store, see **[docs/PUBLISH_GOOGLE_PLAY.md](docs/PUBLISH_GOOGLE_PLAY.md)**. Summary: create an upload keystore, configure `app/android/key.properties`, then run `flutter build appbundle --release` and upload the AAB in [Play Console](https://play.google.com/console).
+
 ## API Endpoints
 
 ```
