@@ -166,7 +166,7 @@ export default function SourceEditorPage() {
             />
             {file && <span className="text-xs text-green-600 mt-1">{file.name}</span>}
             {uploadStatus && <span className="text-xs text-blue-600 mt-1">{uploadStatus}</span>}
-            {existing?.config?.file_path && !file && (
+            {!!existing?.config?.file_path && !file && (
               <span className="text-xs text-slate-500 mt-1">
                 Current: {String(existing.config.file_path).split('/').pop() ?? ''}
               </span>
