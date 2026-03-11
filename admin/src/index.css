@@ -28,6 +28,31 @@
   --color-warning: #ffc107;
 }
 
+/* ── Light theme overrides ───────────── */
+
+[data-theme="light"] {
+  --color-neon: #0099aa;
+  --color-neon-dim: #007788;
+  --color-neon-glow: rgba(0, 153, 170, 0.25);
+  --color-neon-subtle: rgba(0, 153, 170, 0.06);
+  --color-hot: #e05500;
+  --color-hot-dim: #b84400;
+  --color-hot-glow: rgba(224, 85, 0, 0.2);
+  --color-surface: #f0f2f5;
+  --color-surface-raised: #ffffff;
+  --color-surface-card: #ffffff;
+  --color-surface-hover: #e8ecf0;
+  --color-border: #d0d7de;
+  --color-border-bright: #b0bac4;
+  --color-text-primary: #1a2130;
+  --color-text-secondary: #505a6a;
+  --color-text-muted: #8b95a5;
+  --color-danger: #dc2f3e;
+  --color-danger-dim: #b82535;
+  --color-success: #059960;
+  --color-warning: #d4a006;
+}
+
 /* ── Base ─────────────────────────────── */
 
 * {
@@ -51,6 +76,11 @@ body {
   background-size: 16px 16px;
 }
 
+[data-theme="light"] .bg-carbon {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(0,0,0,0.03) 1px, transparent 0);
+}
+
 /* ── Neon glow effects ────────────────── */
 
 .glow-neon {
@@ -71,6 +101,22 @@ body {
 
 .text-glow-hot {
   text-shadow: 0 0 12px var(--color-hot-glow);
+}
+
+[data-theme="light"] .glow-neon {
+  box-shadow: 0 1px 4px rgba(0, 153, 170, 0.15);
+}
+
+[data-theme="light"] .glow-hot {
+  box-shadow: 0 1px 4px rgba(224, 85, 0, 0.15);
+}
+
+[data-theme="light"] .text-glow-neon {
+  text-shadow: none;
+}
+
+[data-theme="light"] .text-glow-hot {
+  text-shadow: none;
 }
 
 /* ── Speed lines decoration ───────────── */
@@ -142,18 +188,26 @@ body {
 /* ── Leaflet dark theme override ──────── */
 
 .leaflet-container {
-  background: #0d1117 !important;
+  background: var(--color-surface) !important;
 }
 
-.leaflet-tile-pane {
+[data-theme="dark"] .leaflet-tile-pane {
   filter: brightness(0.65) invert(1) contrast(2.5) hue-rotate(200deg) saturate(0.4) brightness(0.75);
 }
 
+[data-theme="light"] .leaflet-tile-pane {
+  filter: none;
+}
+
 .leaflet-control-attribution {
-  background: rgba(13, 17, 23, 0.8) !important;
+  background: var(--color-surface-card) !important;
   color: var(--color-text-muted) !important;
   font-family: var(--font-mono) !important;
   font-size: 9px !important;
+}
+
+[data-theme="light"] .leaflet-control-attribution {
+  opacity: 0.8;
 }
 
 .leaflet-control-attribution a {
@@ -174,14 +228,23 @@ body {
   box-shadow: 0 0 12px var(--color-neon-glow) !important;
 }
 
+[data-theme="light"] .leaflet-popup-content-wrapper {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12) !important;
+}
+
 .leaflet-popup-tip {
   background: var(--color-surface-card) !important;
 }
 
-/* ── Form controls dark theme ─────────── */
+/* ── Form controls ───────────────────── */
 
 input, select, textarea {
   font-family: var(--font-body);
+}
+
+/* Light mode cards get a subtle shadow instead of border glow */
+[data-theme="light"] .bg-surface-card {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 
 /* ── Stagger animation children ───────── */
