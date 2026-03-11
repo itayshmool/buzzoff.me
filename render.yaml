@@ -38,6 +38,14 @@ services:
         source: /*
         destination: /index.html
 
+  # Landing Page Website
+  - type: web
+    name: buzzoff-website
+    runtime: static
+    rootDir: website
+    buildCommand: echo 'static site, no build needed'
+    staticPublishPath: .
+
 databases:
   - name: buzzoff-db
     plan: free
