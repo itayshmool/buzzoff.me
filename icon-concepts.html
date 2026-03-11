@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuzzOff Icon Concepts — Mario Kart Theme</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #111;
+  color: #eee;
+  font-family: -apple-system, sans-serif;
+  padding: 40px 20px;
+  text-align: center;
+}
+h1 { font-size: 24px; margin-bottom: 8px; }
+p.sub { color: #888; margin-bottom: 40px; font-size: 14px; }
+.grid {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.concept {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.concept img {
+  width: 200px;
+  height: 200px;
+  border-radius: 44px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  transition: transform 0.2s;
+}
+.concept img:hover {
+  transform: scale(1.08);
+}
+.label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #FF8C00;
+  letter-spacing: 1px;
+}
+.desc {
+  font-size: 12px;
+  color: #888;
+  max-width: 200px;
+  line-height: 1.4;
+}
+hr { border: none; border-top: 1px solid #333; margin: 48px 0; }
+h2 { font-size: 18px; margin-bottom: 24px; color: #aaa; }
+.sizes {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.sizes .size-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.sizes .size-label {
+  font-size: 11px;
+  color: #666;
+}
+.original { margin-top: 48px; }
+.original img {
+  width: 200px;
+  height: 200px;
+  border-radius: 44px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  opacity: 0.5;
+}
+</style>
+</head>
+<body>
+
+<h1>BuzzOff Icon Concepts</h1>
+<p class="sub">Mario Kart themed — Asphalt Dark background</p>
+
+<div class="grid">
+  <div class="concept">
+    <img src="app/assets/icon/concept-1-checkered.svg" alt="Concept 1">
+    <div class="label">1. CHECKERED FLAG</div>
+    <div class="desc">Checkered flag pattern corners + banners. Classic racing finish line feel.</div>
+  </div>
+  <div class="concept">
+    <img src="app/assets/icon/concept-2-itembox.svg" alt="Concept 2">
+    <div class="label">2. ITEM BOX</div>
+    <div class="desc">Camera inside a Mario Kart item box frame with ? mark shadow and sparkles.</div>
+  </div>
+  <div class="concept">
+    <img src="app/assets/icon/concept-3-road.svg" alt="Concept 3">
+    <div class="label">3. RACE TRACK</div>
+    <div class="desc">Camera over a perspective road with boost pad and lane markings.</div>
+  </div>
+</div>
+
+<hr>
+<h2>Size Preview (each concept at app icon sizes)</h2>
+<div class="sizes">
+  <div class="size-item">
+    <img src="app/assets/icon/concept-1-checkered.svg" style="width:180px;height:180px;border-radius:40px;">
+    <div class="size-label">Checkered 180px</div>
+  </div>
+  <div class="size-item">
+    <img src="app/assets/icon/concept-1-checkered.svg" style="width:60px;height:60px;border-radius:13px;">
+    <div class="size-label">60px</div>
+  </div>
+  <div class="size-item">
+    <img src="app/assets/icon/concept-2-itembox.svg" style="width:180px;height:180px;border-radius:40px;">
+    <div class="size-label">Item Box 180px</div>
+  </div>
+  <div class="size-item">
+    <img src="app/assets/icon/concept-2-itembox.svg" style="width:60px;height:60px;border-radius:13px;">
+    <div class="size-label">60px</div>
+  </div>
+  <div class="size-item">
+    <img src="app/assets/icon/concept-3-road.svg" style="width:180px;height:180px;border-radius:40px;">
+    <div class="size-label">Race Track 180px</div>
+  </div>
+  <div class="size-item">
+    <img src="app/assets/icon/concept-3-road.svg" style="width:60px;height:60px;border-radius:13px;">
+    <div class="size-label">60px</div>
+  </div>
+</div>
+
+<div class="original">
+  <h2>Current Icon (for comparison)</h2>
+  <img src="app/assets/icon/buzzoff_icon.svg" alt="Current">
+</div>
+
+</body>
+</html>

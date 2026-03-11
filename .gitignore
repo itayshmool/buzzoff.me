@@ -52,3 +52,4 @@ backend/.pytest_cache/
 credentials.json
 app/android/key.properties
 app/android/*.jks
+.cursor/

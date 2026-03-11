@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -13,6 +15,18 @@ from app.api.routes.admin_sources import router as admin_sources_router
 from app.api.routes.auth import router as auth_router
 
 app = FastAPI(title="BuzzOff API", version="0.1.0")
+logger = logging.getLogger(__name__)
+
+
+@app.on_event("startup")
+def _log_admin_auth_config() -> None:
+    if settings.admin_password == "changeme":
+        logger.warning(
+            "Admin auth: using default password. Set ADMIN_PASSWORD in production."
+        )
+    else:
+        logger.info("Admin auth: custom password configured.")
+
 
 app.add_middleware(
     CORSMiddleware,

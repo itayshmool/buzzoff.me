@@ -15,7 +15,7 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      await login(username, password);
+      await login(username.trim(), password.trim());
       navigate('/');
     } catch {
       setError('Invalid credentials');

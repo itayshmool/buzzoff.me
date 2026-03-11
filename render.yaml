@@ -18,7 +18,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: ADMIN_CORS_ORIGINS
-        value: https://buzzoff-admin.onrender.com
+        value: https://buzzoff-admin.onrender.com,https://admin.buzzoff.me
       - key: PACK_STORAGE_PATH
         value: /data/packs
     disk:

@@ -35,6 +35,9 @@ dependencies:
   # Alerts
   vibration: ^2.0.0
 
+  # Sensors (shake detection)
+  sensors_plus: ^6.1.1
+
   # Preferences
   shared_preferences: ^2.3.4
 
@@ -77,5 +80,5 @@ flutter_launcher_icons:
   ios: true
   remove_alpha_ios: true
   image_path: "assets/icon/buzzoff_icon.png"
-  adaptive_icon_background: "#1a1a2e"
+  adaptive_icon_background: "#1a1a1a"
   adaptive_icon_foreground: "assets/icon/buzzoff_icon.png"
