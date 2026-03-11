@@ -20,33 +20,41 @@ export default function DataTable<T>({
   emptyMessage = 'No data',
 }: DataTableProps<T>) {
   if (data.length === 0) {
-    return <div className="text-sm text-slate-500 py-8 text-center">{emptyMessage}</div>;
+    return (
+      <div className="text-sm text-text-muted py-8 text-center font-mono">
+        {emptyMessage}
+      </div>
+    );
   }
 
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-slate-200">
+          <tr className="border-b border-border">
             {columns.map((col) => (
               <th
                 key={col.key}
-                className="text-left py-3 px-4 font-medium text-slate-600"
+                className="text-left py-3 px-4 font-heading text-xs font-medium tracking-wider text-text-muted uppercase"
               >
                 {col.header}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100">
+        <tbody className="divide-y divide-border/50">
           {data.map((item, i) => (
             <tr
               key={i}
               onClick={() => onRowClick?.(item)}
-              className={onRowClick ? 'hover:bg-slate-50 cursor-pointer' : ''}
+              className={
+                onRowClick
+                  ? 'hover:bg-neon-subtle cursor-pointer transition-colors'
+                  : ''
+              }
             >
               {columns.map((col) => (
-                <td key={col.key} className="py-3 px-4 text-slate-700">
+                <td key={col.key} className="py-3 px-4 text-text-primary">
                   {col.render
                     ? col.render(item)
                     : String((item as Record<string, unknown>)[col.key] ?? '')}

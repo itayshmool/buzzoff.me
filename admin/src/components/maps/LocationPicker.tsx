@@ -20,7 +20,7 @@ export default function LocationPicker({ lat, lon, onChange }: LocationPickerPro
     <MapContainer
       center={lat && lon ? [lat, lon] : [48, 15]}
       zoom={lat && lon ? 14 : 4}
-      className="h-[200px] w-full rounded-lg"
+      className="h-[200px] w-full leaflet-dark border border-border"
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'

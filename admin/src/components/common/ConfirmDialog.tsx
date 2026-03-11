@@ -17,22 +17,24 @@ export default function ConfirmDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onCancel} />
-      <div className="relative bg-white rounded-lg shadow-lg p-6 max-w-sm w-full mx-4">
-        <h3 className="text-lg font-semibold text-slate-800">{title}</h3>
-        <p className="mt-2 text-sm text-slate-600">{message}</p>
-        <div className="mt-4 flex justify-end gap-3">
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onCancel} />
+      <div className="relative bg-surface-card border border-danger/30 p-6 max-w-sm w-full mx-4 clip-angular animate-fade-up">
+        <h3 className="font-heading text-base font-bold tracking-wider text-danger text-glow-hot uppercase">
+          {title}
+        </h3>
+        <p className="mt-3 text-sm text-text-secondary">{message}</p>
+        <div className="mt-5 flex justify-end gap-3">
           <button
             onClick={onCancel}
-            className="px-4 py-2 text-sm rounded border border-slate-300 text-slate-700 hover:bg-slate-50"
+            className="px-4 py-2 text-sm font-heading tracking-wider text-text-muted border border-border hover:border-border-bright hover:text-text-primary transition-colors"
           >
-            Cancel
+            ABORT
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 text-sm rounded bg-red-600 text-white hover:bg-red-700"
+            className="px-4 py-2 text-sm font-heading tracking-wider bg-danger text-white hover:bg-danger-dim transition-colors"
           >
-            Delete
+            CONFIRM
           </button>
         </div>
       </div>

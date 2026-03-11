@@ -51,7 +51,9 @@ export default function GeocodingQueuePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-800 mb-6">Geocoding Queue</h1>
+      <h1 className="font-heading text-2xl font-bold tracking-wider text-text-primary mb-6">
+        GEO <span className="text-hot text-glow-hot">LOCATE</span>
+      </h1>
 
       {/* Tabs */}
       <div className="flex gap-1 mb-6">
@@ -59,35 +61,35 @@ export default function GeocodingQueuePage() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm rounded-t font-medium ${
+            className={`px-4 py-2 text-sm font-heading tracking-wider uppercase transition-colors ${
               tab === t
-                ? 'bg-white text-slate-800 border border-b-0 border-slate-200'
-                : 'bg-slate-100 text-slate-500 hover:text-slate-700'
+                ? 'bg-surface-card text-neon border border-border border-b-0'
+                : 'bg-surface-raised text-text-muted hover:text-text-secondary'
             }`}
           >
-            {t === 'pending' ? 'Pending' : 'Failed'}
+            {t}
           </button>
         ))}
       </div>
 
-      {isLoading && <p className="text-sm text-slate-500">Loading...</p>}
+      {isLoading && <p className="text-sm text-text-muted font-mono">Loading...</p>}
 
       {!isLoading && records.length === 0 && (
-        <p className="text-sm text-slate-500">No {tab} records</p>
+        <p className="text-sm text-text-muted font-mono">No {tab} records</p>
       )}
 
       <div className="space-y-4">
         {records.map((record) => {
           const coords = resolving[record.id];
           return (
-            <div key={record.id} className="bg-white rounded-lg shadow p-4">
+            <div key={record.id} className="bg-surface-card border border-border p-4">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <div className="font-medium text-slate-800">
+                  <div className="font-semibold text-text-primary">
                     {record.address ?? 'No address'}
                   </div>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
+                    <span className="text-xs font-mono bg-surface-hover text-neon-dim px-2 py-0.5 border border-border">
                       {record.country_code}
                     </span>
                     <StatusBadge status={record.type} />
@@ -110,7 +112,7 @@ export default function GeocodingQueuePage() {
                   onChange={(e) =>
                     setCoords(record.id, parseFloat(e.target.value) || 0, coords?.lon ?? 0)
                   }
-                  className="w-32 rounded border border-slate-300 px-2 py-1 text-sm"
+                  className="w-32 bg-surface-raised border border-border px-2 py-1 text-sm text-text-primary font-mono focus:border-neon focus:outline-none"
                 />
                 <input
                   type="number"
@@ -120,14 +122,14 @@ export default function GeocodingQueuePage() {
                   onChange={(e) =>
                     setCoords(record.id, coords?.lat ?? 0, parseFloat(e.target.value) || 0)
                   }
-                  className="w-32 rounded border border-slate-300 px-2 py-1 text-sm"
+                  className="w-32 bg-surface-raised border border-border px-2 py-1 text-sm text-text-primary font-mono focus:border-neon focus:outline-none"
                 />
                 <button
                   onClick={() => handleResolve(record.id)}
                   disabled={!coords || resolveMutation.isPending}
-                  className="px-4 py-1.5 text-sm rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                  className="px-4 py-1.5 text-sm font-heading tracking-wider bg-neon text-surface hover:bg-neon-dim disabled:opacity-50 transition-colors"
                 >
-                  Resolve
+                  RESOLVE
                 </button>
               </div>
             </div>

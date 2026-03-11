@@ -16,11 +16,11 @@ const typeLabels: Record<string, string> = {
 };
 
 const typeColors: Record<string, string> = {
-  fixed_speed: 'bg-red-100 text-red-700',
-  speed: 'bg-red-100 text-red-700',
-  red_light: 'bg-amber-100 text-amber-700',
-  average_speed: 'bg-purple-100 text-purple-700',
-  mobile: 'bg-blue-100 text-blue-700',
+  fixed_speed: 'bg-danger/20 text-danger border-danger/30',
+  speed: 'bg-danger/20 text-danger border-danger/30',
+  red_light: 'bg-hot/20 text-hot border-hot/30',
+  average_speed: 'bg-neon/20 text-neon border-neon/30',
+  mobile: 'bg-neon/10 text-neon-dim border-neon/20',
 };
 
 export default function CamerasPage() {
@@ -113,23 +113,24 @@ export default function CamerasPage() {
         <div>
           <Link
             to={`/countries/${code}`}
-            className="text-sm text-blue-600 hover:text-blue-800"
+            className="text-sm font-heading tracking-wider text-neon-dim hover:text-neon transition-colors"
           >
-            &larr; Back to country
+            &larr; BACK TO ZONE
           </Link>
-          <h1 className="text-2xl font-bold text-slate-800 mt-1">
-            Cameras — {code}
+          <h1 className="font-heading text-2xl font-bold tracking-wider text-text-primary mt-1">
+            SURVEILLANCE <span className="text-hot text-glow-hot">GRID</span>
+            <span className="text-neon text-glow-neon ml-2">({code})</span>
           </h1>
         </div>
         {stats && (
           <div className="flex items-center gap-3 text-sm">
-            <span className="font-medium text-slate-700">{stats.total} cameras</span>
+            <span className="font-heading font-bold tracking-wider text-text-primary">{stats.total} units</span>
             {Object.entries(stats.by_type).map(([type, count]) => (
               <span
                 key={type}
-                className={`px-2 py-0.5 rounded text-xs font-medium ${typeColors[type] ?? 'bg-slate-100 text-slate-600'}`}
+                className={`px-2 py-0.5 text-[10px] font-heading tracking-wider border ${typeColors[type] ?? 'bg-surface-hover text-text-muted border-border'}`}
               >
-                {typeLabels[type] ?? type}: {count}
+                {(typeLabels[type] ?? type).toUpperCase()}: {count}
               </span>
             ))}
           </div>
@@ -140,14 +141,14 @@ export default function CamerasPage() {
       <div className="flex-1 flex gap-4 min-h-0">
         {/* Map panel */}
         <div className="w-3/5 flex flex-col">
-          <div className="text-xs text-slate-500 mb-1">Click on the map to add a camera</div>
+          <div className="text-xs text-text-muted font-mono mb-1">Click on the map to deploy a new unit</div>
           <div className="flex-1">
             <CameraMap
               cameras={cameras}
               onMapClick={handleMapClick}
               selectedId={selectedId}
               onCameraClick={handleCameraClick}
-              className="h-full w-full rounded-lg"
+              className="h-full w-full border border-border"
             />
           </div>
         </div>
@@ -156,12 +157,13 @@ export default function CamerasPage() {
         <div className="w-2/5 flex flex-col min-h-0">
           {/* Add form */}
           {showAddForm && (
-            <div className="bg-white border border-blue-200 rounded-lg p-4 mb-3">
+            <div className="bg-surface-card border border-neon/30 p-4 mb-3 clip-angular">
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-neon to-transparent" />
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-slate-800">Add Camera</h3>
+                <h3 className="text-sm font-heading font-bold tracking-wider text-neon text-glow-neon uppercase">Deploy Unit</h3>
                 <button
                   onClick={() => setShowAddForm(false)}
-                  className="text-slate-400 hover:text-slate-600 text-lg leading-none"
+                  className="text-text-muted hover:text-danger text-lg leading-none transition-colors"
                 >
                   &times;
                 </button>
@@ -169,35 +171,35 @@ export default function CamerasPage() {
               <form onSubmit={handleAddSubmit} className="space-y-2">
                 <div className="grid grid-cols-2 gap-2">
                   <label className="block">
-                    <span className="text-xs text-slate-600">Latitude</span>
+                    <span className="text-[10px] font-heading tracking-wider text-text-muted uppercase">Latitude</span>
                     <input
                       type="number"
                       step="any"
                       required
                       value={addForm.lat}
                       onChange={(e) => setAddForm({ ...addForm, lat: parseFloat(e.target.value) })}
-                      className="mt-0.5 block w-full rounded border border-slate-300 px-2 py-1 text-sm"
+                      className="mt-0.5 block w-full bg-surface-raised border border-border px-2 py-1 text-sm text-text-primary font-mono focus:border-neon focus:outline-none"
                     />
                   </label>
                   <label className="block">
-                    <span className="text-xs text-slate-600">Longitude</span>
+                    <span className="text-[10px] font-heading tracking-wider text-text-muted uppercase">Longitude</span>
                     <input
                       type="number"
                       step="any"
                       required
                       value={addForm.lon}
                       onChange={(e) => setAddForm({ ...addForm, lon: parseFloat(e.target.value) })}
-                      className="mt-0.5 block w-full rounded border border-slate-300 px-2 py-1 text-sm"
+                      className="mt-0.5 block w-full bg-surface-raised border border-border px-2 py-1 text-sm text-text-primary font-mono focus:border-neon focus:outline-none"
                     />
                   </label>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <label className="block">
-                    <span className="text-xs text-slate-600">Type</span>
+                    <span className="text-[10px] font-heading tracking-wider text-text-muted uppercase">Type</span>
                     <select
                       value={addForm.type}
                       onChange={(e) => setAddForm({ ...addForm, type: e.target.value })}
-                      className="mt-0.5 block w-full rounded border border-slate-300 px-2 py-1 text-sm"
+                      className="mt-0.5 block w-full bg-surface-raised border border-border px-2 py-1 text-sm text-text-primary focus:border-neon focus:outline-none"
                     >
                       {CAMERA_TYPES.map((t) => (
                         <option key={t} value={t}>
@@ -207,39 +209,39 @@ export default function CamerasPage() {
                     </select>
                   </label>
                   <label className="block">
-                    <span className="text-xs text-slate-600">Speed Limit</span>
+                    <span className="text-[10px] font-heading tracking-wider text-text-muted uppercase">Speed Limit</span>
                     <input
                       type="number"
                       value={addForm.speed_limit ?? ''}
                       onChange={(e) =>
                         setAddForm({ ...addForm, speed_limit: e.target.value ? parseInt(e.target.value) : null })
                       }
-                      className="mt-0.5 block w-full rounded border border-slate-300 px-2 py-1 text-sm"
+                      className="mt-0.5 block w-full bg-surface-raised border border-border px-2 py-1 text-sm text-text-primary font-mono focus:border-neon focus:outline-none"
                     />
                   </label>
                 </div>
                 <label className="block">
-                  <span className="text-xs text-slate-600">Road Name</span>
+                  <span className="text-[10px] font-heading tracking-wider text-text-muted uppercase">Road Name</span>
                   <input
                     value={addForm.road_name ?? ''}
                     onChange={(e) => setAddForm({ ...addForm, road_name: e.target.value || null })}
-                    className="mt-0.5 block w-full rounded border border-slate-300 px-2 py-1 text-sm"
+                    className="mt-0.5 block w-full bg-surface-raised border border-border px-2 py-1 text-sm text-text-primary focus:border-neon focus:outline-none"
                   />
                 </label>
                 <div className="flex gap-2 pt-1">
                   <button
                     type="button"
                     onClick={() => setShowAddForm(false)}
-                    className="px-3 py-1 text-xs rounded border border-slate-300 text-slate-600"
+                    className="px-3 py-1 text-xs font-heading tracking-wider text-text-muted border border-border hover:border-border-bright transition-colors"
                   >
-                    Cancel
+                    ABORT
                   </button>
                   <button
                     type="submit"
                     disabled={createMutation.isPending}
-                    className="px-3 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                    className="px-3 py-1 text-xs font-heading tracking-wider bg-neon text-surface hover:bg-neon-dim disabled:opacity-50 transition-colors"
                   >
-                    {createMutation.isPending ? 'Adding...' : 'Add Camera'}
+                    {createMutation.isPending ? 'DEPLOYING...' : 'DEPLOY'}
                   </button>
                 </div>
               </form>
@@ -252,49 +254,49 @@ export default function CamerasPage() {
               placeholder="Filter by type, road, coords..."
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="flex-1 rounded border border-slate-300 px-3 py-1.5 text-sm"
+              className="flex-1 bg-surface-raised border border-border px-3 py-1.5 text-sm text-text-primary font-mono focus:border-neon focus:outline-none"
             />
             {!showAddForm && (
               <button
                 onClick={() => setShowAddForm(true)}
-                className="px-3 py-1.5 text-sm rounded bg-blue-600 text-white hover:bg-blue-700 whitespace-nowrap"
+                className="px-3 py-1.5 text-sm font-heading tracking-wider bg-neon text-surface hover:bg-neon-dim whitespace-nowrap transition-colors"
               >
-                + Add
+                + DEPLOY
               </button>
             )}
           </div>
 
           {/* Camera list */}
-          <div ref={listRef} className="flex-1 overflow-y-auto rounded-lg border border-slate-200 bg-white">
+          <div ref={listRef} className="flex-1 overflow-y-auto border border-border bg-surface-card">
             {filteredCameras.length === 0 ? (
-              <p className="p-4 text-sm text-slate-500 text-center">
-                {cameras.length === 0 ? 'No cameras yet' : 'No cameras match filter'}
+              <p className="p-4 text-sm text-text-muted font-mono text-center">
+                {cameras.length === 0 ? 'No units deployed' : 'No units match filter'}
               </p>
             ) : (
-              <div className="divide-y divide-slate-100">
+              <div className="divide-y divide-border/50">
                 {filteredCameras.map((cam) => (
                   <div
                     key={cam.id}
                     id={`cam-${cam.id}`}
                     onClick={() => handleListClick(cam)}
-                    className={`flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-slate-50 ${
-                      cam.id === selectedId ? 'bg-blue-50 border-l-2 border-blue-500' : ''
+                    className={`flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-surface-hover transition-colors ${
+                      cam.id === selectedId ? 'bg-neon/5 border-l-2 border-neon' : ''
                     }`}
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                            typeColors[cam.type] ?? 'bg-slate-100 text-slate-600'
+                          className={`inline-block px-1.5 py-0.5 text-[10px] font-heading tracking-wider border ${
+                            typeColors[cam.type] ?? 'bg-surface-hover text-text-muted border-border'
                           }`}
                         >
-                          {typeLabels[cam.type] ?? cam.type}
+                          {(typeLabels[cam.type] ?? cam.type).toUpperCase()}
                         </span>
                         {cam.speed_limit && (
-                          <span className="text-xs text-slate-500">{cam.speed_limit} km/h</span>
+                          <span className="text-xs text-text-muted font-mono">{cam.speed_limit} km/h</span>
                         )}
                       </div>
-                      <div className="text-xs text-slate-500 mt-0.5 truncate">
+                      <div className="text-xs text-text-muted mt-0.5 truncate font-mono">
                         {cam.road_name ?? `${cam.lat.toFixed(5)}, ${cam.lon.toFixed(5)}`}
                       </div>
                     </div>
@@ -303,7 +305,7 @@ export default function CamerasPage() {
                         e.stopPropagation();
                         setDeleteTarget(cam);
                       }}
-                      className="ml-2 p-1 text-slate-400 hover:text-red-600 flex-shrink-0"
+                      className="ml-2 p-1 text-text-muted hover:text-danger flex-shrink-0 transition-colors"
                       title="Delete camera"
                     >
                       <svg
@@ -326,7 +328,7 @@ export default function CamerasPage() {
               </div>
             )}
           </div>
-          <div className="text-xs text-slate-400 mt-1 text-right">
+          <div className="text-xs text-text-muted font-mono mt-1 text-right">
             Showing {filteredCameras.length} of {cameras.length}
           </div>
         </div>
@@ -334,10 +336,10 @@ export default function CamerasPage() {
 
       <ConfirmDialog
         isOpen={deleteTarget !== null}
-        title="Delete Camera"
+        title="Delete Unit"
         message={
           deleteTarget
-            ? `Delete ${deleteTarget.type} camera at ${deleteTarget.lat.toFixed(5)}, ${deleteTarget.lon.toFixed(5)}?`
+            ? `Remove ${deleteTarget.type} unit at ${deleteTarget.lat.toFixed(5)}, ${deleteTarget.lon.toFixed(5)}?`
             : ''
         }
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}

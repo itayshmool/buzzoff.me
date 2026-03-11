@@ -52,27 +52,29 @@ export default function JobsPage() {
     },
   ];
 
-  if (isLoading) return <p className="text-sm text-slate-500">Loading...</p>;
+  if (isLoading) return <p className="text-sm text-text-muted font-mono">Loading...</p>;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">Jobs</h1>
+        <h1 className="font-heading text-2xl font-bold tracking-wider text-text-primary">
+          OPS <span className="text-neon text-glow-neon">LOG</span>
+        </h1>
         <select
           value={jobType}
           onChange={(e) => setJobType(e.target.value)}
-          className="rounded border border-slate-300 px-3 py-2 text-sm"
+          className="bg-surface-raised border border-border px-3 py-2 text-sm text-text-primary font-heading tracking-wider focus:border-neon focus:outline-none"
         >
           <option value="">All types</option>
           {JOB_TYPES.filter(Boolean).map((t) => (
             <option key={t} value={t}>
-              {t}
+              {t.toUpperCase()}
             </option>
           ))}
         </select>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-surface-card border border-border">
         <DataTable data={jobs} columns={columns} emptyMessage="No job runs found" />
       </div>
     </div>

@@ -98,38 +98,38 @@ export default function SourceEditorPage() {
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   if (!isNew && !existing) {
-    return <p className="text-sm text-slate-500">Loading...</p>;
+    return <p className="text-sm text-text-muted font-mono">Loading...</p>;
   }
 
   return (
     <div className="max-w-lg">
       <Link
         to={`/countries/${code}`}
-        className="text-sm text-blue-600 hover:text-blue-800"
+        className="text-sm font-heading tracking-wider text-neon-dim hover:text-neon transition-colors"
       >
-        &larr; Back to country
+        &larr; BACK TO ZONE
       </Link>
-      <h1 className="text-2xl font-bold text-slate-800 mt-2 mb-6">
-        {isNew ? 'New Source' : 'Edit Source'}
+      <h1 className="font-heading text-2xl font-bold tracking-wider text-text-primary mt-2 mb-6">
+        {isNew ? 'NEW' : 'EDIT'} <span className="text-neon text-glow-neon">SOURCE</span>
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">Name</span>
+          <span className="text-xs font-heading tracking-wider text-text-muted uppercase">Name</span>
           <input
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             required
-            className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 block w-full bg-surface-raised border border-border px-3 py-2 text-sm text-text-primary focus:border-neon focus:outline-none"
           />
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">Adapter</span>
+          <span className="text-xs font-heading tracking-wider text-text-muted uppercase">Adapter</span>
           <select
             value={form.adapter}
             onChange={(e) => setForm({ ...form, adapter: e.target.value })}
-            className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 block w-full bg-surface-raised border border-border px-3 py-2 text-sm text-text-primary focus:border-neon focus:outline-none"
           >
             <option value="csv">CSV</option>
             <option value="excel">Excel</option>
@@ -138,7 +138,7 @@ export default function SourceEditorPage() {
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">Config (JSON)</span>
+          <span className="text-xs font-heading tracking-wider text-text-muted uppercase">Config (JSON)</span>
           <textarea
             value={form.config}
             onChange={(e) => {
@@ -146,28 +146,28 @@ export default function SourceEditorPage() {
               setConfigError('');
             }}
             rows={6}
-            className={`mt-1 block w-full rounded border px-3 py-2 text-sm font-mono ${
-              configError ? 'border-red-400' : 'border-slate-300'
+            className={`mt-1 block w-full bg-surface-raised border px-3 py-2 text-sm font-mono text-text-primary focus:border-neon focus:outline-none ${
+              configError ? 'border-danger' : 'border-border'
             }`}
           />
           {configError && (
-            <span className="text-xs text-red-600 mt-1">{configError}</span>
+            <span className="text-xs text-danger mt-1">{configError}</span>
           )}
         </label>
 
         {(form.adapter === 'excel' || form.adapter === 'csv') && (
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Data File</span>
+            <span className="text-xs font-heading tracking-wider text-text-muted uppercase">Data File</span>
             <input
               type="file"
               accept={form.adapter === 'excel' ? '.xlsx,.xls' : '.csv,.tsv'}
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              className="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              className="mt-1 block w-full text-sm text-text-muted file:mr-4 file:py-2 file:px-4 file:border file:border-neon/30 file:text-sm file:font-heading file:tracking-wider file:bg-surface-raised file:text-neon hover:file:bg-surface-hover file:transition-colors"
             />
-            {file && <span className="text-xs text-green-600 mt-1">{file.name}</span>}
-            {uploadStatus && <span className="text-xs text-blue-600 mt-1">{uploadStatus}</span>}
+            {file && <span className="text-xs text-success mt-1 font-mono">{file.name}</span>}
+            {uploadStatus && <span className="text-xs text-neon mt-1 font-mono">{uploadStatus}</span>}
             {!!existing?.config?.file_path && !file && (
-              <span className="text-xs text-slate-500 mt-1">
+              <span className="text-xs text-text-muted mt-1 font-mono">
                 Current: {String(existing.config.file_path).split('/').pop() ?? ''}
               </span>
             )}
@@ -175,17 +175,17 @@ export default function SourceEditorPage() {
         )}
 
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">Schedule (cron)</span>
+          <span className="text-xs font-heading tracking-wider text-text-muted uppercase">Schedule (cron)</span>
           <input
             value={form.schedule}
             onChange={(e) => setForm({ ...form, schedule: e.target.value })}
             placeholder="e.g. 0 3 * * 1"
-            className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 block w-full bg-surface-raised border border-border px-3 py-2 text-sm text-text-primary font-mono focus:border-neon focus:outline-none"
           />
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">
+          <span className="text-xs font-heading tracking-wider text-text-muted uppercase">
             Confidence ({form.confidence})
           </span>
           <input
@@ -195,7 +195,7 @@ export default function SourceEditorPage() {
             step={0.05}
             value={form.confidence}
             onChange={(e) => setForm({ ...form, confidence: parseFloat(e.target.value) })}
-            className="mt-1 block w-full"
+            className="mt-1 block w-full accent-neon"
           />
         </label>
 
@@ -204,24 +204,25 @@ export default function SourceEditorPage() {
             type="checkbox"
             checked={form.enabled}
             onChange={(e) => setForm({ ...form, enabled: e.target.checked })}
+            className="accent-neon"
           />
-          <span className="text-sm text-slate-700">Enabled</span>
+          <span className="text-sm text-text-secondary">Enabled</span>
         </label>
 
         <div className="flex gap-3 pt-2">
           <button
             type="button"
             onClick={() => navigate(`/countries/${code}`)}
-            className="px-4 py-2 text-sm rounded border border-slate-300 text-slate-700"
+            className="px-4 py-2 text-sm font-heading tracking-wider text-text-muted border border-border hover:border-border-bright transition-colors"
           >
-            Cancel
+            ABORT
           </button>
           <button
             type="submit"
             disabled={isPending}
-            className="px-4 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+            className="px-4 py-2 text-sm font-heading tracking-wider bg-neon text-surface hover:bg-neon-dim disabled:opacity-50 transition-colors"
           >
-            {isNew ? 'Create' : 'Save'}
+            {isNew ? 'CREATE' : 'SAVE'}
           </button>
         </div>
       </form>

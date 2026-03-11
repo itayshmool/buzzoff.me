@@ -13,25 +13,29 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-800 mb-6">Dashboard</h1>
+      <h1 className="font-heading text-2xl font-bold tracking-wider text-text-primary mb-6">
+        HQ <span className="text-neon text-glow-neon">OVERVIEW</span>
+      </h1>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Countries" value={stats?.countries ?? '...'} />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 stagger-children">
+        <StatCard label="Zones" value={stats?.countries ?? '...'} />
         <StatCard label="Sources" value={stats?.sources ?? '...'} />
         <StatCard label="Cameras" value={stats?.cameras?.toLocaleString() ?? '...'} />
         <StatCard label="Packs" value={stats?.packs ?? '...'} />
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold text-slate-800 mb-4">Recent Activity</h2>
+      <div className="bg-surface-card border border-border p-6 neon-top">
+        <h2 className="font-heading text-sm font-semibold tracking-wider text-text-muted uppercase mb-4">
+          Operations Log
+        </h2>
         {jobs && jobs.length > 0 ? (
           <div className="space-y-3">
             {jobs.map((job) => (
               <div
                 key={job.id}
-                className="flex items-center gap-3 text-sm text-slate-600"
+                className="flex items-center gap-3 text-sm text-text-secondary"
               >
-                <span className="text-xs text-slate-400 w-16 shrink-0">
+                <span className="font-mono text-xs text-text-muted w-16 shrink-0">
                   {job.started_at
                     ? new Date(job.started_at).toLocaleTimeString([], {
                         hour: '2-digit',
@@ -40,15 +44,15 @@ export default function DashboardPage() {
                     : ''}
                 </span>
                 <StatusBadge status={job.status} />
-                <span className="font-medium text-slate-700">{job.job_type}</span>
+                <span className="font-semibold text-text-primary">{job.job_type}</span>
                 {job.result_summary && (
-                  <span className="text-slate-500">{job.result_summary}</span>
+                  <span className="text-text-muted font-mono text-xs">{job.result_summary}</span>
                 )}
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-sm text-slate-500">No recent activity</p>
+          <p className="text-sm text-text-muted font-mono">No recent ops</p>
         )}
       </div>
     </div>

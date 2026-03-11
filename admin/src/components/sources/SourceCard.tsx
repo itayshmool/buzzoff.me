@@ -9,35 +9,35 @@ interface SourceCardProps {
 
 export default function SourceCard({ source, onEdit, onDelete }: SourceCardProps) {
   return (
-    <div className="border border-slate-200 rounded-lg p-4">
+    <div className="border border-border bg-surface-card p-4 hover:border-neon/30 transition-colors">
       <div className="flex items-start justify-between">
         <div>
-          <div className="font-medium text-slate-800">{source.name}</div>
+          <div className="font-semibold text-text-primary">{source.name}</div>
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
+            <span className="text-xs font-mono bg-surface-hover text-neon-dim px-2 py-0.5 border border-border">
               {source.adapter}
             </span>
             <StatusBadge status={source.enabled ? 'enabled' : 'disabled'} />
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <button
             onClick={onEdit}
-            className="text-xs text-blue-600 hover:text-blue-800"
+            className="text-xs font-heading tracking-wider text-neon-dim hover:text-neon transition-colors"
           >
-            Edit
+            EDIT
           </button>
           <button
             onClick={onDelete}
-            className="text-xs text-red-600 hover:text-red-800"
+            className="text-xs font-heading tracking-wider text-text-muted hover:text-danger transition-colors"
           >
-            Delete
+            DEL
           </button>
         </div>
       </div>
-      <div className="mt-3 text-sm text-slate-500 flex gap-4">
-        {source.schedule && <span>Schedule: {source.schedule}</span>}
-        <span>Confidence: {source.confidence}</span>
+      <div className="mt-3 text-sm text-text-muted flex gap-4 font-mono text-xs">
+        {source.schedule && <span>sched: {source.schedule}</span>}
+        <span>conf: {source.confidence}</span>
       </div>
     </div>
   );

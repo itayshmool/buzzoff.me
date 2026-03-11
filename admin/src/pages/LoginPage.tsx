@@ -25,41 +25,68 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100">
+    <div className="min-h-screen flex items-center justify-center bg-carbon relative overflow-hidden">
+      {/* Animated background lines */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neon/20 to-transparent" />
+        <div className="absolute top-2/4 left-0 right-0 h-px bg-gradient-to-r from-transparent via-hot/10 to-transparent" />
+        <div className="absolute top-3/4 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neon/10 to-transparent" />
+      </div>
+
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm"
+        className="relative bg-surface-card border border-border p-8 w-full max-w-sm clip-angular animate-fade-up"
       >
-        <h1 className="text-2xl font-bold mb-6 text-center text-slate-800">BuzzOff Admin</h1>
+        {/* Neon top accent */}
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-neon via-hot to-neon" />
+
+        <div className="text-center mb-8">
+          <h1 className="font-heading text-2xl font-black tracking-wider text-neon text-glow-neon">
+            BUZZ<span className="text-hot">OFF</span>
+          </h1>
+          <div className="font-mono text-[10px] text-text-muted tracking-[0.4em] mt-1">
+            COMMAND CENTER ACCESS
+          </div>
+        </div>
+
         {error && (
-          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded text-sm">{error}</div>
+          <div className="mb-4 p-3 bg-danger/10 text-danger border border-danger/20 text-sm font-mono">
+            {error}
+          </div>
         )}
+
         <label className="block mb-4">
-          <span className="text-sm font-medium text-slate-700">Username</span>
+          <span className="text-xs font-heading tracking-wider text-text-muted uppercase">
+            Callsign
+          </span>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+            className="mt-1 block w-full bg-surface-raised border border-border px-3 py-2.5 text-sm text-text-primary font-mono focus:border-neon focus:outline-none transition-colors"
             required
           />
         </label>
+
         <label className="block mb-6">
-          <span className="text-sm font-medium text-slate-700">Password</span>
+          <span className="text-xs font-heading tracking-wider text-text-muted uppercase">
+            Access Key
+          </span>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+            className="mt-1 block w-full bg-surface-raised border border-border px-3 py-2.5 text-sm text-text-primary font-mono focus:border-neon focus:outline-none transition-colors"
             required
           />
         </label>
+
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded font-medium hover:bg-blue-700 disabled:opacity-50"
+          className="w-full bg-neon text-surface font-heading font-bold tracking-wider py-2.5 text-sm hover:bg-neon-dim disabled:opacity-50 transition-colors glow-neon"
         >
-          {loading ? 'Signing in...' : 'Sign in'}
+          {loading ? 'AUTHENTICATING...' : 'ENGAGE'}
         </button>
       </form>
     </div>

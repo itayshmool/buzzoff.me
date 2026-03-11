@@ -1,2 +1,197 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
+
+@theme {
+  --font-heading: 'Orbitron', sans-serif;
+  --font-body: 'Rajdhani', sans-serif;
+  --font-mono: 'Share Tech Mono', monospace;
+
+  --color-neon: #00f0ff;
+  --color-neon-dim: #00a0aa;
+  --color-neon-glow: rgba(0, 240, 255, 0.3);
+  --color-neon-subtle: rgba(0, 240, 255, 0.08);
+  --color-hot: #ff6b00;
+  --color-hot-dim: #cc5500;
+  --color-hot-glow: rgba(255, 107, 0, 0.3);
+  --color-surface: #0d1117;
+  --color-surface-raised: #151b23;
+  --color-surface-card: #1a2130;
+  --color-surface-hover: #1f2937;
+  --color-border: #2a3442;
+  --color-border-bright: #3a4a5c;
+  --color-text-primary: #e8edf3;
+  --color-text-secondary: #8b98a8;
+  --color-text-muted: #5a6a7a;
+  --color-danger: #ff3b4f;
+  --color-danger-dim: #cc2f3f;
+  --color-success: #00ff88;
+  --color-warning: #ffc107;
+}
+
+/* ── Base ─────────────────────────────── */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-bright) transparent;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Carbon fiber background ──────────── */
+
+.bg-carbon {
+  background-color: var(--color-surface);
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0);
+  background-size: 16px 16px;
+}
+
+/* ── Neon glow effects ────────────────── */
+
+.glow-neon {
+  box-shadow:
+    0 0 8px var(--color-neon-glow),
+    inset 0 0 8px rgba(0, 240, 255, 0.05);
+}
+
+.glow-hot {
+  box-shadow:
+    0 0 8px var(--color-hot-glow),
+    inset 0 0 8px rgba(255, 107, 0, 0.05);
+}
+
+.text-glow-neon {
+  text-shadow: 0 0 12px var(--color-neon-glow);
+}
+
+.text-glow-hot {
+  text-shadow: 0 0 12px var(--color-hot-glow);
+}
+
+/* ── Speed lines decoration ───────────── */
+
+.speed-lines {
+  position: relative;
+  overflow: hidden;
+}
+
+.speed-lines::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -20%;
+  right: -20%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-neon) 30%,
+    var(--color-neon) 70%,
+    transparent 100%
+  );
+  opacity: 0.4;
+}
+
+/* ── Angular clip for cards ───────────── */
+
+.clip-angular {
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+
+/* ── Neon border top ──────────────────── */
+
+.neon-top {
+  border-top: 2px solid var(--color-neon);
+}
+
+.hot-top {
+  border-top: 2px solid var(--color-hot);
+}
+
+/* ── Animations ───────────────────────── */
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes pulse-neon {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-in { animation: slide-in-right 0.3s ease-out; }
+.animate-fade-up { animation: fade-in-up 0.3s ease-out; }
+.animate-pulse-neon { animation: pulse-neon 2s ease-in-out infinite; }
+
+/* ── Leaflet dark theme override ──────── */
+
+.leaflet-container {
+  background: #0d1117 !important;
+}
+
+.leaflet-tile-pane {
+  filter: brightness(0.65) invert(1) contrast(2.5) hue-rotate(200deg) saturate(0.4) brightness(0.75);
+}
+
+.leaflet-control-attribution {
+  background: rgba(13, 17, 23, 0.8) !important;
+  color: var(--color-text-muted) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 9px !important;
+}
+
+.leaflet-control-attribution a {
+  color: var(--color-neon-dim) !important;
+}
+
+.leaflet-control-zoom a {
+  background: var(--color-surface-card) !important;
+  color: var(--color-neon) !important;
+  border-color: var(--color-border) !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--color-surface-card) !important;
+  color: var(--color-text-primary) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 0 12px var(--color-neon-glow) !important;
+}
+
+.leaflet-popup-tip {
+  background: var(--color-surface-card) !important;
+}
+
+/* ── Form controls dark theme ─────────── */
+
+input, select, textarea {
+  font-family: var(--font-body);
+}
+
+/* ── Stagger animation children ───────── */
+
+.stagger-children > * {
+  animation: fade-in-up 0.3s ease-out both;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 60ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 120ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 180ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 240ms; }

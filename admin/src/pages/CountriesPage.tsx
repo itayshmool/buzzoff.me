@@ -60,29 +60,31 @@ export default function CountriesPage() {
             e.stopPropagation();
             setDeleteTarget(c.code);
           }}
-          className="text-xs text-red-600 hover:text-red-800"
+          className="text-xs font-heading tracking-wider text-text-muted hover:text-danger transition-colors"
         >
-          Delete
+          DEL
         </button>
       ),
     },
   ];
 
-  if (isLoading) return <p className="text-sm text-slate-500">Loading...</p>;
+  if (isLoading) return <p className="text-sm text-text-muted font-mono">Loading...</p>;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">Countries</h1>
+        <h1 className="font-heading text-2xl font-bold tracking-wider text-text-primary">
+          ZONE <span className="text-neon text-glow-neon">REGISTRY</span>
+        </h1>
         <button
           onClick={() => setShowCreate(true)}
-          className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="px-4 py-2 text-sm font-heading tracking-wider bg-neon text-surface hover:bg-neon-dim transition-colors glow-neon"
         >
-          Add Country
+          + ADD ZONE
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-surface-card border border-border">
         <DataTable
           data={countries}
           columns={columns}
@@ -92,40 +94,43 @@ export default function CountriesPage() {
 
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setShowCreate(false)} />
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowCreate(false)} />
           <form
             onSubmit={(e) => {
               e.preventDefault();
               createMutation.mutate(form);
             }}
-            className="relative bg-white rounded-lg shadow-lg p-6 max-w-sm w-full mx-4"
+            className="relative bg-surface-card border border-neon/30 p-6 max-w-sm w-full mx-4 clip-angular animate-fade-up"
           >
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">Add Country</h3>
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-neon to-transparent" />
+            <h3 className="font-heading text-base font-bold tracking-wider text-neon text-glow-neon uppercase mb-4">
+              New Zone
+            </h3>
             <label className="block mb-3">
-              <span className="text-sm font-medium text-slate-700">Code (2 letters)</span>
+              <span className="text-xs font-heading tracking-wider text-text-muted uppercase">Code (2 letters)</span>
               <input
                 value={form.code}
                 onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
                 maxLength={2}
                 required
-                className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 text-sm"
+                className="mt-1 block w-full bg-surface-raised border border-border px-3 py-2 text-sm text-text-primary font-mono focus:border-neon focus:outline-none"
               />
             </label>
             <label className="block mb-3">
-              <span className="text-sm font-medium text-slate-700">Name</span>
+              <span className="text-xs font-heading tracking-wider text-text-muted uppercase">Name</span>
               <input
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 required
-                className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 text-sm"
+                className="mt-1 block w-full bg-surface-raised border border-border px-3 py-2 text-sm text-text-primary focus:border-neon focus:outline-none"
               />
             </label>
             <label className="block mb-3">
-              <span className="text-sm font-medium text-slate-700">Speed Unit</span>
+              <span className="text-xs font-heading tracking-wider text-text-muted uppercase">Speed Unit</span>
               <select
                 value={form.speed_unit}
                 onChange={(e) => setForm({ ...form, speed_unit: e.target.value })}
-                className="mt-1 block w-full rounded border border-slate-300 px-3 py-2 text-sm"
+                className="mt-1 block w-full bg-surface-raised border border-border px-3 py-2 text-sm text-text-primary focus:border-neon focus:outline-none"
               >
                 <option value="kmh">km/h</option>
                 <option value="mph">mph</option>
@@ -136,23 +141,24 @@ export default function CountriesPage() {
                 type="checkbox"
                 checked={form.enabled}
                 onChange={(e) => setForm({ ...form, enabled: e.target.checked })}
+                className="accent-neon"
               />
-              <span className="text-sm text-slate-700">Enabled</span>
+              <span className="text-sm text-text-secondary">Enabled</span>
             </label>
             <div className="flex justify-end gap-3">
               <button
                 type="button"
                 onClick={() => setShowCreate(false)}
-                className="px-4 py-2 text-sm rounded border border-slate-300 text-slate-700"
+                className="px-4 py-2 text-sm font-heading tracking-wider text-text-muted border border-border hover:border-border-bright transition-colors"
               >
-                Cancel
+                ABORT
               </button>
               <button
                 type="submit"
                 disabled={createMutation.isPending}
-                className="px-4 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                className="px-4 py-2 text-sm font-heading tracking-wider bg-neon text-surface hover:bg-neon-dim disabled:opacity-50 transition-colors"
               >
-                Create
+                CREATE
               </button>
             </div>
           </form>
@@ -161,8 +167,8 @@ export default function CountriesPage() {
 
       <ConfirmDialog
         isOpen={deleteTarget !== null}
-        title="Delete Country"
-        message={`Delete country "${deleteTarget}"? This will remove all associated sources, cameras, and packs.`}
+        title="Delete Zone"
+        message={`Delete zone "${deleteTarget}"? This will remove all associated sources, cameras, and packs.`}
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget)}
         onCancel={() => setDeleteTarget(null)}
       />

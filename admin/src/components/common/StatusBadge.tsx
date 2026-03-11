@@ -1,12 +1,12 @@
 const colors: Record<string, string> = {
-  true: 'bg-green-100 text-green-800',
-  enabled: 'bg-green-100 text-green-800',
-  completed: 'bg-green-100 text-green-800',
-  false: 'bg-red-100 text-red-800',
-  disabled: 'bg-red-100 text-red-800',
-  failed: 'bg-red-100 text-red-800',
-  running: 'bg-yellow-100 text-yellow-800',
-  pending: 'bg-yellow-100 text-yellow-800',
+  true: 'bg-success/10 text-success border-success/30',
+  enabled: 'bg-success/10 text-success border-success/30',
+  completed: 'bg-success/10 text-success border-success/30',
+  false: 'bg-danger/10 text-danger border-danger/30',
+  disabled: 'bg-danger/10 text-danger border-danger/30',
+  failed: 'bg-danger/10 text-danger border-danger/30',
+  running: 'bg-warning/10 text-warning border-warning/30',
+  pending: 'bg-warning/10 text-warning border-warning/30',
 };
 
 interface StatusBadgeProps {
@@ -15,9 +15,11 @@ interface StatusBadgeProps {
 
 export default function StatusBadge({ status }: StatusBadgeProps) {
   const key = String(status).toLowerCase();
-  const colorClass = colors[key] ?? 'bg-slate-100 text-slate-800';
+  const colorClass = colors[key] ?? 'bg-border/20 text-text-secondary border-border';
   return (
-    <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${colorClass}`}>
+    <span
+      className={`inline-block px-2 py-0.5 text-xs font-heading font-medium tracking-wider border uppercase ${colorClass}`}
+    >
       {String(status)}
     </span>
   );
