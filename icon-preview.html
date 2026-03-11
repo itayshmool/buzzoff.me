@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuzzOff Icon Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #1a1a2e;
+    font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    padding: 40px 20px;
+    gap: 40px;
+  }
+
+  h1 {
+    color: #fff;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+  }
+
+  .phones {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .phone-wrapper {
+    text-align: center;
+  }
+
+  .phone-wrapper .label {
+    color: #888;
+    font-size: 13px;
+    margin-top: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .phone {
+    width: 320px;
+    height: 692px;
+    border-radius: 48px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.5), 0 0 0 2px #333, 0 0 0 4px #111;
+  }
+
+  /* iOS Home Screen */
+  .ios .screen {
+    width: 100%;
+    height: 100%;
+    background: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=640&q=80') center/cover;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ios .screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.15);
+  }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 28px 8px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    position: relative;
+    z-index: 2;
+  }
+
+  .status-bar .time { font-size: 15px; }
+  .status-icons { display: flex; gap: 5px; align-items: center; font-size: 12px; }
+
+  /* Dynamic Island */
+  .dynamic-island {
+    width: 120px;
+    height: 34px;
+    background: #000;
+    border-radius: 20px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* App grid */
+  .app-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px 0;
+    padding: 28px 24px;
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    align-content: start;
+  }
+
+  .app-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .app-icon .icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .app-icon .name {
+    font-size: 11px;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    font-weight: 500;
+    max-width: 68px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* BuzzOff icon highlight */
+  .app-icon.buzzoff .icon {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    box-shadow: 0 2px 12px rgba(255,71,87,0.3), 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .buzzoff-icon-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+  }
+
+  /* Fake app icons */
+  .icon-phone { background: linear-gradient(135deg, #34c759, #30b350); }
+  .icon-safari { background: linear-gradient(180deg, #56a8f7, #1a73e8); }
+  .icon-mail { background: linear-gradient(180deg, #5ac8fa, #007aff); }
+  .icon-photos { background: linear-gradient(135deg, #ff6b6b, #ee5a24, #f9ca24, #6ab04c, #22a6b3, #9b59b6, #e84393); }
+  .icon-camera { background: linear-gradient(135deg, #636e72, #2d3436); }
+  .icon-maps { background: linear-gradient(135deg, #55efc4, #00b894); }
+  .icon-clock { background: #000; }
+  .icon-weather { background: linear-gradient(180deg, #74b9ff, #0984e3); }
+  .icon-notes { background: linear-gradient(180deg, #ffeaa7, #fdcb6e); }
+  .icon-music { background: linear-gradient(135deg, #fd79a8, #e84393); }
+  .icon-settings { background: linear-gradient(180deg, #636e72, #b2bec3); }
+  .icon-waze { background: linear-gradient(135deg, #4fc3f7, #29b6f6); }
+  .icon-spotify { background: #1db954; }
+  .icon-whatsapp { background: linear-gradient(135deg, #25d366, #128c7e); }
+  .icon-messages { background: linear-gradient(180deg, #34c759, #248a3d); }
+  .icon-wallet { background: #000; }
+  .icon-store { background: linear-gradient(180deg, #5ac8fa, #007aff); }
+  .icon-health { background: #fff; }
+  .icon-health .inner { color: #ff2d55; }
+  .icon-files { background: linear-gradient(180deg, #5ac8fa, #007aff); }
+  .icon-youtube { background: #fff; }
+  .icon-youtube .inner { color: #ff0000; }
+  .icon-telegram { background: linear-gradient(180deg, #5ac8fa, #0088cc); }
+  .icon-calendar { background: #fff; }
+  .icon-calendar .inner { color: #ff3b30; font-size: 12px; font-weight: 700; }
+  .icon-calendar .day { color: #1c1c1e; font-size: 26px; font-weight: 300; line-height: 1; }
+
+  /* Dock */
+  .dock {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 12px 24px 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .dock::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 30px;
+    margin: 0 16px;
+  }
+
+  .dock .app-icon {
+    position: relative;
+    z-index: 1;
+  }
+
+  .dock .app-icon .name { display: none; }
+
+  /* Page dots */
+  .page-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .page-dots .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+  }
+
+  .page-dots .dot.active {
+    background: #fff;
+  }
+
+  /* Android */
+  .android .screen {
+    width: 100%;
+    height: 100%;
+    background: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=640&q=80') center/cover;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .android .screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.2);
+  }
+
+  .android .app-grid {
+    padding-top: 80px;
+  }
+
+  .android .icon {
+    border-radius: 16px;
+  }
+
+  /* Search bar (Android) */
+  .search-bar {
+    position: relative;
+    z-index: 2;
+    margin: 0 24px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255,255,255,0.7);
+    font-size: 15px;
+  }
+
+  /* Nav bar (Android) */
+  .nav-bar {
+    display: flex;
+    justify-content: center;
+    padding: 8px 0 16px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .nav-bar .pill {
+    width: 120px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.5);
+  }
+
+  /* Arrow pointer for BuzzOff */
+  .pointer {
+    position: absolute;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pointer-tag {
+    background: #ff4757;
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(255,71,87,0.4);
+  }
+
+  .pointer-arrow {
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 10px solid #ff4757;
+  }
+
+  @media (max-width: 720px) {
+    .phones { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<h1>BuzzOff App Icon — Home Screen Preview</h1>
+
+<div class="phones">
+
+  <!-- iOS -->
+  <div class="phone-wrapper">
+    <div class="phone ios">
+      <div class="screen">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="dynamic-island"></div>
+          <div class="status-icons">
+            <span>&#9679;&#9679;&#9679;&#9679;</span>
+            <span>&#128267;</span>
+          </div>
+        </div>
+
+        <div class="app-grid">
+
+          <div class="app-icon">
+            <div class="icon icon-calendar">
+              <div style="display:flex;flex-direction:column;align-items:center;">
+                <div class="inner" style="color:#ff3b30;font-size:11px;font-weight:700;">TUESDAY</div>
+                <div class="day" style="color:#1c1c1e;font-size:28px;font-weight:300;line-height:1;">11</div>
+              </div>
+            </div>
+            <span class="name">Calendar</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-photos">&#127748;</div>
+            <span class="name">Photos</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-camera">&#128247;</div>
+            <span class="name">Camera</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-maps">&#128205;</div>
+            <span class="name">Maps</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-weather">&#9925;</div>
+            <span class="name">Weather</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-clock">&#128336;</div>
+            <span class="name">Clock</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-notes">&#128221;</div>
+            <span class="name">Notes</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-music">&#9835;</div>
+            <span class="name">Music</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-waze"><span style="font-weight:900;font-size:18px;">W</span></div>
+            <span class="name">Waze</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-spotify"><span style="font-size:32px;">&#9679;</span></div>
+            <span class="name">Spotify</span>
+          </div>
+
+          <div class="app-icon buzzoff" style="position:relative;">
+            <div class="pointer" style="top:-36px;left:50%;transform:translateX(-50%);">
+              <div class="pointer-tag">BuzzOff</div>
+              <div class="pointer-arrow"></div>
+            </div>
+            <div class="icon">
+              <img class="buzzoff-icon-img" src="app/assets/icon/buzzoff_icon.png" alt="BuzzOff"/>
+            </div>
+            <span class="name">BuzzOff</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-whatsapp"><span style="font-size:30px;">&#128172;</span></div>
+            <span class="name">WhatsApp</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-youtube">
+              <span class="inner" style="color:#ff0000;font-size:32px;">&#9654;</span>
+            </div>
+            <span class="name">YouTube</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-telegram">&#9993;</div>
+            <span class="name">Telegram</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-settings">&#9881;</div>
+            <span class="name">Settings</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-files">&#128193;</div>
+            <span class="name">Files</span>
+          </div>
+
+        </div>
+
+        <div class="page-dots">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+
+        <div class="dock">
+          <div class="app-icon">
+            <div class="icon icon-phone">&#128222;</div>
+          </div>
+          <div class="app-icon">
+            <div class="icon icon-safari">&#129517;</div>
+          </div>
+          <div class="app-icon">
+            <div class="icon icon-messages">&#128488;</div>
+          </div>
+          <div class="app-icon">
+            <div class="icon icon-mail">&#9993;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="label">iPhone 16 Pro</div>
+  </div>
+
+  <!-- Android -->
+  <div class="phone-wrapper">
+    <div class="phone android">
+      <div class="screen">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="status-icons">
+            <span>&#9679;&#9679;&#9679;&#9679;</span>
+            <span>&#128267;</span>
+          </div>
+        </div>
+
+        <div class="app-grid">
+
+          <div class="app-icon">
+            <div class="icon icon-phone">&#128222;</div>
+            <span class="name">Phone</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-messages">&#128488;</div>
+            <span class="name">Messages</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-camera">&#128247;</div>
+            <span class="name">Camera</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-maps">&#128205;</div>
+            <span class="name">Maps</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-waze"><span style="font-weight:900;font-size:18px;">W</span></div>
+            <span class="name">Waze</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-spotify"><span style="font-size:32px;">&#9679;</span></div>
+            <span class="name">Spotify</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-whatsapp"><span style="font-size:30px;">&#128172;</span></div>
+            <span class="name">WhatsApp</span>
+          </div>
+
+          <div class="app-icon buzzoff" style="position:relative;">
+            <div class="pointer" style="top:-36px;left:50%;transform:translateX(-50%);">
+              <div class="pointer-tag">BuzzOff</div>
+              <div class="pointer-arrow"></div>
+            </div>
+            <div class="icon">
+              <img class="buzzoff-icon-img" src="app/assets/icon/buzzoff_icon.png" alt="BuzzOff"/>
+            </div>
+            <span class="name">BuzzOff</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-youtube">
+              <span class="inner" style="color:#ff0000;font-size:32px;">&#9654;</span>
+            </div>
+            <span class="name">YouTube</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-telegram">&#9993;</div>
+            <span class="name">Telegram</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-settings">&#9881;</div>
+            <span class="name">Settings</span>
+          </div>
+
+          <div class="app-icon">
+            <div class="icon icon-store">
+              <span style="font-size:24px;">&#9654;</span>
+            </div>
+            <span class="name">Play Store</span>
+          </div>
+
+        </div>
+
+        <div style="flex:1;"></div>
+
+        <div class="search-bar">
+          <span>&#128269;</span>
+          <span>Search apps</span>
+        </div>
+
+        <div class="nav-bar">
+          <div class="pill"></div>
+        </div>
+      </div>
+    </div>
+    <div class="label">Pixel 9 Pro</div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -63,8 +63,19 @@ dev_dependencies:
   # Testing
   mocktail: ^1.0.4
 
+  # App icon generation
+  flutter_launcher_icons: ^0.14.3
+
 flutter:
   uses-material-design: true
 
   assets:
     - assets/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icon/buzzoff_icon.png"
+  adaptive_icon_background: "#1a1a2e"
+  adaptive_icon_foreground: "assets/icon/buzzoff_icon.png"
