@@ -8,6 +8,7 @@ import DashboardPage from './pages/DashboardPage';
 import CountriesPage from './pages/CountriesPage';
 import CountryDetailPage from './pages/CountryDetailPage';
 import SourceEditorPage from './pages/SourceEditorPage';
+import CamerasPage from './pages/CamerasPage';
 import GeocodingQueuePage from './pages/GeocodingQueuePage';
 import JobsPage from './pages/JobsPage';
 
@@ -27,6 +28,7 @@ export default function App() {
                 <Route index element={<DashboardPage />} />
                 <Route path="countries" element={<CountriesPage />} />
                 <Route path="countries/:code" element={<CountryDetailPage />} />
+                <Route path="countries/:code/cameras" element={<CamerasPage />} />
                 <Route path="countries/:code/sources/new" element={<SourceEditorPage />} />
                 <Route path="countries/:code/sources/:id" element={<SourceEditorPage />} />
                 <Route path="geocoding" element={<GeocodingQueuePage />} />

@@ -180,7 +180,15 @@ export default function CountryDetailPage() {
       {/* Camera Map */}
       {cameras && cameras.items.length > 0 && (
         <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h2 className="text-lg font-semibold text-slate-800 mb-3">Camera Map</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold text-slate-800">Camera Map</h2>
+            <Link
+              to={`/countries/${code}/cameras`}
+              className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Manage Cameras
+            </Link>
+          </div>
           <CameraMap cameras={cameras.items} />
         </div>
       )}

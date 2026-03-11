@@ -80,6 +80,15 @@ export interface CameraListResponse {
   items: Camera[];
 }
 
+export interface CameraCreate {
+  lat: number;
+  lon: number;
+  type: string;
+  speed_limit?: number | null;
+  heading?: number | null;
+  road_name?: string | null;
+}
+
 export interface CameraStats {
   total: number;
   by_type: Record<string, number>;

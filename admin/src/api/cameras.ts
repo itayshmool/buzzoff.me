@@ -1,5 +1,5 @@
 import client from './client';
-import type { CameraListResponse, CameraStats } from '../types';
+import type { Camera, CameraCreate, CameraListResponse, CameraStats } from '../types';
 
 export async function getCameras(
   countryCode: string,
@@ -16,4 +16,13 @@ export async function getCameras(
 export async function getCameraStats(countryCode: string): Promise<CameraStats> {
   const response = await client.get<CameraStats>(`/countries/${countryCode}/cameras/stats`);
   return response.data;
+}
+
+export async function createCamera(countryCode: string, data: CameraCreate): Promise<Camera> {
+  const response = await client.post<Camera>(`/countries/${countryCode}/cameras`, data);
+  return response.data;
+}
+
+export async function deleteCamera(cameraId: string): Promise<void> {
+  await client.delete(`/cameras/${cameraId}`);
 }

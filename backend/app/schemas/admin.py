@@ -53,3 +53,23 @@ class AdminSourceResponse(BaseModel):
     schedule: str | None = None
     confidence: float
     enabled: bool
+
+
+class CameraCreate(BaseModel):
+    lat: float
+    lon: float
+    type: str
+    speed_limit: int | None = None
+    heading: float | None = None
+    road_name: str | None = None
+
+
+class AdminCameraResponse(BaseModel):
+    id: uuid.UUID
+    lat: float
+    lon: float
+    type: str
+    speed_limit: int | None = None
+    heading: float | None = None
+    road_name: str | None = None
+    confidence: float
