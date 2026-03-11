@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,9 +7,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../core/model/camera.dart';
+import '../../providers/database_provider.dart';
 import '../../providers/driving_state_provider.dart';
 import '../../providers/location_provider.dart';
-import '../../providers/nearby_cameras_provider.dart';
 import '../../services/foreground_task.dart';
 import '../theme/racing_colors.dart';
 import '../widgets/camera_filter_bar.dart';
@@ -28,6 +30,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   double _zoom = 14.0;
   bool _serviceStarted = false;
   bool _hasInitialFix = false;
+
+  List<Camera> _mapCameras = [];
+  Timer? _debounce;
 
   final Set<CameraType> _visibleTypes = {
     CameraType.fixedSpeed,
@@ -60,6 +65,28 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     // Start the orchestrator monitoring (auto-detects driving)
     final orchestrator = ref.read(orchestratorProvider);
     await orchestrator?.startMonitoring();
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  void _refreshCamerasForBounds() {
+    final dao = ref.read(cameraDaoProvider);
+    if (dao == null) return;
+
+    final bounds = _mapController.camera.visibleBounds;
+    final cameras = dao.getCamerasInBounds(
+      bounds.south,
+      bounds.north,
+      bounds.west,
+      bounds.east,
+    );
+    setState(() {
+      _mapCameras = cameras;
+    });
   }
 
   void _toggleFilter(CameraFilter filter) {
@@ -168,10 +195,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   Widget build(BuildContext context) {
     final locationAsync = ref.watch(locationStreamProvider);
     final drivingState = ref.watch(drivingStateProvider);
-    final cameras = ref.watch(nearbyCamerasProvider);
 
     final filteredCameras =
-        cameras.where((c) => _visibleTypes.contains(c.type)).toList();
+        _mapCameras.where((c) => _visibleTypes.contains(c.type)).toList();
 
     final center = locationAsync.when(
       data: (loc) {
@@ -181,6 +207,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               _mapController.move(pos, _zoom);
+              _refreshCamerasForBounds();
             }
           });
         }
@@ -200,6 +227,14 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               options: MapOptions(
                 initialCenter: center,
                 initialZoom: _zoom,
+                onMapReady: _refreshCamerasForBounds,
+                onPositionChanged: (_, _) {
+                  _debounce?.cancel();
+                  _debounce = Timer(
+                    const Duration(milliseconds: 150),
+                    _refreshCamerasForBounds,
+                  );
+                },
               ),
               children: [
                 TileLayer(
@@ -257,7 +292,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               right: 12,
               child: CameraFilterBar(
                 activeTypes: _visibleTypes,
-                cameras: cameras,
+                cameras: _mapCameras,
                 onToggle: _toggleFilter,
               ),
             ),
