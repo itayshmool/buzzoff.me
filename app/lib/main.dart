@@ -9,10 +9,14 @@ import 'data/database/pack_loader.dart';
 import 'providers/database_provider.dart';
 import 'providers/pack_provider.dart';
 import 'providers/settings_provider.dart';
+import 'services/foreground_task.dart';
 import 'services/pack_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize foreground task (notification channel + options)
+  await ForegroundTaskService.init();
 
   final prefs = await SharedPreferences.getInstance();
   final appDir = await getApplicationDocumentsDirectory();

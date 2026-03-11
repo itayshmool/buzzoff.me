@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Steering wheel / driving icon -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,2A10,10 0,0 0,2 12a10,10 0,0 0,10 10,10 10,0 0,0 10,-10A10,10 0,0 0,12 2zM12,4a8,8 0,0 1,8 8,8 8,0 0,1 -8,8 8,8 0,0 1,-8 -8,8 8,0 0,1 8,-8zM12,7a5,5 0,0 0,-5 5,5 5,0 0,0 5,5 5,5 0,0 0,5 -5,5 5,0 0,0 -5,-5zM11,9v2H9A3,3 0,0 1,11 9zM13,9a3,3 0,0 1,2 2h-2V9zM9,13h2v2a3,3 0,0 1,-2 -2zM13,13h2a3,3 0,0 1,-2 2v-2z"/>
+</vector>

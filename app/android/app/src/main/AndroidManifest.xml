@@ -66,6 +66,17 @@
             </intent-filter>
         </receiver>
 
+        <!-- Notification icons for foreground service -->
+        <meta-data
+            android:name="com.buzzoff.ICON_IDLE"
+            android:resource="@drawable/ic_notif_idle" />
+        <meta-data
+            android:name="com.buzzoff.ICON_ACTIVE"
+            android:resource="@drawable/ic_notif_active" />
+        <meta-data
+            android:name="com.buzzoff.ICON_ALERT"
+            android:resource="@drawable/ic_notif_alert" />
+
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
