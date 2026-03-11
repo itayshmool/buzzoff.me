@@ -107,10 +107,10 @@ export default function SourceEditorPage() {
         to={`/countries/${code}`}
         className="text-sm font-heading tracking-wider text-neon-dim hover:text-neon transition-colors"
       >
-        &larr; BACK TO ZONE
+        &larr; BACK TO TRACK
       </Link>
       <h1 className="font-heading text-2xl font-bold tracking-wider text-text-primary mt-2 mb-6">
-        {isNew ? 'NEW' : 'EDIT'} <span className="text-neon text-glow-neon">SOURCE</span>
+        {isNew ? 'NEW' : 'EDIT'} <span className="text-neon text-glow-neon">FEED</span>
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">

@@ -43,15 +43,15 @@ export default function DashboardPage() {
   return (
     <div>
       <h1 className="font-heading text-2xl font-bold tracking-wider text-text-primary mb-6">
-        HQ <span className="text-neon text-glow-neon">OVERVIEW</span>
+        RACE <span className="text-neon text-glow-neon">HQ</span>
       </h1>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8 stagger-children">
-        <StatCard label="Zones" value={stats?.countries ?? '...'} />
-        <StatCard label="Sources" value={stats?.sources ?? '...'} />
-        <StatCard label="Cameras" value={stats?.cameras?.toLocaleString() ?? '...'} />
+        <StatCard label="Tracks" value={stats?.countries ?? '...'} />
+        <StatCard label="Data Feeds" value={stats?.sources ?? '...'} />
+        <StatCard label="Item Boxes" value={stats?.cameras?.toLocaleString() ?? '...'} />
         <StatCard label="Packs" value={stats?.packs ?? '...'} />
-        <StatCard label="Dev Keys" value={stats?.developer_keys ?? '...'} />
+        <StatCard label="Driver Keys" value={stats?.developer_keys ?? '...'} />
         <StatCard label="Pending Subs" value={stats?.pending_submissions ?? '...'} />
       </div>
 
@@ -96,7 +96,7 @@ export default function DashboardPage() {
       {/* Operations Log */}
       <div className="bg-surface-card border border-border p-6 neon-top">
         <h2 className="font-heading text-sm font-semibold tracking-wider text-text-muted uppercase mb-4">
-          Operations Log
+          Lap Log
         </h2>
         {jobs && jobs.length > 0 ? (
           <div className="space-y-3">
@@ -122,7 +122,7 @@ export default function DashboardPage() {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-text-muted font-mono">No recent ops</p>
+          <p className="text-sm text-text-muted font-mono">No recent laps</p>
         )}
       </div>
     </div>

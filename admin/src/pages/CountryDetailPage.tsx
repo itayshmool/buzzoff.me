@@ -99,7 +99,7 @@ export default function CountryDetailPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
         <div>
           <Link to="/countries" className="text-sm font-heading tracking-wider text-neon-dim hover:text-neon transition-colors">
-            &larr; ZONES
+            &larr; TRACKS
           </Link>
           <h1 className="font-heading text-xl md:text-2xl font-bold tracking-wider text-text-primary mt-1">
             {country.name} <span className="text-neon text-glow-neon">({country.code})</span>
@@ -130,8 +130,8 @@ export default function CountryDetailPage() {
 
       {/* Stats Row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 stagger-children">
-        <StatCard label="Sources" value={sources.length} />
-        <StatCard label="Cameras" value={cameraStats?.total.toLocaleString() ?? '...'} />
+        <StatCard label="Data Feeds" value={sources.length} />
+        <StatCard label="Item Boxes" value={cameraStats?.total.toLocaleString() ?? '...'} />
         <StatCard label="Packs" value={packs.length} />
       </div>
 
@@ -139,7 +139,7 @@ export default function CountryDetailPage() {
       {cameraStats && Object.keys(cameraStats.by_type).length > 0 && (
         <div className="bg-surface-card border border-border p-6 mb-8 neon-top">
           <h2 className="font-heading text-sm font-semibold tracking-wider text-text-muted uppercase mb-3">
-            Camera Intel by Type
+            Item Box Intel by Type
           </h2>
           <div className="flex flex-wrap gap-4">
             {Object.entries(cameraStats.by_type).map(([type, count]) => (
@@ -156,13 +156,13 @@ export default function CountryDetailPage() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-heading text-sm font-semibold tracking-wider text-text-muted uppercase">
-            Data Sources
+            Data Feeds
           </h2>
           <Link
             to={`/countries/${code}/sources/new`}
             className="px-4 py-2 text-sm font-heading tracking-wider bg-neon text-surface hover:bg-neon-dim transition-colors glow-neon"
           >
-            + ADD SOURCE
+            + ADD FEED
           </Link>
         </div>
         {sources.length === 0 ? (
@@ -186,13 +186,13 @@ export default function CountryDetailPage() {
         <div className="bg-surface-card border border-border p-6 mb-8 neon-top">
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-heading text-sm font-semibold tracking-wider text-text-muted uppercase">
-              Surveillance Grid
+              Track Map
             </h2>
             <Link
               to={`/countries/${code}/cameras`}
               className="px-4 py-2 text-sm font-heading tracking-wider bg-hot text-white hover:bg-hot-dim transition-colors glow-hot"
             >
-              MANAGE CAMERAS
+              MANAGE ITEMS
             </Link>
           </div>
           <CameraMap cameras={cameras.items} />
@@ -255,7 +255,7 @@ export default function CountryDetailPage() {
           >
             <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-neon to-transparent" />
             <h3 className="font-heading text-base font-bold tracking-wider text-neon text-glow-neon uppercase mb-4">
-              Edit Zone
+              Edit Track
             </h3>
             <label className="block mb-3">
               <span className="text-xs font-heading tracking-wider text-text-muted uppercase">Name</span>
@@ -318,16 +318,16 @@ export default function CountryDetailPage() {
 
       <ConfirmDialog
         isOpen={showDeleteCountry}
-        title="Delete Zone"
-        message={`Delete "${country.name}"? This will remove all associated sources, cameras, and packs.`}
+        title="Delete Track"
+        message={`Delete "${country.name}"? This will remove all associated feeds, cameras, and packs.`}
         onConfirm={() => deleteCountryMutation.mutate()}
         onCancel={() => setShowDeleteCountry(false)}
       />
 
       <ConfirmDialog
         isOpen={deleteSourceId !== null}
-        title="Delete Source"
-        message="Delete this source? Associated cameras will be removed."
+        title="Delete Feed"
+        message="Delete this feed? Associated cameras will be removed."
         onConfirm={() => deleteSourceId && deleteSourceMutation.mutate(deleteSourceId)}
         onCancel={() => setDeleteSourceId(null)}
       />

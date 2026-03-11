@@ -52,7 +52,7 @@ export default function GeocodingQueuePage() {
   return (
     <div>
       <h1 className="font-heading text-2xl font-bold tracking-wider text-text-primary mb-6">
-        GEO <span className="text-hot text-glow-hot">LOCATE</span>
+        PIT <span className="text-hot text-glow-hot">STOP</span>
       </h1>
 
       {/* Tabs */}

@@ -2,42 +2,42 @@
 @import "leaflet/dist/leaflet.css";
 
 @theme {
-  --font-heading: 'Orbitron', sans-serif;
-  --font-body: 'Rajdhani', sans-serif;
+  --font-heading: 'Press Start 2P', cursive;
+  --font-body: 'Russo One', sans-serif;
   --font-mono: 'Share Tech Mono', monospace;
 
-  --color-neon: #00f0ff;
-  --color-neon-dim: #00a0aa;
-  --color-neon-glow: rgba(0, 240, 255, 0.3);
-  --color-neon-subtle: rgba(0, 240, 255, 0.08);
-  --color-hot: #ff6b00;
-  --color-hot-dim: #cc5500;
-  --color-hot-glow: rgba(255, 107, 0, 0.3);
-  --color-surface: #0d1117;
-  --color-surface-raised: #151b23;
-  --color-surface-card: #1a2130;
-  --color-surface-hover: #1f2937;
-  --color-border: #2a3442;
-  --color-border-bright: #3a4a5c;
+  --color-neon: #FBD000;
+  --color-neon-dim: #D4A006;
+  --color-neon-glow: rgba(251, 208, 0, 0.3);
+  --color-neon-subtle: rgba(251, 208, 0, 0.08);
+  --color-hot: #E52521;
+  --color-hot-dim: #B81E1B;
+  --color-hot-glow: rgba(229, 37, 33, 0.3);
+  --color-surface: #1A1A2E;
+  --color-surface-raised: #16213E;
+  --color-surface-card: #0F3460;
+  --color-surface-hover: #1B2A56;
+  --color-border: #2A3F6E;
+  --color-border-bright: #3A5080;
   --color-text-primary: #e8edf3;
   --color-text-secondary: #8b98a8;
-  --color-text-muted: #5a6a7a;
-  --color-danger: #ff3b4f;
-  --color-danger-dim: #cc2f3f;
-  --color-success: #00ff88;
-  --color-warning: #ffc107;
+  --color-text-muted: #5a6a8a;
+  --color-danger: #E52521;
+  --color-danger-dim: #B81E1B;
+  --color-success: #43B047;
+  --color-warning: #FFE135;
 }
 
 /* ── Light theme overrides ───────────── */
 
 [data-theme="light"] {
-  --color-neon: #0099aa;
-  --color-neon-dim: #007788;
-  --color-neon-glow: rgba(0, 153, 170, 0.25);
-  --color-neon-subtle: rgba(0, 153, 170, 0.06);
-  --color-hot: #e05500;
-  --color-hot-dim: #b84400;
-  --color-hot-glow: rgba(224, 85, 0, 0.2);
+  --color-neon: #C89500;
+  --color-neon-dim: #A07800;
+  --color-neon-glow: rgba(200, 149, 0, 0.25);
+  --color-neon-subtle: rgba(200, 149, 0, 0.06);
+  --color-hot: #C41E1A;
+  --color-hot-dim: #A01815;
+  --color-hot-glow: rgba(196, 30, 26, 0.2);
   --color-surface: #f0f2f5;
   --color-surface-raised: #ffffff;
   --color-surface-card: #ffffff;
@@ -47,10 +47,10 @@
   --color-text-primary: #1a2130;
   --color-text-secondary: #505a6a;
   --color-text-muted: #8b95a5;
-  --color-danger: #dc2f3e;
-  --color-danger-dim: #b82535;
-  --color-success: #059960;
-  --color-warning: #d4a006;
+  --color-danger: #C41E1A;
+  --color-danger-dim: #A01815;
+  --color-success: #37923C;
+  --color-warning: #D4B800;
 }
 
 /* ── Base ─────────────────────────────── */
@@ -81,18 +81,18 @@ body {
     radial-gradient(circle at 1px 1px, rgba(0,0,0,0.03) 1px, transparent 0);
 }
 
-/* ── Neon glow effects ────────────────── */
+/* ── Glow effects ────────────────────── */
 
 .glow-neon {
   box-shadow:
     0 0 8px var(--color-neon-glow),
-    inset 0 0 8px rgba(0, 240, 255, 0.05);
+    inset 0 0 8px rgba(251, 208, 0, 0.05);
 }
 
 .glow-hot {
   box-shadow:
     0 0 8px var(--color-hot-glow),
-    inset 0 0 8px rgba(255, 107, 0, 0.05);
+    inset 0 0 8px rgba(229, 37, 33, 0.05);
 }
 
 .text-glow-neon {
@@ -104,11 +104,11 @@ body {
 }
 
 [data-theme="light"] .glow-neon {
-  box-shadow: 0 1px 4px rgba(0, 153, 170, 0.15);
+  box-shadow: 0 1px 4px rgba(200, 149, 0, 0.15);
 }
 
 [data-theme="light"] .glow-hot {
-  box-shadow: 0 1px 4px rgba(224, 85, 0, 0.15);
+  box-shadow: 0 1px 4px rgba(196, 30, 26, 0.15);
 }
 
 [data-theme="light"] .text-glow-neon {
@@ -117,6 +117,12 @@ body {
 
 [data-theme="light"] .text-glow-hot {
   text-shadow: none;
+}
+
+/* ── Rainbow gradient ────────────────── */
+
+.bg-rainbow {
+  background: linear-gradient(90deg, #E52521, #FF6B00, #FBD000, #43B047, #049CD8, #7B2FBE);
 }
 
 /* ── Speed lines decoration ───────────── */
@@ -136,8 +142,11 @@ body {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--color-neon) 30%,
-    var(--color-neon) 70%,
+    #E52521 15%,
+    #FBD000 35%,
+    #43B047 50%,
+    #049CD8 65%,
+    #7B2FBE 85%,
     transparent 100%
   );
   opacity: 0.4;
@@ -149,7 +158,7 @@ body {
   clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
 }
 
-/* ── Neon border top ──────────────────── */
+/* ── Border top accents ──────────────── */
 
 .neon-top {
   border-top: 2px solid var(--color-neon);
@@ -192,7 +201,7 @@ body {
 }
 
 [data-theme="dark"] .leaflet-tile-pane {
-  filter: brightness(0.65) invert(1) contrast(2.5) hue-rotate(200deg) saturate(0.4) brightness(0.75);
+  filter: brightness(0.65) invert(1) contrast(2.5) hue-rotate(180deg) saturate(0.4) brightness(0.75);
 }
 
 [data-theme="light"] .leaflet-tile-pane {

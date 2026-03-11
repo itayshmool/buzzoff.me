@@ -5,11 +5,11 @@ import type { Camera } from '../../types';
 import useGeolocation from '../../hooks/useGeolocation';
 
 const typeColors: Record<string, string> = {
-  fixed_speed: '#ef4444',
-  speed: '#ef4444',
-  red_light: '#f59e0b',
-  average_speed: '#8b5cf6',
-  mobile: '#3b82f6',
+  fixed_speed: '#049CD8',
+  speed: '#049CD8',
+  red_light: '#E52521',
+  average_speed: '#FFE135',
+  mobile: '#FFD700',
 };
 
 function FitBounds({ bounds }: { bounds: LatLngBoundsExpression | null }) {

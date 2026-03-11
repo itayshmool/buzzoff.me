@@ -115,16 +115,16 @@ export default function CamerasPage() {
             to={`/countries/${code}`}
             className="text-sm font-heading tracking-wider text-neon-dim hover:text-neon transition-colors"
           >
-            &larr; BACK TO ZONE
+            &larr; BACK TO TRACK
           </Link>
           <h1 className="font-heading text-xl md:text-2xl font-bold tracking-wider text-text-primary mt-1">
-            SURVEILLANCE <span className="text-hot text-glow-hot">GRID</span>
+            ITEM <span className="text-hot text-glow-hot">BOXES</span>
             <span className="text-neon text-glow-neon ml-2">({code})</span>
           </h1>
         </div>
         {stats && (
           <div className="flex flex-wrap items-center gap-2 text-sm">
-            <span className="font-heading font-bold tracking-wider text-text-primary">{stats.total} units</span>
+            <span className="font-heading font-bold tracking-wider text-text-primary">{stats.total} items</span>
             {Object.entries(stats.by_type).map(([type, count]) => (
               <span
                 key={type}
@@ -141,7 +141,7 @@ export default function CamerasPage() {
       <div className="flex-1 flex flex-col md:flex-row gap-4 min-h-0">
         {/* Map panel */}
         <div className="w-full md:w-3/5 flex flex-col min-h-[300px] md:min-h-0">
-          <div className="text-xs text-text-muted font-mono mb-1">Click on the map to deploy a new unit</div>
+          <div className="text-xs text-text-muted font-mono mb-1">Click on the map to place a new item</div>
           <div className="flex-1">
             <CameraMap
               cameras={cameras}
@@ -160,7 +160,7 @@ export default function CamerasPage() {
             <div className="bg-surface-card border border-neon/30 p-4 mb-3 clip-angular">
               <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-neon to-transparent" />
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-heading font-bold tracking-wider text-neon text-glow-neon uppercase">Deploy Unit</h3>
+                <h3 className="text-sm font-heading font-bold tracking-wider text-neon text-glow-neon uppercase">Place Item</h3>
                 <button
                   onClick={() => setShowAddForm(false)}
                   className="text-text-muted hover:text-danger text-lg leading-none transition-colors"
@@ -241,7 +241,7 @@ export default function CamerasPage() {
                     disabled={createMutation.isPending}
                     className="px-3 py-1 text-xs font-heading tracking-wider bg-neon text-surface hover:bg-neon-dim disabled:opacity-50 transition-colors"
                   >
-                    {createMutation.isPending ? 'DEPLOYING...' : 'DEPLOY'}
+                    {createMutation.isPending ? 'PLACING...' : 'PLACE'}
                   </button>
                 </div>
               </form>
@@ -261,7 +261,7 @@ export default function CamerasPage() {
                 onClick={() => setShowAddForm(true)}
                 className="px-3 py-1.5 text-sm font-heading tracking-wider bg-neon text-surface hover:bg-neon-dim whitespace-nowrap transition-colors"
               >
-                + DEPLOY
+                + PLACE
               </button>
             )}
           </div>
@@ -270,7 +270,7 @@ export default function CamerasPage() {
           <div ref={listRef} className="flex-1 overflow-y-auto border border-border bg-surface-card">
             {filteredCameras.length === 0 ? (
               <p className="p-4 text-sm text-text-muted font-mono text-center">
-                {cameras.length === 0 ? 'No units deployed' : 'No units match filter'}
+                {cameras.length === 0 ? 'No items placed' : 'No items match filter'}
               </p>
             ) : (
               <div className="divide-y divide-border/50">

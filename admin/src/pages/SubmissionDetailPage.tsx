@@ -46,7 +46,7 @@ export default function SubmissionDetailPage() {
         onClick={() => navigate('/developers/submissions')}
         className="text-xs font-heading tracking-wider text-text-muted hover:text-neon transition-colors mb-4 inline-block"
       >
-        &larr; BACK TO QUEUE
+        &larr; BACK TO GRID
       </button>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">

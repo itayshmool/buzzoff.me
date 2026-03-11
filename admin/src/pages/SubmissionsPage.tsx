@@ -58,7 +58,7 @@ export default function SubmissionsPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <h1 className="font-heading text-xl md:text-2xl font-bold tracking-wider text-text-primary">
-          SUBMISSION <span className="text-neon text-glow-neon">QUEUE</span>
+          STARTING <span className="text-neon text-glow-neon">GRID</span>
         </h1>
         <select
           value={statusFilter}

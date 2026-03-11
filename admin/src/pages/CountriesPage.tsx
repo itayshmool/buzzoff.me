@@ -74,13 +74,13 @@ export default function CountriesPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <h1 className="font-heading text-xl md:text-2xl font-bold tracking-wider text-text-primary">
-          ZONE <span className="text-neon text-glow-neon">REGISTRY</span>
+          RACE <span className="text-neon text-glow-neon">TRACKS</span>
         </h1>
         <button
           onClick={() => setShowCreate(true)}
           className="px-4 py-2 text-sm font-heading tracking-wider bg-neon text-surface hover:bg-neon-dim transition-colors glow-neon"
         >
-          + ADD ZONE
+          + ADD TRACK
         </button>
       </div>
 
@@ -104,7 +104,7 @@ export default function CountriesPage() {
           >
             <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-neon to-transparent" />
             <h3 className="font-heading text-base font-bold tracking-wider text-neon text-glow-neon uppercase mb-4">
-              New Zone
+              New Track
             </h3>
             <label className="block mb-3">
               <span className="text-xs font-heading tracking-wider text-text-muted uppercase">Code (2 letters)</span>
@@ -167,8 +167,8 @@ export default function CountriesPage() {
 
       <ConfirmDialog
         isOpen={deleteTarget !== null}
-        title="Delete Zone"
-        message={`Delete zone "${deleteTarget}"? This will remove all associated sources, cameras, and packs.`}
+        title="Delete Track"
+        message={`Delete track "${deleteTarget}"? This will remove all associated feeds, cameras, and packs.`}
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget)}
         onCancel={() => setDeleteTarget(null)}
       />

@@ -3,12 +3,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const links = [
-  { to: '/', label: 'HQ' },
-  { to: '/countries', label: 'ZONES' },
-  { to: '/geocoding', label: 'LOCATE' },
-  { to: '/jobs', label: 'OPS' },
-  { to: '/developers', label: 'DEVS' },
-  { to: '/developers/submissions', label: 'QUEUE' },
+  { to: '/', label: 'RACE HQ' },
+  { to: '/countries', label: 'TRACKS' },
+  { to: '/geocoding', label: 'PIT STOP' },
+  { to: '/jobs', label: 'LAP LOG' },
+  { to: '/developers', label: 'DRIVERS' },
+  { to: '/developers/submissions', label: 'GRID' },
 ];
 
 interface SidebarProps {
@@ -45,7 +45,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               BUZZ<span className="text-hot">OFF</span>
             </div>
             <div className="font-mono text-[10px] text-text-muted tracking-[0.3em] mt-0.5">
-              COMMAND CENTER
+              PIT CREW
             </div>
           </div>
           {/* Close button (mobile only) */}
@@ -83,7 +83,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         {/* Speed line decoration */}
         <div className="px-5 py-1">
-          <div className="h-px bg-gradient-to-r from-transparent via-neon/30 to-transparent" />
+          <div className="h-px bg-rainbow opacity-30" />
         </div>
 
         {/* Footer */}
@@ -112,7 +112,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             onClick={logout}
             className="w-full px-3 py-2 text-xs font-heading tracking-wider text-text-muted hover:text-danger transition-colors border border-border hover:border-danger/40"
           >
-            EJECT
+            FINISH LINE
           </button>
         </div>
       </aside>

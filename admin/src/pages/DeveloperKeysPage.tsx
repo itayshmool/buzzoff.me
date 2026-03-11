@@ -90,7 +90,7 @@ export default function DeveloperKeysPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <h1 className="font-heading text-xl md:text-2xl font-bold tracking-wider text-text-primary">
-          DEVELOPER <span className="text-neon text-glow-neon">KEYS</span>
+          DRIVER <span className="text-neon text-glow-neon">KEYS</span>
         </h1>
         <button
           onClick={() => { setShowCreate(!showCreate); setCreatedKey(null); }}
