@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/racing_colors.dart';
+
 class DownloadProgress extends StatelessWidget {
   final String countryName;
   final double progress;
@@ -22,11 +24,16 @@ class DownloadProgress extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Downloading $countryName...$sizeText',
+          'Loading track: $countryName$sizeText',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 16),
-        LinearProgressIndicator(value: progress > 0 ? progress : null),
+        LinearProgressIndicator(
+          value: progress > 0 ? progress : null,
+          backgroundColor: RacingColors.trackSurface,
+          valueColor:
+              const AlwaysStoppedAnimation<Color>(RacingColors.racingRed),
+        ),
         const SizedBox(height: 8),
         if (progress > 0)
           Text(

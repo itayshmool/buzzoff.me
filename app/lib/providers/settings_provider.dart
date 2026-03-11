@@ -67,4 +67,9 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     state = state.copyWith(vibrationIntensity: intensity);
     _prefs.save(state);
   }
+
+  void updateAlertSound(AlertSound sound) {
+    state = state.copyWith(alertSound: sound);
+    _prefs.save(state);
+  }
 }

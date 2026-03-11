@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/racing_colors.dart';
+
 class ZoomControls extends StatelessWidget {
   final VoidCallback onZoomIn;
   final VoidCallback onZoomOut;
@@ -45,14 +47,19 @@ class _ControlButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.black.withValues(alpha: 0.7),
-      shape: const CircleBorder(),
+      color: RacingColors.trackSurface.withValues(alpha: 0.9),
+      shape: CircleBorder(
+        side: BorderSide(
+          color: RacingColors.coinGold.withValues(alpha: 0.4),
+          width: 1,
+        ),
+      ),
       child: InkWell(
         customBorder: const CircleBorder(),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(10),
-          child: Icon(icon, color: Colors.white, size: 22),
+          child: Icon(icon, color: RacingColors.coinGold, size: 22),
         ),
       ),
     );

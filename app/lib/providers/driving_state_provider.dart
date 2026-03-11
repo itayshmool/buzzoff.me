@@ -25,6 +25,7 @@ final alertServiceProvider = Provider<AlertService>((ref) {
   final service = AlertService(
     vibrationEnabled: settings.vibrationEnabled,
     soundEnabled: settings.soundEnabled,
+    alertSound: settings.alertSound,
     vibrationIntensity: settings.vibrationIntensity,
   );
   return service;

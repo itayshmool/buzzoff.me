@@ -35,12 +35,14 @@ class AlertService {
   DrivingState _currentDrivingState = DrivingState.idle;
   bool vibrationEnabled;
   bool soundEnabled;
+  AlertSound alertSound;
   VibrationIntensity vibrationIntensity;
   final AudioPlayer _audioPlayer = AudioPlayer();
 
   AlertService({
     this.vibrationEnabled = true,
     this.soundEnabled = false,
+    this.alertSound = AlertSound.classicBeep,
     this.vibrationIntensity = VibrationIntensity.high,
   });
 
@@ -51,10 +53,12 @@ class AlertService {
   void updateSettings({
     required bool vibrationEnabled,
     required bool soundEnabled,
+    required AlertSound alertSound,
     required VibrationIntensity vibrationIntensity,
   }) {
     this.vibrationEnabled = vibrationEnabled;
     this.soundEnabled = soundEnabled;
+    this.alertSound = alertSound;
     this.vibrationIntensity = vibrationIntensity;
   }
 
@@ -98,7 +102,7 @@ class AlertService {
 
     // Sound
     if (soundEnabled) {
-      await _audioPlayer.play(AssetSource('alert_beep.wav'));
+      await _audioPlayer.play(AssetSource(alertSound.assetFilename));
     }
 
     ForegroundTaskService.showCameraAlert(message, _currentDrivingState);
@@ -116,6 +120,6 @@ class AlertService {
   }
 
   Future<void> testSound() async {
-    await _audioPlayer.play(AssetSource('alert_beep.wav'));
+    await _audioPlayer.play(AssetSource(alertSound.assetFilename));
   }
 }

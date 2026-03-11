@@ -12,6 +12,7 @@ class UserPreferences {
   static const _keyAvgSpeedZones = 'avg_speed_zones_enabled';
   static const _keySleepAfterMinutes = 'sleep_after_minutes';
   static const _keyVibrationIntensity = 'vibration_intensity';
+  static const _keyAlertSound = 'alert_sound';
 
   final SharedPreferences _prefs;
 
@@ -22,6 +23,8 @@ class UserPreferences {
       alertDistanceMeters: _prefs.getDouble(_keyAlertDistance) ?? 800.0,
       vibrationEnabled: _prefs.getBool(_keyVibrationEnabled) ?? true,
       soundEnabled: _prefs.getBool(_keySoundEnabled) ?? false,
+      alertSound: AlertSound
+          .values[_prefs.getInt(_keyAlertSound) ?? 0],
       activateAtSpeedKmh: _prefs.getDouble(_keyActivateAtSpeed) ?? 40.0,
       speedCamerasEnabled: _prefs.getBool(_keySpeedCameras) ?? true,
       redLightCamerasEnabled: _prefs.getBool(_keyRedLightCameras) ?? true,
@@ -36,6 +39,7 @@ class UserPreferences {
     await _prefs.setDouble(_keyAlertDistance, settings.alertDistanceMeters);
     await _prefs.setBool(_keyVibrationEnabled, settings.vibrationEnabled);
     await _prefs.setBool(_keySoundEnabled, settings.soundEnabled);
+    await _prefs.setInt(_keyAlertSound, settings.alertSound.index);
     await _prefs.setDouble(_keyActivateAtSpeed, settings.activateAtSpeedKmh);
     await _prefs.setBool(_keySpeedCameras, settings.speedCamerasEnabled);
     await _prefs.setBool(_keyRedLightCameras, settings.redLightCamerasEnabled);

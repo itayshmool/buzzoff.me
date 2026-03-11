@@ -1,9 +1,39 @@
 enum VibrationIntensity { low, medium, high }
 
+enum AlertSound {
+  classicBeep,
+  radarPing,
+  siren,
+  coin,
+  shellWarning,
+  raceHorn,
+}
+
+extension AlertSoundX on AlertSound {
+  String get displayName => switch (this) {
+        AlertSound.classicBeep => 'Classic Beep',
+        AlertSound.radarPing => 'Radar Ping',
+        AlertSound.siren => 'Siren',
+        AlertSound.coin => 'Coin',
+        AlertSound.shellWarning => 'Shell Warning',
+        AlertSound.raceHorn => 'Race Horn',
+      };
+
+  String get assetFilename => switch (this) {
+        AlertSound.classicBeep => 'alert_classic.wav',
+        AlertSound.radarPing => 'alert_radar.wav',
+        AlertSound.siren => 'alert_siren.wav',
+        AlertSound.coin => 'alert_coin.wav',
+        AlertSound.shellWarning => 'alert_shell.wav',
+        AlertSound.raceHorn => 'alert_horn.wav',
+      };
+}
+
 class AppSettings {
   final double alertDistanceMeters;
   final bool vibrationEnabled;
   final bool soundEnabled;
+  final AlertSound alertSound;
   final double activateAtSpeedKmh;
   final bool speedCamerasEnabled;
   final bool redLightCamerasEnabled;
@@ -15,6 +45,7 @@ class AppSettings {
     this.alertDistanceMeters = 800.0,
     this.vibrationEnabled = true,
     this.soundEnabled = false,
+    this.alertSound = AlertSound.classicBeep,
     this.activateAtSpeedKmh = 40.0,
     this.speedCamerasEnabled = true,
     this.redLightCamerasEnabled = true,
@@ -27,6 +58,7 @@ class AppSettings {
     double? alertDistanceMeters,
     bool? vibrationEnabled,
     bool? soundEnabled,
+    AlertSound? alertSound,
     double? activateAtSpeedKmh,
     bool? speedCamerasEnabled,
     bool? redLightCamerasEnabled,
@@ -38,6 +70,7 @@ class AppSettings {
       alertDistanceMeters: alertDistanceMeters ?? this.alertDistanceMeters,
       vibrationEnabled: vibrationEnabled ?? this.vibrationEnabled,
       soundEnabled: soundEnabled ?? this.soundEnabled,
+      alertSound: alertSound ?? this.alertSound,
       activateAtSpeedKmh: activateAtSpeedKmh ?? this.activateAtSpeedKmh,
       speedCamerasEnabled: speedCamerasEnabled ?? this.speedCamerasEnabled,
       redLightCamerasEnabled:

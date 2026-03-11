@@ -9,6 +9,8 @@ import '../../providers/driving_state_provider.dart';
 import '../../providers/location_provider.dart';
 import '../../providers/nearby_cameras_provider.dart';
 import '../../services/foreground_task.dart';
+import '../theme/racing_colors.dart';
+import '../widgets/camera_filter_bar.dart';
 import '../widgets/camera_marker.dart';
 import '../widgets/status_bar.dart';
 import '../widgets/zoom_controls.dart';
@@ -26,6 +28,14 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   double _zoom = 14.0;
   bool _serviceStarted = false;
   bool _hasInitialFix = false;
+
+  final Set<CameraType> _visibleTypes = {
+    CameraType.fixedSpeed,
+    CameraType.redLight,
+    CameraType.avgSpeedStart,
+    CameraType.avgSpeedEnd,
+    CameraType.mobileZone,
+  };
 
   // Default to Tel Aviv until GPS provides a position
   static const _defaultCenter = LatLng(32.0853, 34.7818);
@@ -52,11 +62,116 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     await orchestrator?.startMonitoring();
   }
 
+  void _toggleFilter(CameraFilter filter) {
+    setState(() {
+      for (final type in filter.types) {
+        if (_visibleTypes.contains(type)) {
+          _visibleTypes.remove(type);
+        } else {
+          _visibleTypes.add(type);
+        }
+      }
+    });
+  }
+
+  void _showCameraDetail(Camera camera) {
+    final typeLabel = switch (camera.type) {
+      CameraType.fixedSpeed => 'Speed Camera',
+      CameraType.redLight => 'Red Light Camera',
+      CameraType.avgSpeedStart => 'Avg Speed Zone Start',
+      CameraType.avgSpeedEnd => 'Avg Speed Zone End',
+      CameraType.mobileZone => 'Mobile Camera Zone',
+    };
+
+    final color = CameraMarkerWidget.colorForType(camera.type);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: RacingColors.trackSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: color, width: 2),
+                  ),
+                  child: Icon(
+                    CameraMarkerWidget.iconForType(camera.type),
+                    size: 18,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    typeLabel,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (camera.speedLimit != null)
+              _detailRow(Icons.speed, 'Speed Limit', '${camera.speedLimit} km/h'),
+            if (camera.roadName != null)
+              _detailRow(Icons.route, 'Road', camera.roadName!),
+            _detailRow(Icons.location_on, 'Location',
+                '${camera.lat.toStringAsFixed(5)}, ${camera.lon.toStringAsFixed(5)}'),
+            if (camera.heading != null)
+              _detailRow(Icons.compass_calibration, 'Heading',
+                  '${camera.heading!.round()}°'),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _detailRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: Colors.white54),
+          const SizedBox(width: 10),
+          Text(
+            '$label: ',
+            style: const TextStyle(
+                color: Colors.white54, fontSize: 13, fontWeight: FontWeight.w500),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(color: Colors.white, fontSize: 13),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final locationAsync = ref.watch(locationStreamProvider);
     final drivingState = ref.watch(drivingStateProvider);
     final cameras = ref.watch(nearbyCamerasProvider);
+
+    final filteredCameras =
+        cameras.where((c) => _visibleTypes.contains(c.type)).toList();
 
     final center = locationAsync.when(
       data: (loc) {
@@ -93,27 +208,32 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 ),
                 // Camera markers
                 MarkerLayer(
-                  markers: cameras.map(_buildCameraMarker).toList(),
+                  markers: filteredCameras.map(_buildCameraMarker).toList(),
                 ),
-                // User position marker
+                // User position marker (racing car)
                 MarkerLayer(
                   markers: [
                     Marker(
                       point: center,
-                      width: 20,
-                      height: 20,
+                      width: 28,
+                      height: 28,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.blue.shade600,
+                          color: RacingColors.racingRed,
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 2),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.blue.withValues(alpha: 0.4),
-                              blurRadius: 8,
-                              spreadRadius: 2,
+                              color: RacingColors.racingRed.withValues(alpha: 0.5),
+                              blurRadius: 10,
+                              spreadRadius: 3,
                             ),
                           ],
+                        ),
+                        child: const Icon(
+                          Icons.directions_car,
+                          size: 16,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -128,6 +248,18 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               left: 0,
               right: 0,
               child: Center(child: StatusBar(state: drivingState)),
+            ),
+
+            // Camera filter bar
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 52,
+              left: 12,
+              right: 12,
+              child: CameraFilterBar(
+                activeTypes: _visibleTypes,
+                cameras: cameras,
+                onToggle: _toggleFilter,
+              ),
             ),
 
             // Zoom + settings controls
@@ -167,9 +299,12 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   Marker _buildCameraMarker(Camera camera) {
     return Marker(
       point: LatLng(camera.lat, camera.lon),
-      width: 14,
-      height: 14,
-      child: CameraMarkerWidget(camera: camera),
+      width: 28,
+      height: 28,
+      child: GestureDetector(
+        onTap: () => _showCameraDetail(camera),
+        child: CameraMarkerWidget(camera: camera),
+      ),
     );
   }
 }

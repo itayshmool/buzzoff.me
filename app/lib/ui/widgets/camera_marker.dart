@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/model/camera.dart';
+import '../theme/racing_colors.dart';
 
 class CameraMarkerWidget extends StatelessWidget {
   final Camera camera;
@@ -9,31 +10,47 @@ class CameraMarkerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = colorForType(camera.type);
     return Container(
-      width: 14,
-      height: 14,
+      width: 28,
+      height: 28,
       decoration: BoxDecoration(
-        color: _colorForType(camera.type),
+        color: color.withValues(alpha: 0.85),
         shape: BoxShape.circle,
         border: Border.all(color: Colors.white, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 3,
-            offset: const Offset(0, 1),
+            color: color.withValues(alpha: 0.5),
+            blurRadius: 6,
+            spreadRadius: 1,
           ),
         ],
+      ),
+      child: Icon(
+        iconForType(camera.type),
+        size: 14,
+        color: Colors.white,
       ),
     );
   }
 
-  static Color _colorForType(CameraType type) {
+  static Color colorForType(CameraType type) {
     return switch (type) {
-      CameraType.fixedSpeed => Colors.blue,
-      CameraType.redLight => Colors.red,
-      CameraType.avgSpeedStart => Colors.amber,
-      CameraType.avgSpeedEnd => Colors.amber,
-      CameraType.mobileZone => Colors.orange,
+      CameraType.fixedSpeed => RacingColors.cameraSpeed,
+      CameraType.redLight => RacingColors.cameraRedLight,
+      CameraType.avgSpeedStart => RacingColors.cameraAvgSpeed,
+      CameraType.avgSpeedEnd => RacingColors.cameraAvgSpeed,
+      CameraType.mobileZone => RacingColors.cameraMobile,
+    };
+  }
+
+  static IconData iconForType(CameraType type) {
+    return switch (type) {
+      CameraType.fixedSpeed => Icons.speed,
+      CameraType.redLight => Icons.traffic,
+      CameraType.avgSpeedStart => Icons.timer,
+      CameraType.avgSpeedEnd => Icons.timer_off,
+      CameraType.mobileZone => Icons.phone_android,
     };
   }
 }

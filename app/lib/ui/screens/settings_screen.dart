@@ -6,6 +6,8 @@ import '../../providers/driving_state_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../providers/database_provider.dart';
 import '../../providers/pack_provider.dart';
+import '../theme/racing_colors.dart';
+import '../widgets/racing_decorations.dart';
 import 'country_picker_screen.dart';
 import 'setup_screen.dart';
 
@@ -22,23 +24,25 @@ class SettingsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text('RACE SETUP'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           // Alert Distance
-          _SectionTitle('Alert Distance'),
+          _SectionTitle('WARNING RANGE'),
           _RadioGroup<double>(
             value: settings.alertDistanceMeters,
             options: {500.0: '500m', 800.0: '800m', 1200.0: '1200m'},
             onChanged: notifier.updateAlertDistance,
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 8),
+          const RainbowDivider(),
+          const SizedBox(height: 8),
 
-          // Alert Type
-          _SectionTitle('Alert Type'),
+          // Vibration
+          _SectionTitle('RUMBLE'),
           Row(
             children: [
               Expanded(
@@ -73,6 +77,13 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
           ],
+
+          const SizedBox(height: 8),
+          const RainbowDivider(),
+          const SizedBox(height: 8),
+
+          // Sound
+          _SectionTitle('HORN'),
           Row(
             children: [
               Expanded(
@@ -93,91 +104,121 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ],
           ),
+          if (settings.soundEnabled) ...[
+            Padding(
+              padding: const EdgeInsets.only(left: 16, bottom: 8),
+              child: _RadioGroup<AlertSound>(
+                value: settings.alertSound,
+                options: {
+                  for (final sound in AlertSound.values)
+                    sound: sound.displayName,
+                },
+                onChanged: notifier.updateAlertSound,
+              ),
+            ),
+          ],
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 8),
+          const RainbowDivider(),
+          const SizedBox(height: 8),
 
           // Activate at speed
-          _SectionTitle('Activate at speed'),
+          _SectionTitle('MIN RACE SPEED'),
           _RadioGroup<double>(
             value: settings.activateAtSpeedKmh,
             options: {30.0: '30 km/h', 40.0: '40 km/h', 50.0: '50 km/h'},
             onChanged: notifier.updateActivateAtSpeed,
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 8),
+          const RainbowDivider(),
+          const SizedBox(height: 8),
 
           // Sleep timeout
-          _SectionTitle('Sleep when stopped'),
+          _SectionTitle('PIT STOP TIMER'),
           _RadioGroup<int>(
             value: settings.sleepAfterMinutes,
             options: {3: '3 min', 5: '5 min', 10: '10 min', 15: '15 min'},
             onChanged: notifier.updateSleepAfterMinutes,
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 8),
+          const RainbowDivider(),
+          const SizedBox(height: 8),
 
           // Camera types
-          _SectionTitle('Camera types'),
+          _SectionTitle('ITEM TYPES'),
           SwitchListTile(
-            title: const Text('Speed cameras'),
+            title: const Text('Blue Shells'),
+            subtitle: const Text('Speed cameras'),
             value: settings.speedCamerasEnabled,
             onChanged: notifier.toggleSpeedCameras,
           ),
           SwitchListTile(
-            title: const Text('Red light cameras'),
+            title: const Text('Red Shells'),
+            subtitle: const Text('Red light cameras'),
             value: settings.redLightCamerasEnabled,
             onChanged: notifier.toggleRedLightCameras,
           ),
           SwitchListTile(
-            title: const Text('Average speed zones'),
+            title: const Text('Star Zones'),
+            subtitle: const Text('Average speed zones'),
             value: settings.avgSpeedZonesEnabled,
             onChanged: notifier.toggleAvgSpeedZones,
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 8),
+          const RainbowDivider(),
+          const SizedBox(height: 8),
 
           // Country
-          _SectionTitle('Country'),
+          _SectionTitle('RACE TRACK'),
           if (activeCountry != null) ...[
-            ListTile(
-              title: Text('Active: $activeCountry'),
-              subtitle: Text('$cameraCount cameras loaded'),
-              trailing: const Icon(Icons.swap_horiz),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => CountryPickerScreen(
-                      onCountrySelected: (country) async {
-                        final manager = ref.read(packManagerProvider);
-                        // Check if already installed
-                        final installed = installedPacks
-                            .any((p) => p.countryCode == country.code);
-                        if (installed) {
-                          final dao =
-                              await manager.switchCountry(country.code);
-                          ref.read(activeCountryProvider.notifier)
-                              .setCountry(country.code);
-                          ref.read(cameraDaoProvider.notifier).state = dao;
-                          if (context.mounted) Navigator.of(context).pop();
-                        } else {
-                          if (context.mounted) {
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (_) => const SetupScreen(),
-                              ),
-                            );
+            RacingStripeCard(
+              child: ListTile(
+                title: Text(activeCountry),
+                subtitle: Text('$cameraCount cameras loaded'),
+                trailing: Icon(Icons.swap_horiz,
+                    color: RacingColors.coinGold.withValues(alpha: 0.7)),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => CountryPickerScreen(
+                        onCountrySelected: (country) async {
+                          final manager = ref.read(packManagerProvider);
+                          // Check if already installed
+                          final installed = installedPacks
+                              .any((p) => p.countryCode == country.code);
+                          if (installed) {
+                            final dao =
+                                await manager.switchCountry(country.code);
+                            ref
+                                .read(activeCountryProvider.notifier)
+                                .setCountry(country.code);
+                            ref.read(cameraDaoProvider.notifier).state = dao;
+                            if (context.mounted) Navigator.of(context).pop();
+                          } else {
+                            if (context.mounted) {
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (_) => const SetupScreen(),
+                                ),
+                              );
+                            }
                           }
-                        }
-                      },
+                        },
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ] else
-            const ListTile(
-              title: Text('No country selected'),
-              subtitle: Text('Download a camera pack to get started'),
+            const RacingStripeCard(
+              child: ListTile(
+                title: Text('No track selected'),
+                subtitle: Text('Download a camera pack to get started'),
+              ),
             ),
 
           const SizedBox(height: 24),

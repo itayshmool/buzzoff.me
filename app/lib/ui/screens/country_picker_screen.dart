@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/model/country.dart';
 import '../../providers/pack_provider.dart';
+import '../theme/racing_colors.dart';
+import '../widgets/racing_decorations.dart';
 
 class CountryPickerScreen extends ConsumerWidget {
   final void Function(Country country) onCountrySelected;
@@ -14,13 +16,13 @@ class CountryPickerScreen extends ConsumerWidget {
     final countriesAsync = ref.watch(countriesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Select your country')),
+      appBar: AppBar(title: const Text('SELECT YOUR TRACK')),
       body: countriesAsync.when(
         data: (countries) {
           final enabled = countries.where((c) => c.packVersion != null).toList();
           if (enabled.isEmpty) {
             return const Center(
-              child: Text('No countries available yet.'),
+              child: Text('No tracks available yet.'),
             );
           }
           return ListView.builder(
@@ -28,9 +30,20 @@ class CountryPickerScreen extends ConsumerWidget {
             itemCount: enabled.length,
             itemBuilder: (context, index) {
               final country = enabled[index];
-              return _CountryCard(
-                country: country,
-                onTap: () => onCountrySelected(country),
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: RacingStripeCard(
+                  stripeColor: RacingColors.shellBlue,
+                  child: ListTile(
+                    title: Text(country.name),
+                    subtitle: Text(country.cameraCount != null
+                        ? '${country.cameraCount} cameras'
+                        : ''),
+                    trailing: Icon(Icons.download,
+                        color: RacingColors.coinGold.withValues(alpha: 0.7)),
+                    onTap: () => onCountrySelected(country),
+                  ),
+                ),
               );
             },
           );
@@ -42,10 +55,12 @@ class CountryPickerScreen extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.cloud_off, size: 48),
+                Icon(Icons.cloud_off,
+                    size: 48,
+                    color: RacingColors.coinGold.withValues(alpha: 0.5)),
                 const SizedBox(height: 16),
                 Text(
-                  'Could not load countries.\n'
+                  'Could not load tracks.\n'
                   'If you just opened the app, the server may be starting—tap Retry in a few seconds.\n'
                   'Otherwise check your internet connection.',
                   textAlign: TextAlign.center,
@@ -60,30 +75,6 @@ class CountryPickerScreen extends ConsumerWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _CountryCard extends StatelessWidget {
-  final Country country;
-  final VoidCallback onTap;
-
-  const _CountryCard({required this.country, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final cameraText = country.cameraCount != null
-        ? '${country.cameraCount} cameras'
-        : '';
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        title: Text(country.name),
-        subtitle: Text(cameraText),
-        trailing: const Icon(Icons.download),
-        onTap: onTap,
       ),
     );
   }

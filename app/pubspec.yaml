@@ -49,6 +49,9 @@ dependencies:
   # Crypto (checksum verification)
   crypto: ^3.0.6
 
+  # Typography
+  google_fonts: ^6.2.1
+
   # Utilities
   cupertino_icons: ^1.0.8
 
