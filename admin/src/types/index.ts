@@ -139,4 +139,45 @@ export interface DashboardStats {
   sources: number;
   cameras: number;
   packs: number;
+  developer_keys: number;
+  pending_submissions: number;
+}
+
+// Developer Keys
+export interface DeveloperKey {
+  id: string;
+  name: string;
+  email: string;
+  key_prefix: string;
+  scopes: string[];
+  enabled: boolean;
+  last_used_at: string | null;
+  created_at: string;
+}
+
+export interface DeveloperKeyCreateRequest {
+  name: string;
+  email: string;
+  scopes?: string[];
+}
+
+export interface DeveloperKeyCreateResponse extends DeveloperKey {
+  raw_api_key: string;
+}
+
+// Developer Submissions
+export interface DeveloperSubmission {
+  id: string;
+  country_code: string;
+  status: string;
+  camera_count: number;
+  submitted_at: string;
+  reviewed_at: string | null;
+  review_note: string | null;
+  developer_name: string;
+  developer_email: string;
+}
+
+export interface DeveloperSubmissionDetail extends DeveloperSubmission {
+  cameras_json: Record<string, unknown>[];
 }

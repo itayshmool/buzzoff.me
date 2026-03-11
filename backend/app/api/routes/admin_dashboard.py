@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_current_admin, get_db
 from app.models.camera import Camera
 from app.models.country import Country
+from app.models.developer import DeveloperKey, DeveloperSubmission
 from app.models.pack import Pack
 from app.models.source import Source
 
@@ -20,10 +21,24 @@ async def dashboard_stats(
     sources_count = (await db.execute(select(func.count()).select_from(Source))).scalar()
     cameras_count = (await db.execute(select(func.count()).select_from(Camera))).scalar()
     packs_count = (await db.execute(select(func.count()).select_from(Pack))).scalar()
+    dev_keys_count = (
+        await db.execute(
+            select(func.count()).select_from(DeveloperKey).where(DeveloperKey.enabled.is_(True))
+        )
+    ).scalar()
+    pending_submissions = (
+        await db.execute(
+            select(func.count())
+            .select_from(DeveloperSubmission)
+            .where(DeveloperSubmission.status == "pending")
+        )
+    ).scalar()
 
     return {
         "countries": countries_count,
         "sources": sources_count,
         "cameras": cameras_count,
         "packs": packs_count,
+        "developer_keys": dev_keys_count,
+        "pending_submissions": pending_submissions,
     }

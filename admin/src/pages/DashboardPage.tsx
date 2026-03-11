@@ -46,11 +46,13 @@ export default function DashboardPage() {
         HQ <span className="text-neon text-glow-neon">OVERVIEW</span>
       </h1>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 stagger-children">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8 stagger-children">
         <StatCard label="Zones" value={stats?.countries ?? '...'} />
         <StatCard label="Sources" value={stats?.sources ?? '...'} />
         <StatCard label="Cameras" value={stats?.cameras?.toLocaleString() ?? '...'} />
         <StatCard label="Packs" value={stats?.packs ?? '...'} />
+        <StatCard label="Dev Keys" value={stats?.developer_keys ?? '...'} />
+        <StatCard label="Pending Subs" value={stats?.pending_submissions ?? '...'} />
       </div>
 
       {/* App Distribution */}

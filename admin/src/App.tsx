@@ -12,6 +12,9 @@ import SourceEditorPage from './pages/SourceEditorPage';
 import CamerasPage from './pages/CamerasPage';
 import GeocodingQueuePage from './pages/GeocodingQueuePage';
 import JobsPage from './pages/JobsPage';
+import DeveloperKeysPage from './pages/DeveloperKeysPage';
+import SubmissionsPage from './pages/SubmissionsPage';
+import SubmissionDetailPage from './pages/SubmissionDetailPage';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, retry: 1 } },
@@ -35,6 +38,9 @@ export default function App() {
                 <Route path="countries/:code/sources/:id" element={<SourceEditorPage />} />
                 <Route path="geocoding" element={<GeocodingQueuePage />} />
                 <Route path="jobs" element={<JobsPage />} />
+                <Route path="developers" element={<DeveloperKeysPage />} />
+                <Route path="developers/submissions" element={<SubmissionsPage />} />
+                <Route path="developers/submissions/:id" element={<SubmissionDetailPage />} />
               </Route>
             </Route>
           </Routes>

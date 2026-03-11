@@ -7,6 +7,8 @@ const links = [
   { to: '/countries', label: 'ZONES' },
   { to: '/geocoding', label: 'LOCATE' },
   { to: '/jobs', label: 'OPS' },
+  { to: '/developers', label: 'DEVS' },
+  { to: '/developers/submissions', label: 'QUEUE' },
 ];
 
 interface SidebarProps {
