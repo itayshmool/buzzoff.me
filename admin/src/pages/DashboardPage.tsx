@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getStats } from '../api/dashboard';
 import { getJobs } from '../api/jobs';
 import StatCard from '../components/common/StatCard';
 import StatusBadge from '../components/common/StatusBadge';
+
+const APK_PATH = '/buzzoff.apk';
 
 export default function DashboardPage() {
   const { data: stats } = useQuery({ queryKey: ['dashboard-stats'], queryFn: getStats });
@@ -10,6 +13,32 @@ export default function DashboardPage() {
     queryKey: ['jobs', 'recent'],
     queryFn: () => getJobs(undefined, 10),
   });
+
+  const [copied, setCopied] = useState(false);
+  const downloadUrl = `${window.location.origin}${APK_PATH}`;
+
+  function copyLink() {
+    navigator.clipboard.writeText(downloadUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  async function shareLink() {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'BuzzOff',
+          text: 'Download BuzzOff — speed camera alerts for your drive.',
+          url: downloadUrl,
+        });
+      } catch {
+        // User cancelled share
+      }
+    } else {
+      copyLink();
+    }
+  }
 
   return (
     <div>
@@ -24,6 +53,45 @@ export default function DashboardPage() {
         <StatCard label="Packs" value={stats?.packs ?? '...'} />
       </div>
 
+      {/* App Distribution */}
+      <div className="bg-surface-card border border-border p-6 mb-8 hot-top">
+        <h2 className="font-heading text-sm font-semibold tracking-wider text-text-muted uppercase mb-4">
+          App Distribution
+        </h2>
+        <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex-1 min-w-0">
+            <div className="text-sm text-text-secondary mb-1">Android APK download link</div>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 min-w-0 truncate bg-surface-raised border border-border px-3 py-2 text-xs font-mono text-neon">
+                {downloadUrl}
+              </code>
+            </div>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <button
+              onClick={copyLink}
+              className="px-4 py-2 text-xs font-heading tracking-wider border border-border text-text-secondary hover:border-neon/40 hover:text-neon transition-colors"
+            >
+              {copied ? 'COPIED' : 'COPY LINK'}
+            </button>
+            <button
+              onClick={shareLink}
+              className="px-4 py-2 text-xs font-heading tracking-wider bg-hot text-white hover:bg-hot-dim transition-colors glow-hot"
+            >
+              SHARE
+            </button>
+            <a
+              href={APK_PATH}
+              download="buzzoff.apk"
+              className="px-4 py-2 text-xs font-heading tracking-wider bg-neon text-surface hover:bg-neon-dim transition-colors glow-neon"
+            >
+              DOWNLOAD
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Operations Log */}
       <div className="bg-surface-card border border-border p-6 neon-top">
         <h2 className="font-heading text-sm font-semibold tracking-wider text-text-muted uppercase mb-4">
           Operations Log

@@ -26,6 +26,7 @@ app/ios/.symlinks/
 app/ios/Flutter/Flutter.framework
 app/ios/Flutter/Flutter.podspec
 *.apk
+!admin/public/buzzoff.apk
 *.aab
 *.ipa
 
