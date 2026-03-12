@@ -11,6 +11,7 @@ export default function DeveloperKeysPage() {
   const [createdKey, setCreatedKey] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [scopes, setScopes] = useState<string[]>(['read_cameras', 'submit_cameras']);
 
   const { data: keys = [], isLoading } = useQuery({
     queryKey: ['developer-keys'],
@@ -23,6 +24,7 @@ export default function DeveloperKeysPage() {
       setCreatedKey(data.raw_api_key);
       setName('');
       setEmail('');
+      setScopes(['read_cameras', 'submit_cameras']);
       queryClient.invalidateQueries({ queryKey: ['developer-keys'] });
     },
   });
@@ -36,7 +38,7 @@ export default function DeveloperKeysPage() {
 
   function handleCreate(e: React.FormEvent) {
     e.preventDefault();
-    createMutation.mutate({ name, email });
+    createMutation.mutate({ name, email, scopes });
   }
 
   const columns: Column<DeveloperKey>[] = [
@@ -122,30 +124,56 @@ export default function DeveloperKeysPage() {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleCreate} className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="text"
-                placeholder="Developer name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="flex-1 bg-surface-raised border border-border px-3 py-2 text-sm text-text-primary placeholder-text-muted focus:border-neon focus:outline-none"
-              />
-              <input
-                type="email"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="flex-1 bg-surface-raised border border-border px-3 py-2 text-sm text-text-primary placeholder-text-muted focus:border-neon focus:outline-none"
-              />
-              <button
-                type="submit"
-                disabled={createMutation.isPending}
-                className="px-6 py-2 text-xs font-heading tracking-wider bg-hot text-white hover:bg-hot-dim transition-colors glow-hot disabled:opacity-50"
-              >
-                {createMutation.isPending ? 'CREATING...' : 'CREATE'}
-              </button>
+            <form onSubmit={handleCreate} className="flex flex-col gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="text"
+                  placeholder="Developer name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  className="flex-1 bg-surface-raised border border-border px-3 py-2 text-sm text-text-primary placeholder-text-muted focus:border-neon focus:outline-none"
+                />
+                <input
+                  type="email"
+                  placeholder="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="flex-1 bg-surface-raised border border-border px-3 py-2 text-sm text-text-primary placeholder-text-muted focus:border-neon focus:outline-none"
+                />
+              </div>
+              <div className="flex flex-wrap items-center gap-4">
+                <span className="text-xs font-heading tracking-wider text-text-muted">SCOPES:</span>
+                {['read_cameras', 'submit_cameras', 'manage_countries'].map((scope) => (
+                  <label key={scope} className="flex items-center gap-2 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={scopes.includes(scope)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setScopes([...scopes, scope]);
+                        } else {
+                          setScopes(scopes.filter((s) => s !== scope));
+                        }
+                      }}
+                      className="accent-neon w-3.5 h-3.5"
+                    />
+                    <span className={`text-xs font-mono ${scopes.includes(scope) ? 'text-neon' : 'text-text-muted'} group-hover:text-neon/80 transition-colors`}>
+                      {scope}
+                    </span>
+                  </label>
+                ))}
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  disabled={createMutation.isPending || scopes.length === 0}
+                  className="px-6 py-2 text-xs font-heading tracking-wider bg-hot text-white hover:bg-hot-dim transition-colors glow-hot disabled:opacity-50"
+                >
+                  {createMutation.isPending ? 'CREATING...' : 'CREATE'}
+                </button>
+              </div>
             </form>
           )}
         </div>
