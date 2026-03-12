@@ -1,0 +1,419 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1000" viewBox="0 0 1400 1000">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%" stop-color="#0F0F1A"/>
+      <stop offset="100%" stop-color="#1A1A2E"/>
+    </linearGradient>
+    <linearGradient id="rainbow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#E52521"/>
+      <stop offset="20%" stop-color="#FF6B00"/>
+      <stop offset="40%" stop-color="#FBD000"/>
+      <stop offset="60%" stop-color="#43B047"/>
+      <stop offset="80%" stop-color="#049CD8"/>
+      <stop offset="100%" stop-color="#7B2FBE"/>
+    </linearGradient>
+    <linearGradient id="redGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E52521"/>
+      <stop offset="100%" stop-color="#B81E1B"/>
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#049CD8"/>
+      <stop offset="100%" stop-color="#0370A0"/>
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#43B047"/>
+      <stop offset="100%" stop-color="#37923C"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBD000"/>
+      <stop offset="100%" stop-color="#D4A006"/>
+    </linearGradient>
+    <linearGradient id="purpleGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7B2FBE"/>
+      <stop offset="100%" stop-color="#5A1F8E"/>
+    </linearGradient>
+    <linearGradient id="surfaceGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1E2642"/>
+      <stop offset="100%" stop-color="#16213E"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+    <filter id="glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/>
+      <feFlood flood-color="#049CD8" flood-opacity="0.3" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="shadow"/>
+      <feComposite in="SourceGraphic" in2="shadow" operator="over"/>
+    </filter>
+    <pattern id="grid" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+      <rect width="50" height="50" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1400" height="1000" fill="url(#bgGrad)"/>
+  <rect width="1400" height="1000" fill="url(#grid)"/>
+
+  <!-- Title -->
+  <text x="700" y="48" font-family="'Press Start 2P', 'Courier New', monospace" font-size="22" fill="white" text-anchor="middle" letter-spacing="3">BUZZOFF</text>
+  <text x="700" y="72" font-family="'Russo One', Arial, sans-serif" font-size="13" fill="#8b98a8" text-anchor="middle" letter-spacing="2">SYSTEM ARCHITECTURE</text>
+  <rect x="480" y="80" width="440" height="3" rx="1.5" fill="url(#rainbow)"/>
+
+  <!-- ================================================================ -->
+  <!-- ROW 1: External Sources (top) -->
+  <!-- ================================================================ -->
+
+  <!-- Overpass API -->
+  <g transform="translate(120, 140)" filter="url(#shadow)">
+    <rect width="180" height="80" rx="10" fill="url(#surfaceGrad)" stroke="#E52521" stroke-width="1.5"/>
+    <text x="90" y="30" font-family="'Russo One', Arial, sans-serif" font-size="13" fill="#E52521" text-anchor="middle" font-weight="bold">OVERPASS API</text>
+    <text x="90" y="50" font-family="'Share Tech Mono', monospace" font-size="10" fill="#8b98a8" text-anchor="middle">OpenStreetMap</text>
+    <text x="90" y="66" font-family="'Share Tech Mono', monospace" font-size="9" fill="#666" text-anchor="middle">Speed cameras worldwide</text>
+  </g>
+
+  <!-- CSV/Excel -->
+  <g transform="translate(340, 140)" filter="url(#shadow)">
+    <rect width="160" height="80" rx="10" fill="url(#surfaceGrad)" stroke="#FBD000" stroke-width="1.5"/>
+    <text x="80" y="30" font-family="'Russo One', Arial, sans-serif" font-size="13" fill="#FBD000" text-anchor="middle" font-weight="bold">FILE UPLOADS</text>
+    <text x="80" y="50" font-family="'Share Tech Mono', monospace" font-size="10" fill="#8b98a8" text-anchor="middle">CSV / Excel</text>
+    <text x="80" y="66" font-family="'Share Tech Mono', monospace" font-size="9" fill="#666" text-anchor="middle">Manual data import</text>
+  </g>
+
+  <!-- Developer API -->
+  <g transform="translate(540, 140)" filter="url(#shadow)">
+    <rect width="180" height="80" rx="10" fill="url(#surfaceGrad)" stroke="#7B2FBE" stroke-width="1.5"/>
+    <text x="90" y="30" font-family="'Russo One', Arial, sans-serif" font-size="13" fill="#7B2FBE" text-anchor="middle" font-weight="bold">DEVELOPER API</text>
+    <text x="90" y="50" font-family="'Share Tech Mono', monospace" font-size="10" fill="#8b98a8" text-anchor="middle">X-API-Key auth</text>
+    <text x="90" y="66" font-family="'Share Tech Mono', monospace" font-size="9" fill="#666" text-anchor="middle">Camera submissions</text>
+  </g>
+
+  <!-- Nominatim -->
+  <g transform="translate(760, 140)" filter="url(#shadow)">
+    <rect width="160" height="80" rx="10" fill="url(#surfaceGrad)" stroke="#43B047" stroke-width="1.5"/>
+    <text x="80" y="30" font-family="'Russo One', Arial, sans-serif" font-size="13" fill="#43B047" text-anchor="middle" font-weight="bold">NOMINATIM</text>
+    <text x="80" y="50" font-family="'Share Tech Mono', monospace" font-size="10" fill="#8b98a8" text-anchor="middle">Geocoder</text>
+    <text x="80" y="66" font-family="'Share Tech Mono', monospace" font-size="9" fill="#666" text-anchor="middle">Address -> lat/lon</text>
+  </g>
+
+  <!-- Arrows from sources down -->
+  <line x1="210" y1="220" x2="210" y2="280" stroke="#E52521" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.6"/>
+  <polygon points="210,285 205,275 215,275" fill="#E52521" opacity="0.6"/>
+
+  <line x1="420" y1="220" x2="380" y2="280" stroke="#FBD000" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.6"/>
+  <polygon points="380,285 375,275 385,275" fill="#FBD000" opacity="0.6"/>
+
+  <line x1="630" y1="220" x2="540" y2="280" stroke="#7B2FBE" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.6"/>
+  <polygon points="540,285 535,275 545,275" fill="#7B2FBE" opacity="0.6"/>
+
+  <line x1="840" y1="220" x2="680" y2="280" stroke="#43B047" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.6"/>
+  <polygon points="680,285 675,275 685,275" fill="#43B047" opacity="0.6"/>
+
+  <!-- ================================================================ -->
+  <!-- ROW 2: Backend API (center) -->
+  <!-- ================================================================ -->
+
+  <g transform="translate(60, 290)" filter="url(#shadow)">
+    <rect width="860" height="260" rx="14" fill="url(#surfaceGrad)" stroke="#049CD8" stroke-width="2"/>
+    <!-- Header -->
+    <rect width="860" height="40" rx="14" fill="url(#blueGrad)" opacity="0.15"/>
+    <rect width="860" height="26" y="14" fill="url(#surfaceGrad)"/>
+    <text x="430" y="27" font-family="'Press Start 2P', monospace" font-size="14" fill="#049CD8" text-anchor="middle" letter-spacing="2">FASTAPI BACKEND</text>
+    <text x="430" y="53" font-family="'Share Tech Mono', monospace" font-size="10" fill="#8b98a8" text-anchor="middle">Python + Uvicorn on Render  |  buzzoff-api.onrender.com</text>
+
+    <!-- Inner boxes -->
+
+    <!-- Source Adapters -->
+    <g transform="translate(20, 70)">
+      <rect width="190" height="75" rx="8" fill="rgba(229,37,33,0.08)" stroke="#E52521" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="95" y="20" font-family="'Russo One', Arial, sans-serif" font-size="11" fill="#E52521" text-anchor="middle">Source Adapters</text>
+      <text x="95" y="38" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">osm_overpass</text>
+      <text x="95" y="52" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">csv / excel</text>
+      <text x="95" y="66" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">retry + backoff</text>
+    </g>
+
+    <!-- Pipeline -->
+    <g transform="translate(230, 70)">
+      <rect width="400" height="75" rx="8" fill="rgba(251,208,0,0.06)" stroke="#FBD000" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="200" y="20" font-family="'Russo One', Arial, sans-serif" font-size="11" fill="#FBD000" text-anchor="middle">Data Pipeline (APScheduler every 6h)</text>
+
+      <!-- 3 pipeline steps -->
+      <g transform="translate(15, 32)">
+        <rect width="105" height="34" rx="6" fill="rgba(229,37,33,0.15)" stroke="#E52521" stroke-width="1"/>
+        <text x="52" y="15" font-family="'Share Tech Mono', monospace" font-size="9" fill="#E52521" text-anchor="middle">fetch_sources</text>
+        <text x="52" y="28" font-family="'Share Tech Mono', monospace" font-size="8" fill="#888" text-anchor="middle">Overpass + files</text>
+      </g>
+      <text x="135" y="54" font-family="Arial" font-size="16" fill="#FBD000">-></text>
+      <g transform="translate(148, 32)">
+        <rect width="105" height="34" rx="6" fill="rgba(67,176,71,0.15)" stroke="#43B047" stroke-width="1"/>
+        <text x="52" y="15" font-family="'Share Tech Mono', monospace" font-size="9" fill="#43B047" text-anchor="middle">merge_cameras</text>
+        <text x="52" y="28" font-family="'Share Tech Mono', monospace" font-size="8" fill="#888" text-anchor="middle">50m dedup</text>
+      </g>
+      <text x="268" y="54" font-family="Arial" font-size="16" fill="#FBD000">-></text>
+      <g transform="translate(280, 32)">
+        <rect width="105" height="34" rx="6" fill="rgba(4,156,216,0.15)" stroke="#049CD8" stroke-width="1"/>
+        <text x="52" y="15" font-family="'Share Tech Mono', monospace" font-size="9" fill="#049CD8" text-anchor="middle">generate_packs</text>
+        <text x="52" y="28" font-family="'Share Tech Mono', monospace" font-size="8" fill="#888" text-anchor="middle">SQLite + R-tree</text>
+      </g>
+    </g>
+
+    <!-- Public API -->
+    <g transform="translate(650, 70)">
+      <rect width="190" height="75" rx="8" fill="rgba(67,176,71,0.08)" stroke="#43B047" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="95" y="20" font-family="'Russo One', Arial, sans-serif" font-size="11" fill="#43B047" text-anchor="middle">Public REST API</text>
+      <text x="95" y="38" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">GET /packs/{code}/data</text>
+      <text x="95" y="52" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">GET /packs/{code}/meta</text>
+      <text x="95" y="66" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">GET /countries</text>
+    </g>
+
+    <!-- Admin API -->
+    <g transform="translate(20, 165)">
+      <rect width="300" height="75" rx="8" fill="rgba(4,156,216,0.08)" stroke="#049CD8" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="150" y="20" font-family="'Russo One', Arial, sans-serif" font-size="11" fill="#049CD8" text-anchor="middle">Admin API (JWT Auth)</text>
+      <text x="150" y="38" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">Countries / Sources / Cameras CRUD</text>
+      <text x="150" y="52" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">Jobs / Scheduler / Pipeline triggers</text>
+      <text x="150" y="66" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">Developer keys / Submissions review</text>
+    </g>
+
+    <!-- Geocoding -->
+    <g transform="translate(340, 165)">
+      <rect width="170" height="75" rx="8" fill="rgba(67,176,71,0.08)" stroke="#43B047" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="85" y="20" font-family="'Russo One', Arial, sans-serif" font-size="11" fill="#43B047" text-anchor="middle">Geocoding</text>
+      <text x="85" y="38" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">Nominatim API</text>
+      <text x="85" y="52" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">DB cache layer</text>
+      <text x="85" y="66" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">1 req/sec limit</text>
+    </g>
+
+    <!-- Auth -->
+    <g transform="translate(530, 165)">
+      <rect width="160" height="75" rx="8" fill="rgba(123,47,190,0.08)" stroke="#7B2FBE" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="80" y="20" font-family="'Russo One', Arial, sans-serif" font-size="11" fill="#7B2FBE" text-anchor="middle">Auth</text>
+      <text x="80" y="38" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">Admin: JWT Bearer</text>
+      <text x="80" y="52" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">Dev: X-API-Key</text>
+      <text x="80" y="66" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">SHA-256 hashed</text>
+    </g>
+
+    <!-- Pack Storage -->
+    <g transform="translate(710, 165)">
+      <rect width="130" height="75" rx="8" fill="rgba(251,208,0,0.08)" stroke="#FBD000" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="65" y="20" font-family="'Russo One', Arial, sans-serif" font-size="11" fill="#FBD000" text-anchor="middle">Pack Storage</text>
+      <text x="65" y="38" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">Render Disk</text>
+      <text x="65" y="52" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">/data/packs/</text>
+      <text x="65" y="66" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">1 GB persist</text>
+    </g>
+  </g>
+
+  <!-- ================================================================ -->
+  <!-- ROW 3: Database -->
+  <!-- ================================================================ -->
+
+  <g transform="translate(60, 590)" filter="url(#shadow)">
+    <rect width="420" height="100" rx="12" fill="url(#surfaceGrad)" stroke="#049CD8" stroke-width="1.5"/>
+    <text x="210" y="28" font-family="'Press Start 2P', monospace" font-size="11" fill="#049CD8" text-anchor="middle">POSTGRESQL + POSTGIS</text>
+    <text x="210" y="48" font-family="'Share Tech Mono', monospace" font-size="10" fill="#8b98a8" text-anchor="middle">Render Managed  |  v16  |  Spatial queries</text>
+    <text x="210" y="68" font-family="'Share Tech Mono', monospace" font-size="9" fill="#666" text-anchor="middle">countries | sources | raw_cameras | cameras</text>
+    <text x="210" y="82" font-family="'Share Tech Mono', monospace" font-size="9" fill="#666" text-anchor="middle">packs | jobs | developer_keys | submissions</text>
+  </g>
+
+  <!-- Arrow: Backend to DB -->
+  <line x1="270" y1="550" x2="270" y2="585" stroke="#049CD8" stroke-width="1.5" opacity="0.5"/>
+  <polygon points="270,590 265,580 275,580" fill="#049CD8" opacity="0.5"/>
+  <text x="285" y="575" font-family="'Share Tech Mono', monospace" font-size="8" fill="#049CD8" opacity="0.5">asyncpg</text>
+
+  <!-- ================================================================ -->
+  <!-- ROW 3 right: Admin Dashboard -->
+  <!-- ================================================================ -->
+
+  <g transform="translate(540, 590)" filter="url(#shadow)">
+    <rect width="260" height="100" rx="12" fill="url(#surfaceGrad)" stroke="#7B2FBE" stroke-width="1.5"/>
+    <text x="130" y="28" font-family="'Press Start 2P', monospace" font-size="11" fill="#7B2FBE" text-anchor="middle">ADMIN DASHBOARD</text>
+    <text x="130" y="48" font-family="'Share Tech Mono', monospace" font-size="10" fill="#8b98a8" text-anchor="middle">React + TypeScript + Vite</text>
+    <text x="130" y="65" font-family="'Share Tech Mono', monospace" font-size="9" fill="#666" text-anchor="middle">admin.buzzoff.me</text>
+    <text x="130" y="80" font-family="'Share Tech Mono', monospace" font-size="9" fill="#666" text-anchor="middle">TanStack Query | Tailwind | Leaflet</text>
+  </g>
+
+  <!-- Arrow: Admin to Backend -->
+  <line x1="670" y1="590" x2="670" y2="555" stroke="#7B2FBE" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.5"/>
+  <polygon points="670,550 665,560 675,560" fill="#7B2FBE" opacity="0.5"/>
+  <text x="680" y="575" font-family="'Share Tech Mono', monospace" font-size="8" fill="#7B2FBE" opacity="0.5">JWT REST</text>
+
+  <!-- ================================================================ -->
+  <!-- ROW 3 far right: Website -->
+  <!-- ================================================================ -->
+
+  <g transform="translate(860, 590)" filter="url(#shadow)">
+    <rect width="200" height="100" rx="12" fill="url(#surfaceGrad)" stroke="#FBD000" stroke-width="1.5"/>
+    <text x="100" y="28" font-family="'Press Start 2P', monospace" font-size="11" fill="#FBD000" text-anchor="middle">WEBSITE</text>
+    <text x="100" y="48" font-family="'Share Tech Mono', monospace" font-size="10" fill="#8b98a8" text-anchor="middle">Static HTML/CSS/JS</text>
+    <text x="100" y="65" font-family="'Share Tech Mono', monospace" font-size="9" fill="#666" text-anchor="middle">buzzoff.me</text>
+    <text x="100" y="80" font-family="'Share Tech Mono', monospace" font-size="9" fill="#666" text-anchor="middle">GitHub Pages (gh-pages)</text>
+  </g>
+
+  <!-- ================================================================ -->
+  <!-- RIGHT SIDE: Flutter App -->
+  <!-- ================================================================ -->
+
+  <g transform="translate(1000, 140)" filter="url(#shadow)">
+    <rect width="340" height="440" rx="14" fill="url(#surfaceGrad)" stroke="#E52521" stroke-width="2"/>
+    <!-- Header -->
+    <rect width="340" height="40" rx="14" fill="url(#redGrad)" opacity="0.15"/>
+    <rect width="340" height="26" y="14" fill="url(#surfaceGrad)"/>
+    <text x="170" y="27" font-family="'Press Start 2P', monospace" font-size="14" fill="#E52521" text-anchor="middle" letter-spacing="2">FLUTTER APP</text>
+    <text x="170" y="50" font-family="'Share Tech Mono', monospace" font-size="10" fill="#8b98a8" text-anchor="middle">Android + iOS  |  Dart + Riverpod</text>
+
+    <!-- Pack Manager -->
+    <g transform="translate(20, 65)">
+      <rect width="300" height="48" rx="8" fill="rgba(4,156,216,0.08)" stroke="#049CD8" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="150" y="19" font-family="'Russo One', Arial, sans-serif" font-size="11" fill="#049CD8" text-anchor="middle">Pack Manager</text>
+      <text x="150" y="36" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">Download packs | SHA-256 verify | Auto-update</text>
+    </g>
+
+    <!-- SQLite -->
+    <g transform="translate(20, 123)">
+      <rect width="300" height="48" rx="8" fill="rgba(251,208,0,0.08)" stroke="#FBD000" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="150" y="19" font-family="'Russo One', Arial, sans-serif" font-size="11" fill="#FBD000" text-anchor="middle">Local SQLite + R-tree</text>
+      <text x="150" y="36" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">Offline camera database | Spatial index queries</text>
+    </g>
+
+    <!-- Proximity Engine -->
+    <g transform="translate(20, 181)">
+      <rect width="300" height="62" rx="8" fill="rgba(229,37,33,0.1)" stroke="#E52521" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="150" y="19" font-family="'Russo One', Arial, sans-serif" font-size="11" fill="#E52521" text-anchor="middle">Proximity Engine</text>
+      <text x="150" y="36" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">Haversine distance | Heading filter 45deg</text>
+      <text x="150" y="50" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">800m approach | 400m close | 200m cooldown</text>
+    </g>
+
+    <!-- Orchestrator -->
+    <g transform="translate(20, 253)">
+      <rect width="300" height="48" rx="8" fill="rgba(67,176,71,0.08)" stroke="#43B047" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="150" y="19" font-family="'Russo One', Arial, sans-serif" font-size="11" fill="#43B047" text-anchor="middle">Driving Orchestrator</text>
+      <text x="150" y="36" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">Idle -> Driving (40km/h) -> Stopping (2.5min)</text>
+    </g>
+
+    <!-- Alert Service -->
+    <g transform="translate(20, 311)">
+      <rect width="140" height="48" rx="8" fill="rgba(229,37,33,0.08)" stroke="#E52521" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="70" y="19" font-family="'Russo One', Arial, sans-serif" font-size="11" fill="#E52521" text-anchor="middle">Alerts</text>
+      <text x="70" y="36" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">Vibration + Sound</text>
+    </g>
+
+    <!-- Background Service -->
+    <g transform="translate(180, 311)">
+      <rect width="140" height="48" rx="8" fill="rgba(123,47,190,0.08)" stroke="#7B2FBE" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="70" y="19" font-family="'Russo One', Arial, sans-serif" font-size="11" fill="#7B2FBE" text-anchor="middle">Background</text>
+      <text x="70" y="36" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">Foreground Service</text>
+    </g>
+
+    <!-- Map UI -->
+    <g transform="translate(20, 369)">
+      <rect width="300" height="48" rx="8" fill="rgba(251,208,0,0.06)" stroke="#FBD000" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="150" y="19" font-family="'Russo One', Arial, sans-serif" font-size="11" fill="#FBD000" text-anchor="middle">Map UI (flutter_map + OSM tiles)</text>
+      <text x="150" y="36" font-family="'Share Tech Mono', monospace" font-size="9" fill="#aaa" text-anchor="middle">Camera markers | Speed display | Power btn</text>
+    </g>
+  </g>
+
+  <!-- Arrow: Backend Public API to App -->
+  <line x1="920" y1="390" x2="995" y2="230" stroke="#43B047" stroke-width="2" stroke-dasharray="8,4" opacity="0.6"/>
+  <polygon points="1000,225 990,230 995,240" fill="#43B047" opacity="0.6"/>
+  <text x="935" y="295" font-family="'Share Tech Mono', monospace" font-size="9" fill="#43B047" opacity="0.7" transform="rotate(-30 935 295)">HTTPS packs download</text>
+
+  <!-- ================================================================ -->
+  <!-- Bottom: Infrastructure bar -->
+  <!-- ================================================================ -->
+
+  <g transform="translate(60, 730)">
+    <rect width="1280" height="85" rx="10" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="640" y="22" font-family="'Russo One', Arial, sans-serif" font-size="11" fill="#8b98a8" text-anchor="middle" letter-spacing="3">INFRASTRUCTURE</text>
+
+    <!-- Render -->
+    <g transform="translate(40, 35)">
+      <rect width="200" height="40" rx="6" fill="rgba(4,156,216,0.08)" stroke="#049CD8" stroke-width="1"/>
+      <text x="100" y="17" font-family="'Russo One', Arial, sans-serif" font-size="10" fill="#049CD8" text-anchor="middle">Render Cloud</text>
+      <text x="100" y="33" font-family="'Share Tech Mono', monospace" font-size="9" fill="#888" text-anchor="middle">API + Admin + PostgreSQL</text>
+    </g>
+
+    <!-- GitHub Pages -->
+    <g transform="translate(270, 35)">
+      <rect width="180" height="40" rx="6" fill="rgba(251,208,0,0.08)" stroke="#FBD000" stroke-width="1"/>
+      <text x="90" y="17" font-family="'Russo One', Arial, sans-serif" font-size="10" fill="#FBD000" text-anchor="middle">GitHub Pages</text>
+      <text x="90" y="33" font-family="'Share Tech Mono', monospace" font-size="9" fill="#888" text-anchor="middle">Website CDN + HTTPS</text>
+    </g>
+
+    <!-- Google Play -->
+    <g transform="translate(480, 35)">
+      <rect width="180" height="40" rx="6" fill="rgba(67,176,71,0.08)" stroke="#43B047" stroke-width="1"/>
+      <text x="90" y="17" font-family="'Russo One', Arial, sans-serif" font-size="10" fill="#43B047" text-anchor="middle">Google Play Store</text>
+      <text x="90" y="33" font-family="'Share Tech Mono', monospace" font-size="9" fill="#888" text-anchor="middle">me.buzzoff.app</text>
+    </g>
+
+    <!-- OpenStreetMap -->
+    <g transform="translate(690, 35)">
+      <rect width="180" height="40" rx="6" fill="rgba(229,37,33,0.08)" stroke="#E52521" stroke-width="1"/>
+      <text x="90" y="17" font-family="'Russo One', Arial, sans-serif" font-size="10" fill="#E52521" text-anchor="middle">OpenStreetMap</text>
+      <text x="90" y="33" font-family="'Share Tech Mono', monospace" font-size="9" fill="#888" text-anchor="middle">Map tiles + Overpass data</text>
+    </g>
+
+    <!-- Alembic -->
+    <g transform="translate(900, 35)">
+      <rect width="160" height="40" rx="6" fill="rgba(123,47,190,0.08)" stroke="#7B2FBE" stroke-width="1"/>
+      <text x="80" y="17" font-family="'Russo One', Arial, sans-serif" font-size="10" fill="#7B2FBE" text-anchor="middle">Alembic</text>
+      <text x="80" y="33" font-family="'Share Tech Mono', monospace" font-size="9" fill="#888" text-anchor="middle">DB migrations on deploy</text>
+    </g>
+
+    <!-- Auto deploy -->
+    <g transform="translate(1090, 35)">
+      <rect width="150" height="40" rx="6" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+      <text x="75" y="17" font-family="'Russo One', Arial, sans-serif" font-size="10" fill="#aaa" text-anchor="middle">Auto Deploy</text>
+      <text x="75" y="33" font-family="'Share Tech Mono', monospace" font-size="9" fill="#888" text-anchor="middle">git push -> live</text>
+    </g>
+  </g>
+
+  <!-- ================================================================ -->
+  <!-- Bottom: Data flow legend -->
+  <!-- ================================================================ -->
+
+  <g transform="translate(60, 850)">
+    <text x="0" y="15" font-family="'Russo One', Arial, sans-serif" font-size="11" fill="#8b98a8" letter-spacing="2">DATA FLOW</text>
+
+    <!-- Flow steps -->
+    <g transform="translate(0, 30)">
+      <rect width="130" height="30" rx="6" fill="url(#redGrad)" opacity="0.3"/>
+      <text x="65" y="20" font-family="'Share Tech Mono', monospace" font-size="10" fill="#E52521" text-anchor="middle">OSM / Files</text>
+    </g>
+    <text x="142" y="50" font-family="Arial" font-size="18" fill="#FBD000">-></text>
+    <g transform="translate(160, 30)">
+      <rect width="130" height="30" rx="6" fill="url(#redGrad)" opacity="0.2"/>
+      <text x="65" y="20" font-family="'Share Tech Mono', monospace" font-size="10" fill="#E52521" text-anchor="middle">raw_cameras</text>
+    </g>
+    <text x="302" y="50" font-family="Arial" font-size="18" fill="#FBD000">-></text>
+    <g transform="translate(320, 30)">
+      <rect width="140" height="30" rx="6" fill="url(#greenGrad)" opacity="0.2"/>
+      <text x="70" y="20" font-family="'Share Tech Mono', monospace" font-size="10" fill="#43B047" text-anchor="middle">merge (50m)</text>
+    </g>
+    <text x="472" y="50" font-family="Arial" font-size="18" fill="#FBD000">-></text>
+    <g transform="translate(490, 30)">
+      <rect width="130" height="30" rx="6" fill="url(#blueGrad)" opacity="0.2"/>
+      <text x="65" y="20" font-family="'Share Tech Mono', monospace" font-size="10" fill="#049CD8" text-anchor="middle">cameras (PG)</text>
+    </g>
+    <text x="632" y="50" font-family="Arial" font-size="18" fill="#FBD000">-></text>
+    <g transform="translate(650, 30)">
+      <rect width="150" height="30" rx="6" fill="url(#goldGrad)" opacity="0.2"/>
+      <text x="75" y="20" font-family="'Share Tech Mono', monospace" font-size="10" fill="#FBD000" text-anchor="middle">SQLite packs</text>
+    </g>
+    <text x="812" y="50" font-family="Arial" font-size="18" fill="#FBD000">-></text>
+    <g transform="translate(830, 30)">
+      <rect width="180" height="30" rx="6" fill="url(#redGrad)" opacity="0.2"/>
+      <text x="90" y="20" font-family="'Share Tech Mono', monospace" font-size="10" fill="#E52521" text-anchor="middle">App (offline alerts)</text>
+    </g>
+  </g>
+
+  <!-- Stats bar -->
+  <g transform="translate(60, 930)">
+    <text x="0" y="15" font-family="'Share Tech Mono', monospace" font-size="10" fill="#666">11 countries  |  23,000+ cameras  |  Offline-first  |  100% silent  |  Free &amp; open</text>
+  </g>
+
+  <!-- Bottom rainbow -->
+  <rect x="0" y="960" width="1400" height="4" fill="url(#rainbow)"/>
+
+  <!-- Corner branding -->
+  <text x="1340" y="950" font-family="'Press Start 2P', monospace" font-size="8" fill="#444" text-anchor="end">buzzoff.me</text>
+</svg>
