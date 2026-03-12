@@ -9,11 +9,13 @@ import 'package:latlong2/latlong.dart';
 import '../../core/model/camera.dart';
 import '../../providers/database_provider.dart';
 import '../../providers/driving_state_provider.dart';
+import '../../services/orchestrator.dart';
 import '../../providers/location_provider.dart';
 import '../../services/foreground_task.dart';
 import '../theme/racing_colors.dart';
 import '../widgets/camera_filter_bar.dart';
 import '../widgets/camera_marker.dart';
+import '../widgets/power_button.dart';
 import '../widgets/status_bar.dart';
 import '../widgets/zoom_controls.dart';
 import 'settings_screen.dart';
@@ -294,6 +296,23 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 activeTypes: _visibleTypes,
                 cameras: _mapCameras,
                 onToggle: _toggleFilter,
+              ),
+            ),
+
+            // Power on/off toggle
+            Positioned(
+              left: 16,
+              bottom: MediaQuery.of(context).padding.bottom + 24,
+              child: PowerButton(
+                state: drivingState,
+                onToggle: () {
+                  final orchestrator = ref.read(orchestratorProvider);
+                  if (drivingState == DrivingState.idle) {
+                    orchestrator?.startDriving();
+                  } else {
+                    orchestrator?.stopDriving();
+                  }
+                },
               ),
             ),
 
