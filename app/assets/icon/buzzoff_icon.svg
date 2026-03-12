@@ -1,86 +1,112 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
   <defs>
-    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1a1a1a"/>
-      <stop offset="100%" style="stop-color:#0d0d0d"/>
+    <linearGradient id="bg5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E52521"/>
+      <stop offset="100%" style="stop-color:#B81E1B"/>
     </linearGradient>
-    <linearGradient id="boxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#FF8C00"/>
-      <stop offset="100%" style="stop-color:#D35400"/>
-    </linearGradient>
-    <linearGradient id="cameraBody2" x1="0%" y1="0%" x2="0%" y2="100%">
+    <linearGradient id="lensOuter" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#e0e0e0"/>
       <stop offset="100%" style="stop-color:#a0a0a0"/>
     </linearGradient>
-    <linearGradient id="lens2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#2d3436"/>
-      <stop offset="100%" style="stop-color:#0a0a15"/>
-    </linearGradient>
-    <radialGradient id="lensFlare2" cx="40%" cy="35%" r="50%">
+    <radialGradient id="lensInner" cx="45%" cy="40%" r="55%">
+      <stop offset="0%" style="stop-color:#2a2a3a"/>
+      <stop offset="60%" style="stop-color:#0d0d1a"/>
+      <stop offset="100%" style="stop-color:#000005"/>
+    </radialGradient>
+    <radialGradient id="flare5" cx="35%" cy="30%" r="45%">
       <stop offset="0%" style="stop-color:rgba(255,255,255,0.3)"/>
       <stop offset="100%" style="stop-color:rgba(255,255,255,0)"/>
     </radialGradient>
-    <filter id="glow2">
+    <filter id="lensShadow">
+      <feDropShadow dx="0" dy="10" stdDeviation="20" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+    <filter id="recGlow">
       <feGaussianBlur stdDeviation="10" result="blur"/>
       <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
-    <filter id="boxShadow">
-      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#FF8C00" flood-opacity="0.4"/>
-    </filter>
+    <linearGradient id="rainbow5" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#E52521"/>
+      <stop offset="20%" style="stop-color:#FF6B00"/>
+      <stop offset="40%" style="stop-color:#FBD000"/>
+      <stop offset="60%" style="stop-color:#43B047"/>
+      <stop offset="80%" style="stop-color:#049CD8"/>
+      <stop offset="100%" style="stop-color:#7B2FBE"/>
+    </linearGradient>
   </defs>
 
-  <!-- Background -->
-  <rect width="1024" height="1024" rx="224" ry="224" fill="url(#bg2)"/>
+  <!-- Background - bold red -->
+  <rect width="1024" height="1024" rx="224" fill="url(#bg5)"/>
 
-  <!-- Spinning lines behind box (rotation effect) -->
-  <g opacity="0.08" transform="translate(512,460)">
-    <line x1="-380" y1="0" x2="380" y2="0" stroke="#FF8C00" stroke-width="40" transform="rotate(0)"/>
-    <line x1="-380" y1="0" x2="380" y2="0" stroke="#FF8C00" stroke-width="40" transform="rotate(45)"/>
-    <line x1="-380" y1="0" x2="380" y2="0" stroke="#FF8C00" stroke-width="40" transform="rotate(90)"/>
-    <line x1="-380" y1="0" x2="380" y2="0" stroke="#FF8C00" stroke-width="40" transform="rotate(135)"/>
+  <!-- Checkered flag pattern (subtle) -->
+  <g opacity="0.06">
+    <rect x="0" y="0" width="64" height="64" fill="#fff"/>
+    <rect x="128" y="0" width="64" height="64" fill="#fff"/>
+    <rect x="256" y="0" width="64" height="64" fill="#fff"/>
+    <rect x="384" y="0" width="64" height="64" fill="#fff"/>
+    <rect x="512" y="0" width="64" height="64" fill="#fff"/>
+    <rect x="640" y="0" width="64" height="64" fill="#fff"/>
+    <rect x="768" y="0" width="64" height="64" fill="#fff"/>
+    <rect x="896" y="0" width="64" height="64" fill="#fff"/>
+    <rect x="64" y="64" width="64" height="64" fill="#fff"/>
+    <rect x="192" y="64" width="64" height="64" fill="#fff"/>
+    <rect x="320" y="64" width="64" height="64" fill="#fff"/>
+    <rect x="448" y="64" width="64" height="64" fill="#fff"/>
+    <rect x="576" y="64" width="64" height="64" fill="#fff"/>
+    <rect x="704" y="64" width="64" height="64" fill="#fff"/>
+    <rect x="832" y="64" width="64" height="64" fill="#fff"/>
+    <rect x="960" y="64" width="64" height="64" fill="#fff"/>
+    <rect x="0" y="896" width="64" height="64" fill="#fff"/>
+    <rect x="128" y="896" width="64" height="64" fill="#fff"/>
+    <rect x="256" y="896" width="64" height="64" fill="#fff"/>
+    <rect x="384" y="896" width="64" height="64" fill="#fff"/>
+    <rect x="512" y="896" width="64" height="64" fill="#fff"/>
+    <rect x="640" y="896" width="64" height="64" fill="#fff"/>
+    <rect x="768" y="896" width="64" height="64" fill="#fff"/>
+    <rect x="896" y="896" width="64" height="64" fill="#fff"/>
+    <rect x="64" y="960" width="64" height="64" fill="#fff"/>
+    <rect x="192" y="960" width="64" height="64" fill="#fff"/>
+    <rect x="320" y="960" width="64" height="64" fill="#fff"/>
+    <rect x="448" y="960" width="64" height="64" fill="#fff"/>
+    <rect x="576" y="960" width="64" height="64" fill="#fff"/>
+    <rect x="704" y="960" width="64" height="64" fill="#fff"/>
+    <rect x="832" y="960" width="64" height="64" fill="#fff"/>
+    <rect x="960" y="960" width="64" height="64" fill="#fff"/>
   </g>
 
-  <!-- Item box (3D cube look) -->
-  <g filter="url(#boxShadow)">
-    <!-- Box face -->
-    <rect x="262" y="210" width="500" height="500" rx="40" fill="url(#boxGrad)" opacity="0.15" stroke="#FF8C00" stroke-width="6"/>
-    <!-- Inner glow border -->
-    <rect x="282" y="230" width="460" height="460" rx="30" fill="none" stroke="#FF8C00" stroke-width="2" opacity="0.3"/>
+  <!-- Speed lines behind lens -->
+  <g opacity="0.12">
+    <line x1="100" y1="512" x2="280" y2="512" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+    <line x1="120" y1="420" x2="260" y2="450" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+    <line x1="120" y1="604" x2="260" y2="574" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+    <line x1="744" y1="512" x2="924" y2="512" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+    <line x1="764" y1="450" x2="904" y2="420" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+    <line x1="764" y1="574" x2="904" y2="604" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
   </g>
 
-  <!-- Question mark outline behind camera (item box ? mark) -->
-  <text x="512" y="560" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="500" font-weight="900" fill="#FF8C00" opacity="0.06">?</text>
-
-  <!-- Camera pole -->
-  <rect x="492" y="530" width="40" height="140" rx="6" fill="#707080"/>
-
-  <!-- Camera housing -->
-  <rect x="380" y="320" width="264" height="190" rx="24" fill="url(#cameraBody2)" stroke="#888" stroke-width="3"/>
-  <rect x="398" y="310" width="228" height="22" rx="11" fill="#c8c8d0"/>
-
-  <!-- Flash unit - amber themed -->
-  <rect x="462" y="278" width="100" height="38" rx="8" fill="#d0d0d8" stroke="#aaa" stroke-width="2"/>
-  <rect x="474" y="286" width="76" height="22" rx="4" fill="#FF8C00" opacity="0.8"/>
-
-  <!-- Camera lens -->
-  <circle cx="512" cy="415" r="66" fill="url(#lens2)" stroke="#555" stroke-width="4"/>
-  <circle cx="512" cy="415" r="50" fill="none" stroke="#444" stroke-width="2"/>
-  <circle cx="512" cy="415" r="36" fill="#0d0d1a" stroke="#333" stroke-width="2"/>
-  <circle cx="512" cy="415" r="66" fill="url(#lensFlare2)"/>
-  <circle cx="512" cy="415" r="11" fill="#ff2d2d" filter="url(#glow2)" opacity="0.9"/>
-
-  <!-- Warning triangle -->
-  <g transform="translate(512, 770)">
-    <polygon points="0,-52 48,36 -48,36" fill="#ff4757" stroke="#ff6b6b" stroke-width="3" stroke-linejoin="round"/>
-    <rect x="-5" y="-30" width="10" height="34" rx="4" fill="#fff"/>
-    <circle cx="0" cy="18" r="6" fill="#fff"/>
+  <!-- Large camera lens -->
+  <g filter="url(#lensShadow)">
+    <!-- Outer chrome ring -->
+    <circle cx="512" cy="480" r="260" fill="url(#lensOuter)" stroke="#888" stroke-width="4"/>
+    <!-- Lens barrel ring -->
+    <circle cx="512" cy="480" r="230" fill="#333" stroke="#555" stroke-width="3"/>
+    <!-- Inner dark lens -->
+    <circle cx="512" cy="480" r="200" fill="url(#lensInner)"/>
+    <!-- Aperture blades hint -->
+    <circle cx="512" cy="480" r="160" fill="none" stroke="#444" stroke-width="2"/>
+    <circle cx="512" cy="480" r="120" fill="none" stroke="#3a3a4a" stroke-width="2"/>
+    <circle cx="512" cy="480" r="80" fill="#0a0a12"/>
+    <!-- Glass flare -->
+    <circle cx="512" cy="480" r="200" fill="url(#flare5)"/>
+    <!-- Recording dot -->
+    <circle cx="512" cy="480" r="24" fill="#E52521" filter="url(#recGlow)"/>
   </g>
 
-  <!-- Corner sparkles (item box pickup effect) -->
-  <g fill="#FF8C00" opacity="0.5">
-    <polygon points="180,180 190,160 200,180 220,190 200,200 190,220 180,200 160,190" transform="scale(0.8)"/>
-    <polygon points="860,180 870,160 880,180 900,190 880,200 870,220 860,200 840,190" transform="scale(0.8)"/>
-    <polygon points="180,780 190,760 200,780 220,790 200,800 190,820 180,800 160,790" transform="scale(0.7)"/>
-    <polygon points="860,780 870,760 880,780 900,790 880,800 870,820 860,800 840,790" transform="scale(0.7)"/>
-  </g>
+  <!-- "NO" slash across the lens (speed camera = no!) -->
+  <line x1="340" y1="300" x2="684" y2="660" stroke="#FBD000" stroke-width="16" stroke-linecap="round" opacity="0.85"/>
+
+  <!-- BUZZOFF text below -->
+  <text x="512" y="810" text-anchor="middle" font-family="Arial Black, Impact, sans-serif" font-size="72" font-weight="900" fill="#fff" letter-spacing="12" opacity="0.95">BUZZOFF</text>
+
+  <!-- Rainbow underline -->
+  <rect x="240" y="835" width="544" height="5" rx="3" fill="url(#rainbow5)" opacity="0.7"/>
 </svg>
