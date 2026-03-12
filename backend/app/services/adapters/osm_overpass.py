@@ -47,11 +47,11 @@ class OSMOverpassAdapter(SourceAdapter):
                     response.raise_for_status()
                     return response.json()
             except httpx.HTTPStatusError as e:
-                if e.response.status_code == 429 and attempt < MAX_RETRIES:
+                if e.response.status_code in (429, 504) and attempt < MAX_RETRIES:
                     delay = RETRY_BASE_DELAY * (2 ** attempt)
                     logger.warning(
-                        "Overpass 429 rate-limited (attempt %d/%d), retrying in %ds...",
-                        attempt + 1, MAX_RETRIES + 1, delay,
+                        "Overpass %s (attempt %d/%d), retrying in %ds...",
+                        e.response.status_code, attempt + 1, MAX_RETRIES + 1, delay,
                     )
                     await asyncio.sleep(delay)
                     continue
