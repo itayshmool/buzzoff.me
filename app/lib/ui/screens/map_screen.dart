@@ -32,6 +32,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   double _zoom = 14.0;
   bool _serviceStarted = false;
   bool _hasInitialFix = false;
+  bool _followMode = true;
 
   List<Camera> _mapCameras = [];
   Timer? _debounce;
@@ -204,12 +205,13 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     final center = locationAsync.when(
       data: (loc) {
         final pos = LatLng(loc.latitude, loc.longitude);
-        if (!_hasInitialFix) {
+        if (!_hasInitialFix || _followMode) {
+          final isFirst = !_hasInitialFix;
           _hasInitialFix = true;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               _mapController.move(pos, _zoom);
-              _refreshCamerasForBounds();
+              if (isFirst) _refreshCamerasForBounds();
             }
           });
         }
@@ -230,7 +232,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 initialCenter: center,
                 initialZoom: _zoom,
                 onMapReady: _refreshCamerasForBounds,
-                onPositionChanged: (_, _) {
+                onPositionChanged: (camera, hasGesture) {
+                  if (hasGesture) _followMode = false;
                   _debounce?.cancel();
                   _debounce = Timer(
                     const Duration(milliseconds: 150),
@@ -321,6 +324,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               right: 16,
               bottom: MediaQuery.of(context).padding.bottom + 24,
               child: ZoomControls(
+                followMode: _followMode,
                 onZoomIn: () {
                   _zoom = (_zoom + 1).clamp(3.0, 18.0);
                   _mapController.move(
@@ -336,6 +340,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                   );
                 },
                 onMyLocation: () {
+                  _followMode = true;
                   _mapController.move(center, _zoom);
                 },
                 onSettings: () {

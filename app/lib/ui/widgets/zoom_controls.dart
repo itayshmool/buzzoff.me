@@ -6,6 +6,7 @@ class ZoomControls extends StatelessWidget {
   final VoidCallback onZoomIn;
   final VoidCallback onZoomOut;
   final VoidCallback onMyLocation;
+  final bool followMode;
   final VoidCallback onSettings;
 
   const ZoomControls({
@@ -13,6 +14,7 @@ class ZoomControls extends StatelessWidget {
     required this.onZoomIn,
     required this.onZoomOut,
     required this.onMyLocation,
+    this.followMode = false,
     required this.onSettings,
   });
 
@@ -34,6 +36,7 @@ class ZoomControls extends StatelessWidget {
         _ControlButton(
           icon: Icons.my_location,
           onTap: onMyLocation,
+          active: followMode,
         ),
         const SizedBox(height: 16),
         _ControlButton(
@@ -48,17 +51,19 @@ class ZoomControls extends StatelessWidget {
 class _ControlButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
+  final bool active;
 
-  const _ControlButton({required this.icon, required this.onTap});
+  const _ControlButton({required this.icon, required this.onTap, this.active = false});
 
   @override
   Widget build(BuildContext context) {
+    final color = active ? RacingColors.shellBlue : RacingColors.coinGold;
     return Material(
       color: RacingColors.trackSurface.withValues(alpha: 0.9),
       shape: CircleBorder(
         side: BorderSide(
-          color: RacingColors.coinGold.withValues(alpha: 0.4),
-          width: 1,
+          color: color.withValues(alpha: active ? 0.8 : 0.4),
+          width: active ? 2 : 1,
         ),
       ),
       child: InkWell(
@@ -66,7 +71,7 @@ class _ControlButton extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(10),
-          child: Icon(icon, color: RacingColors.coinGold, size: 22),
+          child: Icon(icon, color: color, size: 22),
         ),
       ),
     );
