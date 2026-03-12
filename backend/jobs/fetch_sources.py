@@ -15,11 +15,12 @@ from app.services.adapters.registry import get_adapter
 logger = logging.getLogger(__name__)
 
 
-async def fetch_all_sources():
+async def fetch_all_sources(country_code: str | None = None):
     async with async_session_factory() as session:
-        result = await session.execute(
-            select(Source).where(Source.enabled.is_(True))
-        )
+        query = select(Source).where(Source.enabled.is_(True))
+        if country_code:
+            query = query.where(Source.country_code == country_code)
+        result = await session.execute(query)
         sources = result.scalars().all()
 
         logger.info("Found %d enabled sources", len(sources))

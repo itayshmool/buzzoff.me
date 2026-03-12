@@ -17,11 +17,12 @@ from app.services.pack_generator import PackCamera, PackGenerator, PackMeta
 logger = logging.getLogger(__name__)
 
 
-async def generate_all_packs():
+async def generate_all_packs(country_code: str | None = None):
     async with async_session_factory() as session:
-        result = await session.execute(
-            select(Country).where(Country.enabled.is_(True))
-        )
+        query = select(Country).where(Country.enabled.is_(True))
+        if country_code:
+            query = query.where(Country.code == country_code)
+        result = await session.execute(query)
         countries = result.scalars().all()
 
         generator = PackGenerator(output_dir=settings.pack_storage_path)

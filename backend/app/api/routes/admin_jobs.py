@@ -1,11 +1,12 @@
 import asyncio
 import logging
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_admin, get_db
+from app.models.country import Country
 from app.models.job_run import JobRun
 
 logger = logging.getLogger(__name__)
@@ -66,3 +67,41 @@ async def trigger_job(
     except Exception as e:
         logger.exception("Job %s failed", job_type)
         return {"status": "failed", "job_type": job_type, "error": str(e)}
+
+
+@router.post("/jobs/run/pipeline/{country_code}")
+async def trigger_country_pipeline(
+    country_code: str,
+    _admin: str = Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    code = country_code.upper()
+    result = await db.execute(
+        select(Country).where(Country.code == code, Country.enabled.is_(True))
+    )
+    country = result.scalar_one_or_none()
+    if not country:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Country '{code}' not found or not enabled",
+        )
+
+    from jobs.fetch_sources import fetch_all_sources
+    from jobs.merge_cameras import merge_all_countries
+    from jobs.generate_packs import generate_all_packs
+
+    steps = {}
+    for name, runner in [
+        ("fetch_sources", lambda: fetch_all_sources(country_code=code)),
+        ("merge_cameras", lambda: merge_all_countries(country_code=code)),
+        ("generate_packs", lambda: generate_all_packs(country_code=code)),
+    ]:
+        try:
+            await runner()
+            steps[name] = "completed"
+        except Exception as e:
+            logger.exception("Pipeline step %s failed for %s", name, code)
+            steps[name] = f"failed: {e}"
+            break
+
+    return {"country_code": code, "steps": steps}
