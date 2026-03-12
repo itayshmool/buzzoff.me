@@ -24,16 +24,20 @@ async def fetch_all_sources():
 
         logger.info("Found %d enabled sources", len(sources))
 
-        for i, source in enumerate(sources):
+        overpass_count = 0
+        for source in sources:
             try:
+                # Overpass API rate-limits aggressively — wait 30s between queries
+                if source.adapter == "osm_overpass" and overpass_count > 0:
+                    logger.info("Waiting 30s before next Overpass query...")
+                    await asyncio.sleep(30)
                 await _fetch_source(session, source)
+                if source.adapter == "osm_overpass":
+                    overpass_count += 1
             except Exception:
                 logger.exception("Failed to fetch source %s (%s)", source.name, source.id)
-
-            # Rate-limit protection: pause between sources to avoid
-            # hitting Overpass API 429 limits.
-            if i < len(sources) - 1:
-                await asyncio.sleep(10)
+                if source.adapter == "osm_overpass":
+                    overpass_count += 1
 
 
 async def _fetch_source(session: AsyncSession, source: Source):
