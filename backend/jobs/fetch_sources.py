@@ -24,11 +24,16 @@ async def fetch_all_sources():
 
         logger.info("Found %d enabled sources", len(sources))
 
-        for source in sources:
+        for i, source in enumerate(sources):
             try:
                 await _fetch_source(session, source)
             except Exception:
                 logger.exception("Failed to fetch source %s (%s)", source.name, source.id)
+
+            # Rate-limit protection: pause between sources to avoid
+            # hitting Overpass API 429 limits.
+            if i < len(sources) - 1:
+                await asyncio.sleep(10)
 
 
 async def _fetch_source(session: AsyncSession, source: Source):
