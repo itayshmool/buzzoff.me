@@ -5,12 +5,14 @@ import '../theme/racing_colors.dart';
 class ZoomControls extends StatelessWidget {
   final VoidCallback onZoomIn;
   final VoidCallback onZoomOut;
+  final VoidCallback onMyLocation;
   final VoidCallback onSettings;
 
   const ZoomControls({
     super.key,
     required this.onZoomIn,
     required this.onZoomOut,
+    required this.onMyLocation,
     required this.onSettings,
   });
 
@@ -27,6 +29,11 @@ class ZoomControls extends StatelessWidget {
         _ControlButton(
           icon: Icons.remove,
           onTap: onZoomOut,
+        ),
+        const SizedBox(height: 8),
+        _ControlButton(
+          icon: Icons.my_location,
+          onTap: onMyLocation,
         ),
         const SizedBox(height: 16),
         _ControlButton(

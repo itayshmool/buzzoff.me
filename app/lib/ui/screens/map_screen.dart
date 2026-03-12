@@ -335,6 +335,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                     _zoom,
                   );
                 },
+                onMyLocation: () {
+                  _mapController.move(center, _zoom);
+                },
                 onSettings: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
