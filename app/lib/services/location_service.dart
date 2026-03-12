@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show protected;
 import 'package:geolocator/geolocator.dart';
 
 class LocationData {
@@ -24,9 +25,10 @@ class LocationData {
 
 class LocationService {
   StreamSubscription<Position>? _subscription;
-  final _controller = StreamController<LocationData>.broadcast();
+  @protected
+  final controller = StreamController<LocationData>.broadcast();
 
-  Stream<LocationData> get locationStream => _controller.stream;
+  Stream<LocationData> get locationStream => controller.stream;
 
   Future<bool> requestPermission() async {
     var permission = await Geolocator.checkPermission();
@@ -48,7 +50,7 @@ class LocationService {
     _subscription = Geolocator.getPositionStream(
       locationSettings: settings,
     ).listen((position) {
-      _controller.add(LocationData(
+      controller.add(LocationData(
         latitude: position.latitude,
         longitude: position.longitude,
         speed: position.speed,
@@ -86,6 +88,6 @@ class LocationService {
 
   void dispose() {
     stopTracking();
-    _controller.close();
+    controller.close();
   }
 }

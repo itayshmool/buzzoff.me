@@ -34,6 +34,53 @@ async def _startup() -> None:
     from app.services.scheduler import start_scheduler
     await start_scheduler()
 
+    # Regenerate pack files if missing from disk (e.g. after Render redeploy)
+    await _ensure_packs_on_disk()
+
+
+async def _ensure_packs_on_disk() -> None:
+    from pathlib import Path
+    from sqlalchemy import select, func
+    from app.db.session import async_session_factory
+    from app.models.pack import Pack
+
+    try:
+        async with async_session_factory() as session:
+            # Get the latest pack per country
+            subq = (
+                select(
+                    Pack.country_code,
+                    func.max(Pack.version).label("max_version"),
+                )
+                .group_by(Pack.country_code)
+                .subquery()
+            )
+            result = await session.execute(
+                select(Pack).join(
+                    subq,
+                    (Pack.country_code == subq.c.country_code)
+                    & (Pack.version == subq.c.max_version),
+                )
+            )
+            packs = result.scalars().all()
+
+            missing = [p for p in packs if not Path(p.file_path).exists()]
+
+            if not missing:
+                logger.info("All %d pack files present on disk.", len(packs))
+                return
+
+            logger.warning(
+                "%d/%d pack files missing on disk, regenerating...",
+                len(missing), len(packs),
+            )
+
+        from jobs.generate_packs import generate_all_packs
+        await generate_all_packs()
+        logger.info("Pack regeneration complete.")
+    except Exception:
+        logger.exception("Failed to check/regenerate packs on startup")
+
 
 @app.on_event("shutdown")
 async def _shutdown() -> None:

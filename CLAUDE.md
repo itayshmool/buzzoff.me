@@ -1,5 +1,11 @@
 # BuzzOff — Project Notes
 
+## Domain
+
+- **Primary domain: `buzzoff.me`**
+- Backend API base URL: `https://buzzoff.me/api/` (proxied) or `https://buzzoff-api.onrender.com/`
+- ALWAYS use `buzzoff.me` when referring to the project domain. Never guess other domains.
+
 ## Deployment
 
 - **Website (buzzoff.me)**: Deployed via **GitHub Pages** from the `gh-pages` branch (root `/`). NOT from `main`.

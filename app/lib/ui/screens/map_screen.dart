@@ -9,6 +9,7 @@ import 'package:latlong2/latlong.dart';
 import '../../core/model/camera.dart';
 import '../../providers/database_provider.dart';
 import '../../providers/driving_state_provider.dart';
+import '../../providers/simulation_provider.dart';
 import '../../services/orchestrator.dart';
 import '../../providers/location_provider.dart';
 import '../../services/foreground_task.dart';
@@ -287,7 +288,12 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               top: MediaQuery.of(context).padding.top + 12,
               left: 0,
               right: 0,
-              child: Center(child: StatusBar(state: drivingState)),
+              child: Center(
+                child: StatusBar(
+                  state: drivingState,
+                  isSimulating: ref.watch(simulationEnabledProvider),
+                ),
+              ),
             ),
 
             // Camera filter bar

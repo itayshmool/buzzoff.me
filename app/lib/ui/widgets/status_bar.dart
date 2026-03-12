@@ -6,8 +6,9 @@ import '../theme/racing_colors.dart';
 
 class StatusBar extends StatelessWidget {
   final DrivingState state;
+  final bool isSimulating;
 
-  const StatusBar({super.key, required this.state});
+  const StatusBar({super.key, required this.state, this.isSimulating = false});
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +18,19 @@ class StatusBar extends StatelessWidget {
       DrivingState.idle => ('START LINE', Colors.grey, Icons.sports_score),
     };
 
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (isSimulating) ...[
+          _pill('SIM', Colors.purpleAccent, Icons.route),
+          const SizedBox(width: 8),
+        ],
+        _pill(text, color, icon),
+      ],
+    );
+  }
+
+  Widget _pill(String text, Color color, IconData icon) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
       decoration: BoxDecoration(

@@ -6,6 +6,7 @@ import '../../providers/driving_state_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../providers/database_provider.dart';
 import '../../providers/pack_provider.dart';
+import '../../providers/simulation_provider.dart';
 import '../theme/racing_colors.dart';
 import '../widgets/racing_decorations.dart';
 import 'country_picker_screen.dart';
@@ -230,6 +231,53 @@ class SettingsScreen extends ConsumerWidget {
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
+
+          const SizedBox(height: 24),
+          const RainbowDivider(),
+          const SizedBox(height: 8),
+
+          // Debug section
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.redAccent.withValues(alpha: 0.4),
+                width: 1,
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.only(top: 8, bottom: 4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    'DEBUG',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.redAccent,
+                        ),
+                  ),
+                ),
+                SwitchListTile(
+                  title: const Text('Simulation Mode'),
+                  subtitle: const Text('Fake GPS along Ayalon Hwy at 80 km/h'),
+                  value: ref.watch(simulationEnabledProvider),
+                  activeTrackColor: Colors.purpleAccent,
+                  onChanged: (_) {
+                    ref.read(simulationEnabledProvider.notifier).toggle();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Restart app to apply'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
         ],
       ),
     );
