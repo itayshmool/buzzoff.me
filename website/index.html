@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="buzzoff_icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Russo+One&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Russo+One&family=Share+Tech+Mono&family=Heebo:wght@400;700;900&family=Rubik:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 /* ─── RESET & VARIABLES ───────────────────────────── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -32,6 +32,97 @@ html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--border) t
 body{font-family:var(--font-body);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.6}
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
+
+/* ─── RTL SUPPORT ─────────────────────────────────── */
+html[dir="rtl"]{
+  --font-body:'Rubik','Russo One',sans-serif;
+}
+html[dir="rtl"] body{font-family:var(--font-body)}
+html[dir="rtl"] .section-tag,
+html[dir="rtl"] .section-title,
+html[dir="rtl"] .hero h1,
+html[dir="rtl"] .hero-sub,
+html[dir="rtl"] .step h3,
+html[dir="rtl"] .step p,
+html[dir="rtl"] .feature-card h3,
+html[dir="rtl"] .feature-card p,
+html[dir="rtl"] .stat-label,
+html[dir="rtl"] .cta-section h2,
+html[dir="rtl"] .cta-sub,
+html[dir="rtl"] .footer-copy,
+html[dir="rtl"] .footer-tag,
+html[dir="rtl"] .nav-links a,
+html[dir="rtl"] .mobile-menu a,
+html[dir="rtl"] .btn-boost span{
+  font-family:'Rubik','Russo One',sans-serif;
+}
+html[dir="rtl"] .section-title,
+html[dir="rtl"] .hero h1,
+html[dir="rtl"] .step h3,
+html[dir="rtl"] .feature-card h3,
+html[dir="rtl"] .cta-section h2{
+  font-family:'Heebo','Press Start 2P',cursive;
+  font-weight:900;
+}
+/* RTL pixel-font headings: bigger because Heebo is less dense than Press Start 2P */
+html[dir="rtl"] .section-title{font-size:clamp(22px,3.5vw,38px)}
+html[dir="rtl"] .hero h1{font-size:clamp(26px,5.5vw,52px)}
+html[dir="rtl"] .step h3{font-size:14px;letter-spacing:0}
+html[dir="rtl"] .feature-card h3{font-size:13px;letter-spacing:0}
+html[dir="rtl"] .cta-section h2{font-size:clamp(20px,4vw,42px)}
+html[dir="rtl"] .section-tag{font-size:clamp(11px,1.5vw,14px);letter-spacing:1px}
+html[dir="rtl"] .nav-links a{letter-spacing:0}
+html[dir="rtl"] .btn-boost{transform:skewX(4deg)}
+html[dir="rtl"] .btn-boost>*{transform:skewX(-4deg)}
+html[dir="rtl"] .btn-badge{transform:skewX(-4deg) rotate(-3deg)}
+html[dir="rtl"] .feature-card::before{left:auto;right:0}
+html[dir="rtl"] .feature-card::after{right:auto;left:-8px}
+html[dir="rtl"] .feature-card{
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+}
+html[dir="rtl"] .speed-line:nth-child(8){left:auto;right:-5%;animation-direction:reverse}
+html[dir="rtl"] .speed-line:nth-child(9){right:auto;left:-5%;animation-direction:normal}
+html[dir="rtl"] .speed-line:nth-child(10){left:auto;right:-5%;animation-direction:reverse}
+html[dir="rtl"] .hero-stripes{
+  background:repeating-linear-gradient(
+    45deg,
+    transparent,transparent 40px,
+    rgba(229,37,33,0.03) 40px,rgba(229,37,33,0.03) 80px
+  );
+}
+
+/* ─── LANGUAGE TOGGLE ─────────────────────────────── */
+.lang-toggle{
+  display:flex;align-items:center;gap:0;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:6px;overflow:hidden;
+  height:30px;
+  margin-left:12px;
+  flex-shrink:0;
+}
+html[dir="rtl"] .lang-toggle{margin-left:0;margin-right:12px}
+.lang-btn{
+  padding:4px 10px;font-size:11px;
+  font-family:var(--font-body);
+  color:var(--muted);cursor:pointer;
+  background:transparent;border:none;
+  transition:all .2s;letter-spacing:1px;
+  height:100%;display:flex;align-items:center;
+}
+.lang-btn.active{
+  background:var(--gold);color:var(--bg);
+  font-weight:700;
+}
+.lang-btn:hover:not(.active){color:var(--text)}
+
+/* Mobile lang toggle */
+.mobile-lang{
+  display:flex;gap:0;justify-content:center;
+  margin-top:8px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:6px;overflow:hidden;align-self:center;
+}
+.mobile-lang .lang-btn{padding:8px 20px;font-size:13px}
 
 /* ─── CHECKERED PATTERN ───────────────────────────── */
 .checkered{
@@ -183,6 +274,7 @@ img{max-width:100%;display:block}
   white-space:nowrap;
   box-shadow:0 2px 8px rgba(251,208,0,0.4);
 }
+html[dir="rtl"] .btn-badge{right:auto;left:-10px}
 .btn-boost .btn-icon{font-size:18px}
 .hero-rainbow{
   width:200px;height:3px;margin:48px auto 0;
@@ -519,6 +611,7 @@ img{max-width:100%;display:block}
 /* ─── RESPONSIVE ──────────────────────────────────── */
 @media(max-width:480px){
   .hero h1{font-size:18px}
+  html[dir="rtl"] .hero h1{font-size:22px}
   .btn-boost{padding:12px 20px;font-size:12px}
   .phone{width:170px}
   .phone-frame{width:170px;height:340px}
@@ -537,11 +630,15 @@ img{max-width:100%;display:block}
       <span><span class="gold">BUZZ</span><span class="red-text">OFF</span></span>
     </a>
     <div class="nav-links">
-      <a href="#how">How It Works</a>
-      <a href="#features">Features</a>
-      <a href="#screenshots">Screens</a>
+      <a href="#how" data-i18n="nav_how">How It Works</a>
+      <a href="#features" data-i18n="nav_features">Features</a>
+      <a href="#screenshots" data-i18n="nav_screens">Screens</a>
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="he">HE</button>
+      </div>
       <a href="#download" class="btn-boost red" style="padding:8px 18px;font-size:11px;transform:skewX(-3deg)">
-        <span>DOWNLOAD</span>
+        <span data-i18n="nav_download">DOWNLOAD</span>
       </a>
     </div>
     <div class="hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0">
@@ -551,10 +648,14 @@ img{max-width:100%;display:block}
   <div class="nav-check checkered"></div>
 </nav>
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#how" onclick="closeMobile()">How It Works</a>
-  <a href="#features" onclick="closeMobile()">Features</a>
-  <a href="#screenshots" onclick="closeMobile()">Screens</a>
-  <a href="#download" onclick="closeMobile()">Download</a>
+  <a href="#how" onclick="closeMobile()" data-i18n="nav_how">How It Works</a>
+  <a href="#features" onclick="closeMobile()" data-i18n="nav_features">Features</a>
+  <a href="#screenshots" onclick="closeMobile()" data-i18n="nav_screens">Screens</a>
+  <a href="#download" onclick="closeMobile()" data-i18n="nav_download">Download</a>
+  <div class="mobile-lang">
+    <button class="lang-btn active" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="he">HE</button>
+  </div>
 </div>
 
 <!-- ═══════════ HERO ═══════════ -->
@@ -573,17 +674,17 @@ img{max-width:100%;display:block}
   <div class="hero-corner br checkered"></div>
   <div class="hero-content">
     <img src="buzzoff_icon.svg" alt="BuzzOff Icon" class="hero-icon">
-    <h1>Never Get<br>Flashed Again</h1>
-    <p class="hero-sub">Speed camera alerts that ride with you. Silent. Offline. Always watching the road ahead.</p>
+    <h1 data-i18n="hero_title" data-i18n-html="true">Never Get<br>Flashed Again</h1>
+    <p class="hero-sub" data-i18n="hero_sub">Speed camera alerts that ride with you. Silent. Offline. Always watching the road ahead.</p>
     <div class="hero-cta">
       <span class="btn-boost red disabled">
         <span class="btn-icon">&#xF8FF;</span>
-        <span>App Store</span>
-        <span class="btn-badge">COMING SOON</span>
+        <span data-i18n="btn_appstore">App Store</span>
+        <span class="btn-badge" data-i18n="btn_coming_soon">COMING SOON</span>
       </span>
       <a href="https://buzzoff-admin.onrender.com/buzzoff.apk" class="btn-boost green">
         <span class="btn-icon">&#9654;</span>
-        <span>Android APK</span>
+        <span data-i18n="btn_android">Android APK</span>
       </a>
     </div>
     <div class="hero-rainbow"></div>
@@ -593,27 +694,27 @@ img{max-width:100%;display:block}
 <!-- ═══════════ HOW IT WORKS ═══════════ -->
 <section class="section" id="how">
   <div class="section-inner">
-    <div class="section-tag">&#127937; Race Stages</div>
-    <h2 class="section-title">START YOUR <span class="accent">ENGINE</span><div class="section-divider"></div></h2>
+    <div class="section-tag">&#127937; <span data-i18n="how_tag">Race Stages</span></div>
+    <h2 class="section-title" data-i18n="how_title" data-i18n-html="true">START YOUR <span class="accent">ENGINE</span><div class="section-divider"></div></h2>
     <div class="steps">
       <div class="track-line"><div class="track-line-inner"></div></div>
       <div class="step fade-up">
         <div class="step-num">1</div>
         <div class="step-icon">&#127937;</div>
-        <h3>PICK YOUR TRACK</h3>
-        <p>Choose your country. Each track comes loaded with every mapped speed camera location.</p>
+        <h3 data-i18n="step1_title">PICK YOUR TRACK</h3>
+        <p data-i18n="step1_desc">Choose your country. Each track comes loaded with every mapped speed camera location.</p>
       </div>
       <div class="step fade-up">
         <div class="step-num">2</div>
         <div class="step-icon">&#128230;</div>
-        <h3>GRAB POWER-UPS</h3>
-        <p>Download the camera pack. All data stored locally — no internet needed while driving.</p>
+        <h3 data-i18n="step2_title">GRAB POWER-UPS</h3>
+        <p data-i18n="step2_desc">Download the camera pack. All data stored locally — no internet needed while driving.</p>
       </div>
       <div class="step fade-up">
         <div class="step-num">3</div>
         <div class="step-icon">&#128663;</div>
-        <h3>DRIVE SAFE</h3>
-        <p>Alerts activate automatically when you hit driving speed. Silent vibrations keep you informed.</p>
+        <h3 data-i18n="step3_title">DRIVE SAFE</h3>
+        <p data-i18n="step3_desc">Alerts activate automatically when you hit driving speed. Silent vibrations keep you informed.</p>
       </div>
     </div>
   </div>
@@ -622,38 +723,38 @@ img{max-width:100%;display:block}
 <!-- ═══════════ FEATURES ═══════════ -->
 <section class="section" id="features" style="background:var(--surface)">
   <div class="section-inner">
-    <div class="section-tag">&#10068; Item Boxes</div>
-    <h2 class="section-title">POWER<span class="accent">-UPS</span><div class="section-divider"></div></h2>
+    <div class="section-tag">&#10068; <span data-i18n="feat_tag">Item Boxes</span></div>
+    <h2 class="section-title" data-i18n="feat_title" data-i18n-html="true">POWER<span class="accent">-UPS</span><div class="section-divider"></div></h2>
     <div class="features-grid">
       <div class="feature-card fade-up">
         <span class="feature-icon">&#128225;</span>
-        <h3>SPEED CAMERA ALERTS</h3>
-        <p>Detects fixed, mobile, and average speed cameras ahead. Visual and haptic warnings.</p>
+        <h3 data-i18n="f1_title">SPEED CAMERA ALERTS</h3>
+        <p data-i18n="f1_desc">Detects fixed, mobile, and average speed cameras ahead. Visual and haptic warnings.</p>
       </div>
       <div class="feature-card fade-up">
         <span class="feature-icon">&#128243;</span>
-        <h3>VIBRATION WARNING</h3>
-        <p>Silent haptic alerts. No distracting sounds needed — feel the warning through your phone.</p>
+        <h3 data-i18n="f2_title">VIBRATION WARNING</h3>
+        <p data-i18n="f2_desc">Silent haptic alerts. No distracting sounds needed — feel the warning through your phone.</p>
       </div>
       <div class="feature-card fade-up">
         <span class="feature-icon">&#128267;</span>
-        <h3>BACKGROUND MODE</h3>
-        <p>Runs silently while you use Waze, Spotify, or any other app. Always on guard.</p>
+        <h3 data-i18n="f3_title">BACKGROUND MODE</h3>
+        <p data-i18n="f3_desc">Runs silently while you use Waze, Spotify, or any other app. Always on guard.</p>
       </div>
       <div class="feature-card fade-up">
         <span class="feature-icon">&#128244;</span>
-        <h3>OFFLINE PACKS</h3>
-        <p>All camera data stored locally. No internet needed while driving. Zero data usage.</p>
+        <h3 data-i18n="f4_title">OFFLINE PACKS</h3>
+        <p data-i18n="f4_desc">All camera data stored locally. No internet needed while driving. Zero data usage.</p>
       </div>
       <div class="feature-card fade-up">
         <span class="feature-icon">&#127758;</span>
-        <h3>MULTIPLE COUNTRIES</h3>
-        <p>Israel, UK, and more. Pick your track and race with full camera coverage.</p>
+        <h3 data-i18n="f5_title">MULTIPLE COUNTRIES</h3>
+        <p data-i18n="f5_desc">Israel, UK, and more. Pick your track and race with full camera coverage.</p>
       </div>
       <div class="feature-card fade-up">
         <span class="feature-icon">&#128164;</span>
-        <h3>SMART SLEEP</h3>
-        <p>Configurable auto-sleep timer. Knows when you've stopped and saves battery.</p>
+        <h3 data-i18n="f6_title">SMART SLEEP</h3>
+        <p data-i18n="f6_desc">Configurable auto-sleep timer. Knows when you've stopped and saves battery.</p>
       </div>
     </div>
   </div>
@@ -662,8 +763,8 @@ img{max-width:100%;display:block}
 <!-- ═══════════ SCREENSHOTS ═══════════ -->
 <section class="section" id="screenshots">
   <div class="section-inner">
-    <div class="section-tag">&#127916; Screens</div>
-    <h2 class="section-title">RACE <span class="accent">REPLAY</span><div class="section-divider"></div></h2>
+    <div class="section-tag">&#127916; <span data-i18n="screens_tag">Screens</span></div>
+    <h2 class="section-title" data-i18n="screens_title" data-i18n-html="true">RACE <span class="accent">REPLAY</span><div class="section-divider"></div></h2>
     <div class="phones-wrap">
       <!-- Phone 1: Country Picker -->
       <div class="phone fade-up">
@@ -686,7 +787,7 @@ img{max-width:100%;display:block}
             </div>
           </div>
         </div>
-        <div class="phone-label">STAGE 1</div>
+        <div class="phone-label" data-i18n="stage_1">STAGE 1</div>
       </div>
 
       <!-- Phone 2: Download -->
@@ -703,7 +804,7 @@ img{max-width:100%;display:block}
             </div>
           </div>
         </div>
-        <div class="phone-label">STAGE 2</div>
+        <div class="phone-label" data-i18n="stage_2">STAGE 2</div>
       </div>
 
       <!-- Phone 3: Map Alert -->
@@ -729,7 +830,7 @@ img{max-width:100%;display:block}
             </div>
           </div>
         </div>
-        <div class="phone-label">STAGE 3</div>
+        <div class="phone-label" data-i18n="stage_3">STAGE 3</div>
       </div>
 
       <!-- Phone 4: Map Idle -->
@@ -755,7 +856,7 @@ img{max-width:100%;display:block}
             </div>
           </div>
         </div>
-        <div class="phone-label">STAGE 4</div>
+        <div class="phone-label" data-i18n="stage_4">STAGE 4</div>
       </div>
 
       <!-- Phone 5: Settings -->
@@ -803,7 +904,7 @@ img{max-width:100%;display:block}
             </div>
           </div>
         </div>
-        <div class="phone-label">STAGE 5</div>
+        <div class="phone-label" data-i18n="stage_5">STAGE 5</div>
       </div>
     </div>
   </div>
@@ -812,34 +913,34 @@ img{max-width:100%;display:block}
 <!-- ═══════════ STATS ═══════════ -->
 <section class="section stats-section" id="stats">
   <div class="section-inner">
-    <div class="section-tag">&#127942; Records</div>
-    <h2 class="section-title">LEADER<span class="accent">BOARD</span><div class="section-divider"></div></h2>
+    <div class="section-tag">&#127942; <span data-i18n="stats_tag">Records</span></div>
+    <h2 class="section-title" data-i18n="stats_title" data-i18n-html="true">LEADER<span class="accent">BOARD</span><div class="section-divider"></div></h2>
     <div class="leaderboard">
       <div class="stats-grid">
         <div class="stat fade-up">
           <span class="stat-icon">&#127942;</span>
           <div class="stat-num" data-target="184">0</div>
-          <div class="stat-label">Cameras in Israel</div>
+          <div class="stat-label" data-i18n="stat_cameras">Cameras in Israel</div>
         </div>
         <div class="stat fade-up">
           <span class="stat-icon">&#128506;</span>
           <div class="stat-num" data-target="5">0</div>
-          <div class="stat-label">Countries</div>
+          <div class="stat-label" data-i18n="stat_countries">Countries</div>
         </div>
         <div class="stat fade-up">
           <span class="stat-icon">&#9889;</span>
           <div class="stat-num" data-target="1" data-prefix="<" data-suffix="s">0</div>
-          <div class="stat-label">Alert Time</div>
+          <div class="stat-label" data-i18n="stat_alert">Alert Time</div>
         </div>
         <div class="stat fade-up">
           <span class="stat-icon">&#128263;</span>
           <div class="stat-num" data-target="100" data-suffix="%">0</div>
-          <div class="stat-label">Silent Operation</div>
+          <div class="stat-label" data-i18n="stat_silent">Silent Operation</div>
         </div>
         <div class="stat fade-up">
           <span class="stat-icon">&#128230;</span>
           <div class="stat-num" data-target="5" data-prefix="<" data-suffix="MB">0</div>
-          <div class="stat-label">Per Country Pack</div>
+          <div class="stat-label" data-i18n="stat_size">Per Country Pack</div>
         </div>
       </div>
     </div>
@@ -848,17 +949,17 @@ img{max-width:100%;display:block}
 
 <!-- ═══════════ FINAL CTA ═══════════ -->
 <section class="cta-section" id="download">
-  <h2>READY TO <span class="accent">RACE?</span></h2>
-  <p class="cta-sub">Free. No account needed. No ads.</p>
+  <h2 data-i18n="cta_title" data-i18n-html="true">READY TO <span class="accent">RACE?</span></h2>
+  <p class="cta-sub" data-i18n="cta_sub">Free. No account needed. No ads.</p>
   <div class="cta-buttons">
     <span class="btn-boost red disabled">
       <span class="btn-icon">&#xF8FF;</span>
-      <span>App Store</span>
-      <span class="btn-badge">COMING SOON</span>
+      <span data-i18n="btn_appstore">App Store</span>
+      <span class="btn-badge" data-i18n="btn_coming_soon">COMING SOON</span>
     </span>
     <a href="https://buzzoff-admin.onrender.com/buzzoff.apk" class="btn-boost green">
       <span class="btn-icon">&#9654;</span>
-      <span>Android APK</span>
+      <span data-i18n="btn_android">Android APK</span>
     </a>
   </div>
 </section>
@@ -866,15 +967,173 @@ img{max-width:100%;display:block}
 <!-- ═══════════ FOOTER ═══════════ -->
 <footer class="footer">
   <div class="footer-links">
-    <a href="#">Privacy Policy</a>
-    <a href="#">Terms</a>
-    <a href="#">Contact</a>
+    <a href="#" data-i18n="footer_privacy">Privacy Policy</a>
+    <a href="#" data-i18n="footer_terms">Terms</a>
+    <a href="#" data-i18n="footer_contact">Contact</a>
   </div>
   <div class="footer-copy">&copy; 2026 BuzzOff</div>
-  <div class="footer-tag">Made with &#127950; in Tel Aviv</div>
+  <div class="footer-tag" data-i18n="footer_tag" data-i18n-html="true">Made with &#127950; in Tel Aviv</div>
 </footer>
 
 <script>
+/* ═══════════ i18n ═══════════ */
+const translations = {
+  en: {
+    nav_how: 'How It Works',
+    nav_features: 'Features',
+    nav_screens: 'Screens',
+    nav_download: 'DOWNLOAD',
+    hero_title: 'Never Get<br>Flashed Again',
+    hero_sub: 'Speed camera alerts that ride with you. Silent. Offline. Always watching the road ahead.',
+    btn_appstore: 'App Store',
+    btn_android: 'Android APK',
+    btn_coming_soon: 'COMING SOON',
+    how_tag: 'Race Stages',
+    how_title: 'START YOUR <span class="accent">ENGINE</span><div class="section-divider"></div>',
+    step1_title: 'PICK YOUR TRACK',
+    step1_desc: 'Choose your country. Each track comes loaded with every mapped speed camera location.',
+    step2_title: 'GRAB POWER-UPS',
+    step2_desc: 'Download the camera pack. All data stored locally — no internet needed while driving.',
+    step3_title: 'DRIVE SAFE',
+    step3_desc: 'Alerts activate automatically when you hit driving speed. Silent vibrations keep you informed.',
+    feat_tag: 'Item Boxes',
+    feat_title: 'POWER<span class="accent">-UPS</span><div class="section-divider"></div>',
+    f1_title: 'SPEED CAMERA ALERTS',
+    f1_desc: 'Detects fixed, mobile, and average speed cameras ahead. Visual and haptic warnings.',
+    f2_title: 'VIBRATION WARNING',
+    f2_desc: 'Silent haptic alerts. No distracting sounds needed — feel the warning through your phone.',
+    f3_title: 'BACKGROUND MODE',
+    f3_desc: 'Runs silently while you use Waze, Spotify, or any other app. Always on guard.',
+    f4_title: 'OFFLINE PACKS',
+    f4_desc: 'All camera data stored locally. No internet needed while driving. Zero data usage.',
+    f5_title: 'MULTIPLE COUNTRIES',
+    f5_desc: 'Israel, UK, and more. Pick your track and race with full camera coverage.',
+    f6_title: 'SMART SLEEP',
+    f6_desc: 'Configurable auto-sleep timer. Knows when you\'ve stopped and saves battery.',
+    screens_tag: 'Screens',
+    screens_title: 'RACE <span class="accent">REPLAY</span><div class="section-divider"></div>',
+    stage_1: 'STAGE 1',
+    stage_2: 'STAGE 2',
+    stage_3: 'STAGE 3',
+    stage_4: 'STAGE 4',
+    stage_5: 'STAGE 5',
+    stats_tag: 'Records',
+    stats_title: 'LEADER<span class="accent">BOARD</span><div class="section-divider"></div>',
+    stat_cameras: 'Cameras in Israel',
+    stat_countries: 'Countries',
+    stat_alert: 'Alert Time',
+    stat_silent: 'Silent Operation',
+    stat_size: 'Per Country Pack',
+    cta_title: 'READY TO <span class="accent">RACE?</span>',
+    cta_sub: 'Free. No account needed. No ads.',
+    footer_privacy: 'Privacy Policy',
+    footer_terms: 'Terms',
+    footer_contact: 'Contact',
+    footer_tag: 'Made with &#127950; in Tel Aviv',
+    page_title: 'BuzzOff — Never Get Flashed Again',
+    meta_desc: 'Speed camera alerts that ride with you. Silent. Offline. Always watching the road ahead.',
+  },
+  he: {
+    nav_how: '\u05D0\u05D9\u05DA \u05D6\u05D4 \u05E2\u05D5\u05D1\u05D3',
+    nav_features: '\u05EA\u05DB\u05D5\u05E0\u05D5\u05EA',
+    nav_screens: '\u05DE\u05E1\u05DB\u05D9\u05DD',
+    nav_download: '\u05D4\u05D5\u05E8\u05D3\u05D4',
+    hero_title: '\u05DC\u05E2\u05D5\u05DC\u05DD \u05DC\u05D0<br>\u05EA\u05D9\u05EA\u05E4\u05E1 \u05E9\u05D5\u05D1',
+    hero_sub: '\u05D4\u05EA\u05E8\u05D0\u05D5\u05EA \u05DE\u05DE\u05E6\u05DC\u05DE\u05D5\u05EA \u05DE\u05D4\u05D9\u05E8\u05D5\u05EA \u05E9\u05E0\u05D5\u05E1\u05E2\u05D5\u05EA \u05D0\u05D9\u05EA\u05DA. \u05E9\u05E7\u05D8\u05D5\u05EA. \u05D0\u05D5\u05E4\u05DC\u05D9\u05D9\u05DF. \u05EA\u05DE\u05D9\u05D3 \u05E9\u05D5\u05DE\u05E8\u05D5\u05EA \u05E2\u05DC \u05D4\u05DB\u05D1\u05D9\u05E9.',
+    btn_appstore: 'App Store',
+    btn_android: 'Android APK',
+    btn_coming_soon: '\u05D1\u05E7\u05E8\u05D5\u05D1',
+    how_tag: '\u05E9\u05DC\u05D1\u05D9 \u05DE\u05E8\u05D5\u05E5',
+    how_title: '\u05D4\u05EA\u05E0\u05E2 \u05D0\u05EA <span class="accent">\u05D4\u05DE\u05E0\u05D5\u05E2</span><div class="section-divider"></div>',
+    step1_title: '\u05D1\u05D7\u05E8 \u05DE\u05E1\u05DC\u05D5\u05DC',
+    step1_desc: '\u05D1\u05D7\u05E8 \u05DE\u05D3\u05D9\u05E0\u05D4. \u05DB\u05DC \u05DE\u05E1\u05DC\u05D5\u05DC \u05DE\u05D2\u05D9\u05E2 \u05E2\u05DD \u05DB\u05DC \u05DE\u05D9\u05E7\u05D5\u05DE\u05D9 \u05D4\u05DE\u05E6\u05DC\u05DE\u05D5\u05EA \u05D4\u05DE\u05DE\u05D5\u05E4\u05D5\u05EA.',
+    step2_title: '\u05D4\u05D5\u05E8\u05D3 \u05D7\u05D1\u05D9\u05DC\u05D4',
+    step2_desc: '\u05D4\u05D5\u05E8\u05D3 \u05D0\u05EA \u05D7\u05D1\u05D9\u05DC\u05EA \u05D4\u05DE\u05E6\u05DC\u05DE\u05D5\u05EA. \u05DB\u05DC \u05D4\u05DE\u05D9\u05D3\u05E2 \u05E0\u05E9\u05DE\u05E8 \u05DE\u05E7\u05D5\u05DE\u05D9\u05EA \u2014 \u05DC\u05D0 \u05E6\u05E8\u05D9\u05DA \u05D0\u05D9\u05E0\u05D8\u05E8\u05E0\u05D8 \u05D1\u05D6\u05DE\u05DF \u05E0\u05D4\u05D9\u05D2\u05D4.',
+    step3_title: '\u05E1\u05E2 \u05D1\u05D8\u05D5\u05D7',
+    step3_desc: '\u05D4\u05EA\u05E8\u05D0\u05D5\u05EA \u05DE\u05D5\u05E4\u05E2\u05DC\u05D5\u05EA \u05D0\u05D5\u05D8\u05D5\u05DE\u05D8\u05D9\u05EA \u05DB\u05E9\u05DE\u05D2\u05D9\u05E2\u05D9\u05DD \u05DC\u05DE\u05D4\u05D9\u05E8\u05D5\u05EA \u05E0\u05D4\u05D9\u05D2\u05D4. \u05E8\u05D8\u05D8 \u05E9\u05E7\u05D8 \u05E9\u05D5\u05DE\u05E8 \u05E2\u05DC\u05D9\u05DA.',
+    feat_tag: '\u05EA\u05D9\u05D1\u05D5\u05EA \u05DB\u05D5\u05D7',
+    feat_title: '\u05DB\u05DC\u05D9 <span class="accent">\u05E0\u05E9\u05E7</span><div class="section-divider"></div>',
+    f1_title: '\u05D4\u05EA\u05E8\u05D0\u05D5\u05EA \u05DE\u05E6\u05DC\u05DE\u05D5\u05EA',
+    f1_desc: '\u05DE\u05D6\u05D4\u05D4 \u05DE\u05E6\u05DC\u05DE\u05D5\u05EA \u05E7\u05D1\u05D5\u05E2\u05D5\u05EA, \u05E0\u05D9\u05D9\u05D3\u05D5\u05EA \u05D5\u05DE\u05DE\u05D5\u05E6\u05E2\u05D5\u05EA. \u05D4\u05EA\u05E8\u05D0\u05D5\u05EA \u05D7\u05D6\u05D5\u05EA\u05D9\u05D5\u05EA \u05D5\u05D5\u05D9\u05D1\u05E8\u05E6\u05D9\u05D4.',
+    f2_title: '\u05D4\u05EA\u05E8\u05D0\u05D4 \u05D1\u05E8\u05D8\u05D8',
+    f2_desc: '\u05D4\u05EA\u05E8\u05D0\u05D5\u05EA \u05E8\u05D8\u05D8 \u05E9\u05E7\u05D8\u05D5\u05EA. \u05DC\u05D0 \u05E6\u05E8\u05D9\u05DA \u05E6\u05DC\u05D9\u05DC\u05D9\u05DD \u05DE\u05E1\u05D9\u05D7\u05D9 \u05D3\u05E2\u05EA \u2014 \u05EA\u05E8\u05D2\u05D9\u05E9 \u05D0\u05EA \u05D4\u05D0\u05D6\u05D4\u05E8\u05D4 \u05D3\u05E8\u05DA \u05D4\u05D8\u05DC\u05E4\u05D5\u05DF.',
+    f3_title: '\u05E4\u05E2\u05D9\u05DC \u05D1\u05E8\u05E7\u05E2',
+    f3_desc: '\u05E8\u05E5 \u05D1\u05E9\u05E7\u05D8 \u05D1\u05E8\u05E7\u05E2 \u05D1\u05D6\u05DE\u05DF \u05E9\u05D0\u05EA\u05D4 \u05DE\u05E9\u05EA\u05DE\u05E9 \u05D1-Waze, Spotify \u05D0\u05D5 \u05DB\u05DC \u05D0\u05E4\u05DC\u05D9\u05E7\u05E6\u05D9\u05D4 \u05D0\u05D7\u05E8\u05EA.',
+    f4_title: '\u05D7\u05D1\u05D9\u05DC\u05D5\u05EA \u05D0\u05D5\u05E4\u05DC\u05D9\u05D9\u05DF',
+    f4_desc: '\u05DB\u05DC \u05D4\u05DE\u05D9\u05D3\u05E2 \u05E0\u05E9\u05DE\u05E8 \u05DE\u05E7\u05D5\u05DE\u05D9\u05EA. \u05DC\u05D0 \u05E6\u05E8\u05D9\u05DA \u05D0\u05D9\u05E0\u05D8\u05E8\u05E0\u05D8 \u05D1\u05D6\u05DE\u05DF \u05E0\u05D4\u05D9\u05D2\u05D4. \u05D0\u05E4\u05E1 \u05EA\u05E2\u05D1\u05D5\u05E8\u05EA \u05E0\u05EA\u05D5\u05E0\u05D9\u05DD.',
+    f5_title: '\u05DE\u05D3\u05D9\u05E0\u05D5\u05EA \u05E8\u05D1\u05D5\u05EA',
+    f5_desc: '\u05D9\u05E9\u05E8\u05D0\u05DC, \u05D1\u05E8\u05D9\u05D8\u05E0\u05D9\u05D4, \u05D5\u05E2\u05D5\u05D3. \u05D1\u05D7\u05E8 \u05DE\u05E1\u05DC\u05D5\u05DC \u05D5\u05E7\u05D1\u05DC \u05DB\u05D9\u05E1\u05D5\u05D9 \u05DE\u05DC\u05D0 \u05E9\u05DC \u05DE\u05E6\u05DC\u05DE\u05D5\u05EA.',
+    f6_title: '\u05DE\u05E6\u05D1 \u05E9\u05D9\u05E0\u05D4 \u05D7\u05DB\u05DD',
+    f6_desc: '\u05D8\u05D9\u05D9\u05DE\u05E8 \u05E9\u05D9\u05E0\u05D4 \u05D0\u05D5\u05D8\u05D5\u05DE\u05D8\u05D9 \u05DE\u05EA\u05DB\u05D5\u05D5\u05E0\u05DF. \u05D9\u05D5\u05D3\u05E2 \u05DE\u05EA\u05D9 \u05E2\u05E6\u05E8\u05EA \u05D5\u05D7\u05D5\u05E1\u05DA \u05D1\u05E1\u05D5\u05DC\u05DC\u05D4.',
+    screens_tag: '\u05DE\u05E1\u05DB\u05D9\u05DD',
+    screens_title: '\u05D4\u05E7\u05E8\u05E0\u05EA <span class="accent">\u05DE\u05D7\u05D3\u05E9</span><div class="section-divider"></div>',
+    stage_1: '\u05E9\u05DC\u05D1 1',
+    stage_2: '\u05E9\u05DC\u05D1 2',
+    stage_3: '\u05E9\u05DC\u05D1 3',
+    stage_4: '\u05E9\u05DC\u05D1 4',
+    stage_5: '\u05E9\u05DC\u05D1 5',
+    stats_tag: '\u05E9\u05D9\u05D0\u05D9\u05DD',
+    stats_title: '\u05DC\u05D5\u05D7 <span class="accent">\u05EA\u05D5\u05E6\u05D0\u05D5\u05EA</span><div class="section-divider"></div>',
+    stat_cameras: '\u05DE\u05E6\u05DC\u05DE\u05D5\u05EA \u05D1\u05D9\u05E9\u05E8\u05D0\u05DC',
+    stat_countries: '\u05DE\u05D3\u05D9\u05E0\u05D5\u05EA',
+    stat_alert: '\u05D6\u05DE\u05DF \u05D4\u05EA\u05E8\u05D0\u05D4',
+    stat_silent: '\u05E4\u05E2\u05D5\u05DC\u05D4 \u05E9\u05E7\u05D8\u05D4',
+    stat_size: '\u05DC\u05DB\u05DC \u05D7\u05D1\u05D9\u05DC\u05EA \u05DE\u05D3\u05D9\u05E0\u05D4',
+    cta_title: '\u05DE\u05D5\u05DB\u05E0\u05D9\u05DD <span class="accent">\u05DC\u05DE\u05E8\u05D5\u05E5?</span>',
+    cta_sub: '\u05D7\u05D9\u05E0\u05DD. \u05D1\u05DC\u05D9 \u05D7\u05E9\u05D1\u05D5\u05DF. \u05D1\u05DC\u05D9 \u05E4\u05E8\u05E1\u05D5\u05DE\u05D5\u05EA.',
+    footer_privacy: '\u05DE\u05D3\u05D9\u05E0\u05D9\u05D5\u05EA \u05E4\u05E8\u05D8\u05D9\u05D5\u05EA',
+    footer_terms: '\u05EA\u05E0\u05D0\u05D9\u05DD',
+    footer_contact: '\u05E6\u05D5\u05E8 \u05E7\u05E9\u05E8',
+    footer_tag: '\u05E0\u05D1\u05E0\u05D4 \u05E2\u05DD &#127950; \u05D1\u05EA\u05DC \u05D0\u05D1\u05D9\u05D1',
+    page_title: 'BuzzOff \u2014 \u05DC\u05E2\u05D5\u05DC\u05DD \u05DC\u05D0 \u05EA\u05D9\u05EA\u05E4\u05E1 \u05E9\u05D5\u05D1',
+    meta_desc: '\u05D4\u05EA\u05E8\u05D0\u05D5\u05EA \u05DE\u05DE\u05E6\u05DC\u05DE\u05D5\u05EA \u05DE\u05D4\u05D9\u05E8\u05D5\u05EA \u05E9\u05E0\u05D5\u05E1\u05E2\u05D5\u05EA \u05D0\u05D9\u05EA\u05DA. \u05E9\u05E7\u05D8\u05D5\u05EA. \u05D0\u05D5\u05E4\u05DC\u05D9\u05D9\u05DF. \u05EA\u05DE\u05D9\u05D3 \u05E9\u05D5\u05DE\u05E8\u05D5\u05EA \u05E2\u05DC \u05D4\u05DB\u05D1\u05D9\u05E9.',
+  }
+};
+
+let currentLang = localStorage.getItem('buzzoff-lang') || 'en';
+
+function setLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem('buzzoff-lang', lang);
+  const html = document.documentElement;
+  html.lang = lang;
+  html.dir = lang === 'he' ? 'rtl' : 'ltr';
+
+  // Update page title & meta
+  document.title = translations[lang].page_title;
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc) metaDesc.content = translations[lang].meta_desc;
+
+  // Translate all elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = translations[lang][key];
+    if (!val) return;
+    if (el.getAttribute('data-i18n-html') === 'true') {
+      el.innerHTML = val;
+    } else {
+      el.textContent = val;
+    }
+  });
+
+  // Update lang toggle buttons (both desktop and mobile)
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+}
+
+// Init language on load
+document.addEventListener('DOMContentLoaded', () => {
+  setLanguage(currentLang);
+});
+
+// Bind language buttons
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('lang-btn')) {
+    setLanguage(e.target.dataset.lang);
+  }
+});
+
 /* ── Nav scroll effect ── */
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => {

@@ -244,7 +244,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               children: [
                 TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.buzzoff.app',
+                  userAgentPackageName: 'me.buzzoff.app',
                 ),
                 // Camera markers
                 MarkerLayer(
