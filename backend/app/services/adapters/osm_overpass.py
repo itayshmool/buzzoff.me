@@ -1,8 +1,15 @@
+import asyncio
+import logging
+
 import httpx
 
 from app.services.adapters.base import RawCameraRecord, SourceAdapter
 
+logger = logging.getLogger(__name__)
+
 OVERPASS_API_URL = "https://overpass-api.de/api/interpreter"
+MAX_RETRIES = 3
+RETRY_BASE_DELAY = 60  # seconds
 
 
 class OSMOverpassAdapter(SourceAdapter):
@@ -26,17 +33,29 @@ class OSMOverpassAdapter(SourceAdapter):
         return records
 
     async def _execute_query(self, query: str) -> dict:
-        if self._client:
-            response = await self._client.post(
-                OVERPASS_API_URL, data={"data": query}
-            )
-            response.raise_for_status()
-            return response.json()
+        for attempt in range(MAX_RETRIES + 1):
+            try:
+                if self._client:
+                    response = await self._client.post(
+                        OVERPASS_API_URL, data={"data": query}
+                    )
+                    response.raise_for_status()
+                    return response.json()
 
-        async with httpx.AsyncClient(timeout=120) as client:
-            response = await client.post(OVERPASS_API_URL, data={"data": query})
-            response.raise_for_status()
-            return response.json()
+                async with httpx.AsyncClient(timeout=120) as client:
+                    response = await client.post(OVERPASS_API_URL, data={"data": query})
+                    response.raise_for_status()
+                    return response.json()
+            except httpx.HTTPStatusError as e:
+                if e.response.status_code == 429 and attempt < MAX_RETRIES:
+                    delay = RETRY_BASE_DELAY * (2 ** attempt)
+                    logger.warning(
+                        "Overpass 429 rate-limited (attempt %d/%d), retrying in %ds...",
+                        attempt + 1, MAX_RETRIES + 1, delay,
+                    )
+                    await asyncio.sleep(delay)
+                    continue
+                raise
 
     def _parse_node(
         self, element: dict, tags: dict, type_mapping: dict
