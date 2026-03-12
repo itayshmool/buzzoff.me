@@ -12,6 +12,7 @@ import SourceEditorPage from './pages/SourceEditorPage';
 import CamerasPage from './pages/CamerasPage';
 import GeocodingQueuePage from './pages/GeocodingQueuePage';
 import JobsPage from './pages/JobsPage';
+import SchedulerPage from './pages/SchedulerPage';
 import DeveloperKeysPage from './pages/DeveloperKeysPage';
 import SubmissionsPage from './pages/SubmissionsPage';
 import SubmissionDetailPage from './pages/SubmissionDetailPage';
@@ -38,6 +39,7 @@ export default function App() {
                 <Route path="countries/:code/sources/:id" element={<SourceEditorPage />} />
                 <Route path="geocoding" element={<GeocodingQueuePage />} />
                 <Route path="jobs" element={<JobsPage />} />
+                <Route path="scheduler" element={<SchedulerPage />} />
                 <Route path="developers" element={<DeveloperKeysPage />} />
                 <Route path="developers/submissions" element={<SubmissionsPage />} />
                 <Route path="developers/submissions/:id" element={<SubmissionDetailPage />} />

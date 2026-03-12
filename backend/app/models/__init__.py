@@ -5,9 +5,10 @@ from app.models.geocode_cache import GeocodeCache
 from app.models.job_run import JobRun
 from app.models.pack import Pack
 from app.models.raw_camera import RawCamera
+from app.models.scheduler_settings import SchedulerSettings
 from app.models.source import Source
 
 __all__ = [
     "Camera", "Country", "DeveloperKey", "DeveloperSubmission",
-    "GeocodeCache", "JobRun", "Pack", "RawCamera", "Source",
+    "GeocodeCache", "JobRun", "Pack", "RawCamera", "SchedulerSettings", "Source",
 ]

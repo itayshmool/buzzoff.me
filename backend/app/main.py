@@ -11,6 +11,7 @@ from app.api.routes.admin_developers import router as admin_developers_router
 from app.api.routes.admin_geocoding import router as admin_geocoding_router
 from app.api.routes.admin_jobs import router as admin_jobs_router
 from app.api.routes.admin_packs import router as admin_packs_router
+from app.api.routes.admin_scheduler import router as admin_scheduler_router
 from app.api.routes.admin_sources import router as admin_sources_router
 from app.api.routes.admin_submissions import router as admin_submissions_router
 from app.api.routes.auth import router as auth_router
@@ -22,13 +23,22 @@ logger = logging.getLogger(__name__)
 
 
 @app.on_event("startup")
-def _log_admin_auth_config() -> None:
+async def _startup() -> None:
     if settings.admin_password == "changeme":
         logger.warning(
             "Admin auth: using default password. Set ADMIN_PASSWORD in production."
         )
     else:
         logger.info("Admin auth: custom password configured.")
+
+    from app.services.scheduler import start_scheduler
+    await start_scheduler()
+
+
+@app.on_event("shutdown")
+async def _shutdown() -> None:
+    from app.services.scheduler import stop_scheduler
+    await stop_scheduler()
 
 
 app.add_middleware(
@@ -58,3 +68,4 @@ app.include_router(admin_jobs_router, prefix="/admin/api", tags=["admin-jobs"])
 app.include_router(admin_developers_router, prefix="/admin/api", tags=["admin-developers"])
 app.include_router(admin_submissions_router, prefix="/admin/api", tags=["admin-submissions"])
 app.include_router(admin_dashboard_router, prefix="/admin/api", tags=["admin-dashboard"])
+app.include_router(admin_scheduler_router, prefix="/admin/api", tags=["admin-scheduler"])

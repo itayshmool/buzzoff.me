@@ -7,6 +7,7 @@ const links = [
   { to: '/countries', label: 'TRACKS' },
   { to: '/geocoding', label: 'PIT STOP' },
   { to: '/jobs', label: 'LAP LOG' },
+  { to: '/scheduler', label: 'CRON' },
   { to: '/developers', label: 'DRIVERS' },
   { to: '/developers/submissions', label: 'GRID' },
 ];

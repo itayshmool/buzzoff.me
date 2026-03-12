@@ -133,6 +133,20 @@ export interface JobRun {
   items_processed: number | null;
 }
 
+// Scheduler
+export interface SchedulerState {
+  enabled: boolean;
+  interval_hours: number;
+  last_run_at: string | null;
+  next_run_at: string | null;
+  status: 'idle' | 'running' | 'disabled';
+}
+
+export interface SchedulerUpdate {
+  enabled?: boolean;
+  interval_hours?: number;
+}
+
 // Dashboard
 export interface DashboardStats {
   countries: number;
