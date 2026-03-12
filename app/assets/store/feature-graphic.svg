@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 500">
+  <defs>
+    <linearGradient id="fbg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A1A2E"/>
+      <stop offset="100%" style="stop-color:#0F3460"/>
+    </linearGradient>
+    <linearGradient id="frainbow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#E52521"/>
+      <stop offset="17%" style="stop-color:#FF6B00"/>
+      <stop offset="33%" style="stop-color:#FBD000"/>
+      <stop offset="50%" style="stop-color:#43B047"/>
+      <stop offset="67%" style="stop-color:#049CD8"/>
+      <stop offset="100%" style="stop-color:#7B2FBE"/>
+    </linearGradient>
+    <filter id="fglow">
+      <feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="#FBD000" flood-opacity="0.4"/>
+    </filter>
+    <filter id="iconglow">
+      <feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="#E52521" flood-opacity="0.5"/>
+    </filter>
+    <linearGradient id="iconbg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E52521"/>
+      <stop offset="100%" style="stop-color:#B81E1B"/>
+    </linearGradient>
+    <radialGradient id="flens" cx="45%" cy="40%" r="55%">
+      <stop offset="0%" style="stop-color:#2a2a3a"/>
+      <stop offset="60%" style="stop-color:#0d0d1a"/>
+      <stop offset="100%" style="stop-color:#000005"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="500" fill="url(#fbg)"/>
+
+  <!-- Racing stripes -->
+  <g opacity="0.04">
+    <rect x="-100" y="-100" width="80" height="800" fill="#fff" transform="rotate(-25 512 250)"/>
+    <rect x="100" y="-100" width="80" height="800" fill="#fff" transform="rotate(-25 512 250)"/>
+    <rect x="300" y="-100" width="80" height="800" fill="#fff" transform="rotate(-25 512 250)"/>
+    <rect x="500" y="-100" width="80" height="800" fill="#fff" transform="rotate(-25 512 250)"/>
+    <rect x="700" y="-100" width="80" height="800" fill="#fff" transform="rotate(-25 512 250)"/>
+    <rect x="900" y="-100" width="80" height="800" fill="#fff" transform="rotate(-25 512 250)"/>
+  </g>
+
+  <!-- Rainbow line top -->
+  <rect x="0" y="0" width="1024" height="4" fill="url(#frainbow)"/>
+
+  <!-- Checkered corners -->
+  <g opacity="0.06">
+    <!-- Top-left -->
+    <rect x="0" y="4" width="20" height="20" fill="#fff"/>
+    <rect x="40" y="4" width="20" height="20" fill="#fff"/>
+    <rect x="80" y="4" width="20" height="20" fill="#fff"/>
+    <rect x="20" y="24" width="20" height="20" fill="#fff"/>
+    <rect x="60" y="24" width="20" height="20" fill="#fff"/>
+    <rect x="100" y="24" width="20" height="20" fill="#fff"/>
+    <!-- Top-right -->
+    <rect x="904" y="4" width="20" height="20" fill="#fff"/>
+    <rect x="944" y="4" width="20" height="20" fill="#fff"/>
+    <rect x="984" y="4" width="20" height="20" fill="#fff"/>
+    <rect x="924" y="24" width="20" height="20" fill="#fff"/>
+    <rect x="964" y="24" width="20" height="20" fill="#fff"/>
+    <rect x="1004" y="24" width="20" height="20" fill="#fff"/>
+  </g>
+
+  <!-- App icon (mini version) -->
+  <g filter="url(#iconglow)" transform="translate(120, 130)">
+    <rect width="240" height="240" rx="52" fill="url(#iconbg)"/>
+    <!-- Checkered subtle -->
+    <g opacity="0.06">
+      <rect x="0" y="0" width="30" height="30" fill="#fff" rx="4"/>
+      <rect x="60" y="0" width="30" height="30" fill="#fff"/>
+      <rect x="120" y="0" width="30" height="30" fill="#fff"/>
+      <rect x="180" y="0" width="30" height="30" fill="#fff"/>
+      <rect x="30" y="30" width="30" height="30" fill="#fff"/>
+      <rect x="90" y="30" width="30" height="30" fill="#fff"/>
+      <rect x="150" y="30" width="30" height="30" fill="#fff"/>
+      <rect x="210" y="30" width="30" height="30" fill="#fff" rx="4"/>
+    </g>
+    <!-- Lens -->
+    <circle cx="120" cy="115" r="72" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+    <circle cx="120" cy="115" r="62" fill="#333"/>
+    <circle cx="120" cy="115" r="54" fill="url(#flens)"/>
+    <circle cx="120" cy="115" r="38" fill="none" stroke="#444" stroke-width="1.5"/>
+    <circle cx="120" cy="115" r="22" fill="#0a0a12"/>
+    <circle cx="120" cy="115" r="8" fill="#E52521"/>
+    <!-- Gold slash -->
+    <line x1="60" y1="55" x2="180" y2="175" stroke="#FBD000" stroke-width="8" stroke-linecap="round" opacity="0.85"/>
+    <!-- Text -->
+    <text x="120" y="215" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="22" font-weight="900" fill="#fff" letter-spacing="4">BUZZOFF</text>
+  </g>
+
+  <!-- Title text -->
+  <g filter="url(#fglow)">
+    <text x="520" y="180" font-family="'Arial Black', Impact, sans-serif" font-size="60" font-weight="900" fill="#FBD000" letter-spacing="4">BUZZOFF</text>
+  </g>
+
+  <!-- Tagline -->
+  <text x="520" y="230" font-family="'Trebuchet MS', sans-serif" font-size="24" fill="#8b98a8" letter-spacing="3">SPEED CAMERA ALERTS</text>
+
+  <!-- Sub-tagline -->
+  <text x="520" y="290" font-family="'Trebuchet MS', sans-serif" font-size="18" fill="#5a6a8a" letter-spacing="1">Never Get Flashed Again</text>
+
+  <!-- Feature pills -->
+  <g transform="translate(520, 320)">
+    <rect x="0" y="0" width="100" height="30" rx="15" fill="rgba(229,37,33,0.2)" stroke="#E52521" stroke-width="1"/>
+    <text x="50" y="20" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#E52521" font-weight="600">OFFLINE</text>
+
+    <rect x="116" y="0" width="100" height="30" rx="15" fill="rgba(67,176,71,0.2)" stroke="#43B047" stroke-width="1"/>
+    <text x="166" y="20" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#43B047" font-weight="600">SILENT</text>
+
+    <rect x="232" y="0" width="130" height="30" rx="15" fill="rgba(4,156,216,0.2)" stroke="#049CD8" stroke-width="1"/>
+    <text x="297" y="20" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#049CD8" font-weight="600">BACKGROUND</text>
+
+    <rect x="378" y="0" width="100" height="30" rx="15" fill="rgba(251,208,0,0.2)" stroke="#FBD000" stroke-width="1"/>
+    <text x="428" y="20" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#FBD000" font-weight="600">FREE</text>
+  </g>
+
+  <!-- Speed lines -->
+  <g opacity="0.1">
+    <line x1="0" y1="400" x2="140" y2="400" stroke="#FBD000" stroke-width="3" stroke-linecap="round"/>
+    <line x1="0" y1="430" x2="100" y2="430" stroke="#E52521" stroke-width="2" stroke-linecap="round"/>
+    <line x1="884" y1="390" x2="1024" y2="390" stroke="#049CD8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="924" y1="420" x2="1024" y2="420" stroke="#FBD000" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Rainbow line bottom -->
+  <rect x="0" y="496" width="1024" height="4" fill="url(#frainbow)"/>
+</svg>
