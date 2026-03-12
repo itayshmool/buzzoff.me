@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from geoalchemy2.functions import ST_X, ST_Y
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,14 +9,28 @@ from app.api.deps import get_current_developer, get_db
 from app.models.camera import Camera
 from app.models.country import Country
 from app.models.developer import DeveloperKey, DeveloperSubmission
+from app.models.source import Source
 from app.schemas.developer import (
     CameraSubmitRequest,
+    CountryCreateRequest,
+    CountryResponse,
+    CountryUpdateRequest,
     DeveloperMeResponse,
+    SourceCreateRequest,
+    SourceResponse,
     SubmissionDetailResponse,
     SubmissionResponse,
 )
 
 router = APIRouter()
+
+
+def _require_scope(dev: DeveloperKey, scope: str) -> None:
+    if scope not in dev.scopes:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"API key missing required scope: {scope}",
+        )
 
 
 @router.get("/me", response_model=DeveloperMeResponse)
@@ -47,6 +61,169 @@ async def list_countries(
         for c in countries
     ]
 
+
+@router.post("/countries", response_model=CountryResponse, status_code=status.HTTP_201_CREATED)
+async def create_country(
+    body: CountryCreateRequest,
+    dev: DeveloperKey = Depends(get_current_developer),
+    db: AsyncSession = Depends(get_db),
+):
+    _require_scope(dev, "manage_countries")
+    result = await db.execute(select(Country).where(Country.code == body.code))
+    if result.scalar_one_or_none() is not None:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Country already exists")
+
+    country = Country(
+        code=body.code,
+        name=body.name,
+        name_local=body.name_local,
+        speed_unit=body.speed_unit,
+        enabled=True,
+    )
+    db.add(country)
+    await db.commit()
+    return CountryResponse(
+        code=country.code, name=country.name, name_local=country.name_local,
+        speed_unit=country.speed_unit, enabled=country.enabled,
+    )
+
+
+@router.get("/countries/{code}", response_model=CountryResponse)
+async def get_country(
+    code: str,
+    dev: DeveloperKey = Depends(get_current_developer),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(Country).where(Country.code == code))
+    country = result.scalar_one_or_none()
+    if country is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Country not found")
+    return CountryResponse(
+        code=country.code, name=country.name, name_local=country.name_local,
+        speed_unit=country.speed_unit, enabled=country.enabled,
+    )
+
+
+@router.put("/countries/{code}", response_model=CountryResponse)
+async def update_country(
+    code: str,
+    body: CountryUpdateRequest,
+    dev: DeveloperKey = Depends(get_current_developer),
+    db: AsyncSession = Depends(get_db),
+):
+    _require_scope(dev, "manage_countries")
+    result = await db.execute(select(Country).where(Country.code == code))
+    country = result.scalar_one_or_none()
+    if country is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Country not found")
+
+    if body.name is not None:
+        country.name = body.name
+    if body.name_local is not None:
+        country.name_local = body.name_local
+    if body.speed_unit is not None:
+        country.speed_unit = body.speed_unit
+
+    await db.commit()
+    return CountryResponse(
+        code=country.code, name=country.name, name_local=country.name_local,
+        speed_unit=country.speed_unit, enabled=country.enabled,
+    )
+
+
+@router.delete("/countries/{code}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_country(
+    code: str,
+    dev: DeveloperKey = Depends(get_current_developer),
+    db: AsyncSession = Depends(get_db),
+):
+    _require_scope(dev, "manage_countries")
+    result = await db.execute(select(Country).where(Country.code == code))
+    country = result.scalar_one_or_none()
+    if country is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Country not found")
+
+    await db.delete(country)
+    await db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+# --- Sources ---
+
+@router.get("/countries/{code}/sources", response_model=list[SourceResponse])
+async def list_sources(
+    code: str,
+    dev: DeveloperKey = Depends(get_current_developer),
+    db: AsyncSession = Depends(get_db),
+):
+    _require_scope(dev, "manage_countries")
+    result = await db.execute(select(Source).where(Source.country_code == code))
+    sources = result.scalars().all()
+    return [
+        SourceResponse(
+            id=s.id, country_code=s.country_code, name=s.name,
+            adapter=s.adapter, confidence=s.confidence, enabled=s.enabled,
+            last_fetched_at=s.last_fetched_at, created_at=s.created_at,
+        )
+        for s in sources
+    ]
+
+
+@router.post(
+    "/countries/{code}/sources",
+    response_model=SourceResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_source(
+    code: str,
+    body: SourceCreateRequest,
+    dev: DeveloperKey = Depends(get_current_developer),
+    db: AsyncSession = Depends(get_db),
+):
+    _require_scope(dev, "manage_countries")
+    result = await db.execute(select(Country).where(Country.code == code))
+    if result.scalar_one_or_none() is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Country not found")
+
+    source = Source(
+        country_code=code,
+        name=body.name,
+        adapter=body.adapter,
+        config=body.config,
+        confidence=body.confidence,
+        enabled=True,
+    )
+    db.add(source)
+    await db.commit()
+    await db.refresh(source)
+    return SourceResponse(
+        id=source.id, country_code=source.country_code, name=source.name,
+        adapter=source.adapter, confidence=source.confidence, enabled=source.enabled,
+        last_fetched_at=source.last_fetched_at, created_at=source.created_at,
+    )
+
+
+@router.delete("/countries/{code}/sources/{source_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_source(
+    code: str,
+    source_id: uuid.UUID,
+    dev: DeveloperKey = Depends(get_current_developer),
+    db: AsyncSession = Depends(get_db),
+):
+    _require_scope(dev, "manage_countries")
+    result = await db.execute(
+        select(Source).where(Source.id == source_id, Source.country_code == code)
+    )
+    source = result.scalar_one_or_none()
+    if source is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Source not found")
+
+    await db.delete(source)
+    await db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+# --- Cameras ---
 
 @router.post(
     "/countries/{code}/cameras",

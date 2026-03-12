@@ -14,6 +14,49 @@ class SubmittedCamera(BaseModel):
     address: str | None = None
 
 
+# --- Country CRUD ---
+
+class CountryCreateRequest(BaseModel):
+    code: str = Field(..., min_length=2, max_length=2, pattern=r"^[A-Z]{2}$")
+    name: str = Field(..., min_length=1, max_length=100)
+    name_local: str | None = None
+    speed_unit: str = Field(default="kmh", pattern=r"^(kmh|mph)$")
+
+
+class CountryUpdateRequest(BaseModel):
+    name: str | None = Field(default=None, max_length=100)
+    name_local: str | None = None
+    speed_unit: str | None = Field(default=None, pattern=r"^(kmh|mph)$")
+
+
+class CountryResponse(BaseModel):
+    code: str
+    name: str
+    name_local: str | None = None
+    speed_unit: str
+    enabled: bool
+
+
+# --- Source Management ---
+
+class SourceCreateRequest(BaseModel):
+    name: str = Field(..., min_length=1, max_length=200)
+    adapter: str = "developer_api"
+    config: dict = Field(default_factory=dict)
+    confidence: float = Field(default=0.5, ge=0.0, le=1.0)
+
+
+class SourceResponse(BaseModel):
+    id: uuid.UUID
+    country_code: str
+    name: str
+    adapter: str
+    confidence: float
+    enabled: bool
+    last_fetched_at: datetime | None = None
+    created_at: datetime
+
+
 # --- Developer API ---
 
 class DeveloperMeResponse(BaseModel):
