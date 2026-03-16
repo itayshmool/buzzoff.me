@@ -150,7 +150,11 @@ async def run_pipeline_now(
             sched_mod._running = False
             set_current_step(None)
 
-    asyncio.create_task(_run_in_background())
+    # Store task reference to prevent garbage collection
+    import app.services.scheduler as sched_mod
+    task = asyncio.create_task(_run_in_background())
+    sched_mod._background_tasks.add(task)
+    task.add_done_callback(sched_mod._background_tasks.discard)
     return {"status": "started"}
 
 

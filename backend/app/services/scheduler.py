@@ -16,6 +16,7 @@ PIPELINE_JOB_ID = "auto_pipeline"
 _scheduler: AsyncIOScheduler | None = None
 _running = False
 _current_step: str | None = None
+_background_tasks: set = set()  # prevent GC of fire-and-forget tasks
 
 
 def get_scheduler() -> AsyncIOScheduler | None:
