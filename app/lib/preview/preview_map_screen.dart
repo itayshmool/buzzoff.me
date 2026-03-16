@@ -115,7 +115,7 @@ class _PreviewMapScreenState extends ConsumerState<PreviewMapScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      builder: (_) => Padding(
+      builder: (sheetContext) => Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -159,8 +159,101 @@ class _PreviewMapScreenState extends ConsumerState<PreviewMapScreen> {
             if (camera.heading != null)
               _detailRow(Icons.compass_calibration, 'Heading',
                   '${camera.heading!.round()}°'),
+            const SizedBox(height: 12),
+            // Report buttons
+            Container(
+              padding: const EdgeInsets.only(top: 12),
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+                ),
+              ),
+              child: Row(
+                children: [
+                  _reportButton(
+                    sheetContext,
+                    icon: Icons.videocam_off,
+                    label: 'NO\nCAMERA',
+                    color: Colors.orangeAccent,
+                  ),
+                  const SizedBox(width: 10),
+                  _reportButton(
+                    sheetContext,
+                    icon: Icons.warning_amber_rounded,
+                    label: 'DUMMY',
+                    color: Colors.amber,
+                  ),
+                  const SizedBox(width: 10),
+                  _reportButton(
+                    sheetContext,
+                    icon: Icons.swap_horiz,
+                    label: 'WRONG\nLANE',
+                    color: RacingColors.shellGreen,
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 8),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _reportButton(
+    BuildContext sheetContext, {
+    required IconData icon,
+    required String label,
+    required Color color,
+  }) {
+    return Expanded(
+      child: Material(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: () {
+            Navigator.of(sheetContext).pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text(
+                  'Reported — thank you!',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                backgroundColor: RacingColors.trackSurface,
+                behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: color.withValues(alpha: 0.3)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, color: color, size: 26),
+                const SizedBox(height: 6),
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    height: 1.2,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
