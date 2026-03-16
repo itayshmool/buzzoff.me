@@ -117,7 +117,8 @@ main() → init ForegroundTask → load SharedPreferences → load PackStorage
 
 ```
 app/lib/
-├── main.dart                     # Entry point
+├── main.dart                     # Entry point (mobile)
+├── main_preview.dart             # Entry point (web preview — flutter run -d chrome)
 ├── app.dart                      # Root widget (routes to Map or Setup)
 ├── core/
 │   ├── geo/geo_utils.dart        # haversine(), bearing(), isAhead()
@@ -136,12 +137,18 @@ app/lib/
 │   │   └── pack_loader.dart      # Open SQLite in read-only mode
 │   └── preferences/
 │       └── user_preferences.dart # SharedPreferences serialization
+├── preview/
+│   ├── mock_camera_dao.dart      # In-memory camera store (6 Tel Aviv cameras)
+│   ├── mock_pack_storage.dart    # Stub PackStorage (no filesystem)
+│   ├── preview_map_screen.dart   # Web-safe map (no ForegroundTask/sqlite3)
+│   └── preview_settings_screen.dart # Web-safe settings (no PackManager/sqlite3)
 ├── providers/
-│   ├── database_provider.dart    # cameraDaoProvider, cameraCountProvider
+│   ├── database_provider.dart    # cameraDaoProvider (CameraQueryPort?), cameraCountProvider
 │   ├── driving_state_provider.dart  # orchestratorProvider, alertServiceProvider
 │   ├── location_provider.dart    # locationServiceProvider, locationStreamProvider
 │   ├── nearby_cameras_provider.dart # nearbyCamerasProvider (map viewport)
-│   ├── pack_provider.dart        # packManagerProvider, activeCountryProvider, countriesProvider
+│   ├── pack_manager_provider.dart # packManagerProvider, countriesProvider (sqlite3 deps)
+│   ├── pack_provider.dart        # packStorageProvider, activeCountryProvider (no sqlite3)
 │   ├── settings_provider.dart    # settingsProvider (SettingsNotifier)
 │   └── simulation_provider.dart  # simulationEnabledProvider (debug GPS)
 ├── services/
@@ -264,7 +271,7 @@ On each location update while driving: calls `ProximityEngine.check()` → for e
 - Follow mode: auto-tracks user position; disabled on manual pan; re-enabled on "my location" tap
 
 **SettingsScreen** — Sections (all Mario Kart themed):
-WARNING RANGE → RUMBLE (toggle + intensity + test) → HORN (toggle + sound picker + test) → MIN RACE SPEED → PIT STOP TIMER → ITEM TYPES → TRACK REGION (active country + camera count + switch) → DEBUG (simulation mode toggle)
+WARNING RANGE → RUMBLE (toggle + intensity + test) → HORN (toggle + sound picker + test) → MIN RACE SPEED → PIT STOP TIMER → ITEM TYPES → RACE TRACK (active country + camera count + switch) → DEBUG (simulation mode toggle) → PIT CREW (version info + check for updates)
 
 ### Simulation Mode
 
@@ -422,6 +429,13 @@ flutter build apk --release      # Release APK
 cp build/app/outputs/flutter-apk/app-release.apk ../admin/public/buzzoff.apk
 ```
 
+### Web Preview
+```bash
+cd app
+flutter run -d chrome --target lib/main_preview.dart
+```
+Opens in Chrome with mock data (6 cameras around Tel Aviv, simulation mode on). Bottom tab nav between Map and Settings. No real GPS, SQLite, or backend needed.
+
 ### Backend (local)
 ```bash
 docker compose up -d             # Start PostgreSQL + PostGIS
@@ -454,6 +468,25 @@ cd backend && pytest
 
 ---
 
+## Development Workflow — Preview First
+
+**Every UI/feature change follows this flow:**
+
+1. **Implement in web preview first** (`preview/` screens + `main_preview.dart`)
+2. **User approves** the layout/behavior in Chrome
+3. **Port to the real app** (`ui/screens/` + production providers)
+4. **Build APK** and copy to `admin/public/buzzoff.apk`
+
+This ensures visual validation before deploying to mobile. The web preview uses mock data and avoids native dependencies (sqlite3, ForegroundTask, Geolocator).
+
+**Provider split for web compatibility:**
+- `pack_provider.dart` — storage-only providers (no sqlite3 transitive deps)
+- `pack_manager_provider.dart` — PackManager/countries providers (sqlite3 deps via CameraDao)
+- `database_provider.dart` — uses `CameraQueryPort` interface (not concrete `CameraDao`)
+- Preview screens import only web-safe providers; production screens import both
+
+---
+
 ## Critical Rules for Development
 
 1. **NEVER replace themed widgets** (RainbowDivider, RacingStripeCard, PowerButton, StatusBar, CameraFilterBar) with plain Material equivalents
@@ -466,3 +499,4 @@ cd backend && pytest
 8. **ProximityEngine is stateful** — tracks alerted cameras to prevent duplicates
 9. **Foreground service is required** for background GPS on Android
 10. **Copy release APK to `admin/public/buzzoff.apk`** after every build
+11. **Preview first** — implement UI changes in web preview, get approval, then port to real app

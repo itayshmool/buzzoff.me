@@ -9,6 +9,10 @@ abstract class CameraQueryPort {
     double minLon,
     double maxLon,
   );
+
+  int getCameraCount();
+
+  String? getMeta(String key);
 }
 
 class ProximityEngine {

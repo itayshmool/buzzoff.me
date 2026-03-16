@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/model/country.dart';
 import '../../providers/database_provider.dart';
+import '../../providers/pack_manager_provider.dart';
 import '../../providers/pack_provider.dart';
 import '../widgets/download_progress.dart';
 import 'country_picker_screen.dart';

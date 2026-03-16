@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,11 +61,15 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     _serviceStarted = true;
 
     // Request location permission
-    final locationService = ref.read(locationServiceProvider);
-    await locationService.requestPermission();
+    if (!kIsWeb) {
+      final locationService = ref.read(locationServiceProvider);
+      await locationService.requestPermission();
+    }
 
     // Start foreground service (shows persistent notification)
-    await ForegroundTaskService.start();
+    if (!kIsWeb) {
+      await ForegroundTaskService.start();
+    }
 
     // Start the orchestrator monitoring (auto-detects driving)
     final orchestrator = ref.read(orchestratorProvider);
@@ -222,8 +227,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       error: (_, __) => _defaultCenter,
     );
 
-    return WithForegroundTask(
-      child: Scaffold(
+    final body = Scaffold(
         body: Stack(
           children: [
             // Map
@@ -360,8 +364,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ),
           ],
         ),
-      ),
-    );
+      );
+
+    return kIsWeb ? body : WithForegroundTask(child: body);
   }
 
   Marker _buildCameraMarker(Camera camera) {

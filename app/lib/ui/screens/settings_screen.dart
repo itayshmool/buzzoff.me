@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../core/model/app_settings.dart';
 import '../../providers/driving_state_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../providers/database_provider.dart';
+import '../../providers/pack_manager_provider.dart';
 import '../../providers/pack_provider.dart';
 import '../../providers/simulation_provider.dart';
 import '../theme/racing_colors.dart';
@@ -277,7 +279,35 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
+          const RainbowDivider(),
+          const SizedBox(height: 8),
+
+          // About
+          _SectionTitle('PIT CREW'),
+          FutureBuilder<PackageInfo>(
+            future: PackageInfo.fromPlatform(),
+            builder: (context, snapshot) {
+              final version = snapshot.data?.version ?? '...';
+              final buildNumber = snapshot.data?.buildNumber ?? '';
+              return RacingStripeCard(
+                stripeColor: RacingColors.coinGold,
+                child: ListTile(
+                  leading: const Icon(Icons.info_outline,
+                      color: RacingColors.coinGold),
+                  title: const Text('BuzzOff'),
+                  subtitle: Text('Version $version ($buildNumber)'),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 8),
+          _CheckForUpdatesCard(
+            activeCountry: activeCountry,
+            ref: ref,
+          ),
+
+          SizedBox(height: MediaQuery.of(context).padding.bottom + 24),
         ],
       ),
     );
@@ -297,6 +327,115 @@ class _SectionTitle extends StatelessWidget {
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
+      ),
+    );
+  }
+}
+
+class _CheckForUpdatesCard extends StatefulWidget {
+  final String? activeCountry;
+  final WidgetRef ref;
+
+  const _CheckForUpdatesCard({
+    required this.activeCountry,
+    required this.ref,
+  });
+
+  @override
+  State<_CheckForUpdatesCard> createState() => _CheckForUpdatesCardState();
+}
+
+class _CheckForUpdatesCardState extends State<_CheckForUpdatesCard> {
+  bool _checking = false;
+  String? _resultMessage;
+  bool _updateAvailable = false;
+  bool _updating = false;
+
+  Future<void> _checkForUpdates() async {
+    final country = widget.activeCountry;
+    if (country == null) return;
+
+    setState(() {
+      _checking = true;
+      _resultMessage = null;
+    });
+
+    try {
+      final manager = widget.ref.read(packManagerProvider);
+      final update = await manager.checkForUpdate(country);
+      if (!mounted) return;
+
+      if (update != null) {
+        setState(() {
+          _updateAvailable = true;
+          _resultMessage =
+              'Update available: v${update.version} (${update.cameraCount} cameras)';
+        });
+      } else {
+        setState(() {
+          _updateAvailable = false;
+          _resultMessage = 'Camera pack is up to date';
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _updateAvailable = false;
+        _resultMessage = 'Could not check for updates';
+      });
+    } finally {
+      if (mounted) setState(() => _checking = false);
+    }
+  }
+
+  Future<void> _applyUpdate() async {
+    final country = widget.activeCountry;
+    if (country == null) return;
+
+    setState(() => _updating = true);
+
+    try {
+      final manager = widget.ref.read(packManagerProvider);
+      final dao = await manager.updatePack(country);
+      if (!mounted) return;
+      widget.ref.read(cameraDaoProvider.notifier).state = dao;
+      setState(() {
+        _updateAvailable = false;
+        _updating = false;
+        _resultMessage = 'Updated successfully';
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _updating = false;
+        _resultMessage = 'Update failed';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RacingStripeCard(
+      stripeColor: RacingColors.shellGreen,
+      child: ListTile(
+        leading: _checking || _updating
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(Icons.system_update, color: RacingColors.shellGreen),
+        title: const Text('Check for updates'),
+        subtitle: _resultMessage != null
+            ? Text(_resultMessage!)
+            : const Text('Tap to check for new camera data'),
+        trailing: _updateAvailable && !_updating
+            ? FilledButton(
+                onPressed: _applyUpdate,
+                child: const Text('Update'),
+              )
+            : null,
+        onTap: _checking || _updating ? null : _checkForUpdates,
       ),
     );
   }
