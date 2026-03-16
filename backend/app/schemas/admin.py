@@ -24,6 +24,7 @@ class AdminCountryResponse(BaseModel):
     name_local: str | None = None
     speed_unit: str
     enabled: bool
+    pack_count: int = 0
 
 
 class SourceCreate(BaseModel):

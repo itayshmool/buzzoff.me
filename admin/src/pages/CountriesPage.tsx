@@ -17,6 +17,7 @@ export default function CountriesPage() {
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'enabled' | 'disabled'>('all');
+  const [packFilter, setPackFilter] = useState<'all' | 'has_packs' | 'no_packs'>('all');
   const [showCreate, setShowCreate] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [form, setForm] = useState<CountryCreate>({
@@ -49,6 +50,15 @@ export default function CountriesPage() {
     { key: 'name_local', header: 'Local Name', render: (c) => c.name_local ?? '-' },
     { key: 'speed_unit', header: 'Speed Unit' },
     {
+      key: 'pack_count',
+      header: '#Packs',
+      render: (c) => (
+        <span className={c.pack_count === 0 ? 'text-text-muted' : 'text-neon'}>
+          {c.pack_count}
+        </span>
+      ),
+    },
+    {
       key: 'enabled',
       header: 'Status',
       render: (c) => <StatusBadge status={c.enabled ? 'enabled' : 'disabled'} />,
@@ -76,12 +86,16 @@ export default function CountriesPage() {
   const filtered = countries.filter((c) => {
     if (statusFilter === 'enabled' && !c.enabled) return false;
     if (statusFilter === 'disabled' && c.enabled) return false;
+    if (packFilter === 'has_packs' && c.pack_count === 0) return false;
+    if (packFilter === 'no_packs' && c.pack_count > 0) return false;
     if (q && !c.code.toLowerCase().includes(q) && !c.name.toLowerCase().includes(q) && !(c.name_local ?? '').toLowerCase().includes(q)) return false;
     return true;
   });
 
   const enabledCount = countries.filter((c) => c.enabled).length;
   const disabledCount = countries.length - enabledCount;
+  const hasPacksCount = countries.filter((c) => c.pack_count > 0).length;
+  const noPacksCount = countries.length - hasPacksCount;
 
   return (
     <div>
@@ -135,6 +149,22 @@ export default function CountriesPage() {
               `}
             >
               {f === 'all' ? `ALL (${countries.length})` : f === 'enabled' ? `ON (${enabledCount})` : `OFF (${disabledCount})`}
+            </button>
+          ))}
+          <div className="w-px bg-border" />
+          {(['all', 'has_packs', 'no_packs'] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setPackFilter(f)}
+              className={`
+                px-3 py-2 text-xs font-heading tracking-wider border transition-all duration-150
+                ${packFilter === f
+                  ? 'bg-neon/15 text-neon border-neon/50'
+                  : 'bg-surface-raised text-text-secondary border-border hover:border-neon/30 hover:text-text-primary'
+                }
+              `}
+            >
+              {f === 'all' ? `PACKS (${countries.reduce((s, c) => s + c.pack_count, 0)})` : f === 'has_packs' ? `HAS (${hasPacksCount})` : `NONE (${noPacksCount})`}
             </button>
           ))}
         </div>

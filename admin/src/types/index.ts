@@ -16,6 +16,7 @@ export interface Country {
   name_local: string | null;
   speed_unit: string;
   enabled: boolean;
+  pack_count: number;
 }
 
 export interface CountryCreate {

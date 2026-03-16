@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_admin, get_db
 from app.models.country import Country
+from app.models.pack import Pack
 from app.schemas.admin import AdminCountryResponse, CountryCreate, CountryUpdate
 
 router = APIRouter()
@@ -16,6 +17,14 @@ async def list_countries(
 ):
     result = await db.execute(select(Country))
     countries = result.scalars().all()
+
+    # Count packs per country
+    pack_stmt = select(
+        Pack.country_code, func.count().label("cnt")
+    ).group_by(Pack.country_code)
+    pack_result = await db.execute(pack_stmt)
+    pack_counts = {row.country_code: row.cnt for row in pack_result.all()}
+
     return [
         AdminCountryResponse(
             code=c.code,
@@ -23,6 +32,7 @@ async def list_countries(
             name_local=c.name_local,
             speed_unit=c.speed_unit,
             enabled=c.enabled,
+            pack_count=pack_counts.get(c.code, 0),
         )
         for c in countries
     ]
