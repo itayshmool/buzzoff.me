@@ -46,7 +46,7 @@ export default function CountriesPage() {
   });
 
   const [buildingCode, setBuildingCode] = useState<string | null>(null);
-  const [buildResult, setBuildResult] = useState<{ code: string; steps: Record<string, string> } | null>(null);
+  const [buildResult, setBuildResult] = useState<{ code: string; steps?: Record<string, string>; error?: string } | null>(null);
 
   const buildMutation = useMutation({
     mutationFn: runCountryPipeline,
@@ -56,8 +56,12 @@ export default function CountriesPage() {
       setBuildResult({ code: data.country_code, steps: data.steps });
       setTimeout(() => setBuildResult(null), 8000);
     },
-    onError: () => {
+    onError: (err: unknown) => {
+      const code = buildingCode ?? '??';
       setBuildingCode(null);
+      const msg = err instanceof Error ? err.message : String(err);
+      setBuildResult({ code, error: msg });
+      setTimeout(() => setBuildResult(null), 8000);
     },
   });
 
@@ -204,17 +208,20 @@ export default function CountriesPage() {
 
       {buildResult && (
         <div className={`mb-4 px-4 py-3 text-xs font-heading tracking-wider border ${
-          Object.values(buildResult.steps).every((v) => v === 'completed')
-            ? 'bg-neon/10 text-neon border-neon/30'
-            : 'bg-danger/10 text-danger border-danger/30'
+          buildResult.error || (buildResult.steps && !Object.values(buildResult.steps).every((v) => v === 'completed'))
+            ? 'bg-danger/10 text-danger border-danger/30'
+            : 'bg-neon/10 text-neon border-neon/30'
         }`}>
           <span className="font-bold">{buildResult.code}</span>
           {' — '}
-          {Object.entries(buildResult.steps).map(([step, status]) => (
-            <span key={step} className="mr-3">
-              {status === 'completed' ? '\u2713' : '\u2717'} {step.replace('_', ' ').toUpperCase()}
-            </span>
-          ))}
+          {buildResult.error
+            ? <span>FAILED: {buildResult.error}</span>
+            : buildResult.steps && Object.entries(buildResult.steps).map(([step, status]) => (
+                <span key={step} className="mr-3">
+                  {status === 'completed' ? '\u2713' : '\u2717'} {step.replace('_', ' ').toUpperCase()}
+                </span>
+              ))
+          }
         </div>
       )}
 
