@@ -16,6 +16,7 @@ import '../ui/widgets/camera_filter_bar.dart';
 import '../ui/widgets/camera_marker.dart';
 import '../ui/widgets/power_button.dart';
 import '../ui/widgets/status_bar.dart';
+import '../ui/widgets/speedometer.dart';
 import '../ui/widgets/zoom_controls.dart';
 
 /// Preview-only map screen. Same layout as MapScreen but without
@@ -291,6 +292,21 @@ class _PreviewMapScreenState extends ConsumerState<PreviewMapScreen> {
               activeTypes: _visibleTypes,
               cameras: _mapCameras,
               onToggle: _toggleFilter,
+            ),
+          ),
+
+          // Speedometer (bottom-center)
+          Positioned(
+            bottom: MediaQuery.of(context).padding.bottom + 24,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Speedometer(
+                speedKmh: locationAsync.whenOrNull(
+                      data: (loc) => loc.speedKmh,
+                    ) ??
+                    0,
+              ),
             ),
           ),
 

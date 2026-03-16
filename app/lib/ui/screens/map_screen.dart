@@ -19,6 +19,7 @@ import '../widgets/camera_filter_bar.dart';
 import '../widgets/camera_marker.dart';
 import '../widgets/power_button.dart';
 import '../widgets/status_bar.dart';
+import '../widgets/speedometer.dart';
 import '../widgets/zoom_controls.dart';
 import 'settings_screen.dart';
 
@@ -309,6 +310,21 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 activeTypes: _visibleTypes,
                 cameras: _mapCameras,
                 onToggle: _toggleFilter,
+              ),
+            ),
+
+            // Speedometer (bottom-center)
+            Positioned(
+              bottom: MediaQuery.of(context).padding.bottom + 24,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Speedometer(
+                  speedKmh: locationAsync.whenOrNull(
+                        data: (loc) => loc.speedKmh,
+                      ) ??
+                      0,
+                ),
               ),
             ),
 
