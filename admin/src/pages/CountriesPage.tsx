@@ -15,6 +15,8 @@ export default function CountriesPage() {
     queryFn: getCountries,
   });
 
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'enabled' | 'disabled'>('all');
   const [showCreate, setShowCreate] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [form, setForm] = useState<CountryCreate>({
@@ -70,6 +72,17 @@ export default function CountriesPage() {
 
   if (isLoading) return <p className="text-sm text-text-muted font-mono">Loading...</p>;
 
+  const q = search.toLowerCase().trim();
+  const filtered = countries.filter((c) => {
+    if (statusFilter === 'enabled' && !c.enabled) return false;
+    if (statusFilter === 'disabled' && c.enabled) return false;
+    if (q && !c.code.toLowerCase().includes(q) && !c.name.toLowerCase().includes(q) && !(c.name_local ?? '').toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  const enabledCount = countries.filter((c) => c.enabled).length;
+  const disabledCount = countries.length - enabledCount;
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
@@ -84,11 +97,55 @@ export default function CountriesPage() {
         </button>
       </div>
 
+      {/* Search & Filters */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <div className="relative flex-1">
+          <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search by code or name..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-3 py-2 bg-surface-raised border border-border text-sm text-text-primary font-mono placeholder:text-text-muted focus:border-neon focus:outline-none transition-colors"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+        <div className="flex gap-2">
+          {(['all', 'enabled', 'disabled'] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setStatusFilter(f)}
+              className={`
+                px-3 py-2 text-xs font-heading tracking-wider border transition-all duration-150
+                ${statusFilter === f
+                  ? 'bg-neon/15 text-neon border-neon/50'
+                  : 'bg-surface-raised text-text-secondary border-border hover:border-neon/30 hover:text-text-primary'
+                }
+              `}
+            >
+              {f === 'all' ? `ALL (${countries.length})` : f === 'enabled' ? `ON (${enabledCount})` : `OFF (${disabledCount})`}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="bg-surface-card border border-border overflow-x-auto">
         <DataTable
-          data={countries}
+          data={filtered}
           columns={columns}
           onRowClick={(c) => navigate(`/countries/${c.code}`)}
+          emptyMessage={search || statusFilter !== 'all' ? 'No tracks match your filters' : 'No tracks yet'}
         />
       </div>
 
