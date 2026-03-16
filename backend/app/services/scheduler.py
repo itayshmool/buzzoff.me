@@ -15,6 +15,7 @@ PIPELINE_JOB_ID = "auto_pipeline"
 
 _scheduler: AsyncIOScheduler | None = None
 _running = False
+_current_step: str | None = None
 
 
 def get_scheduler() -> AsyncIOScheduler | None:
@@ -23,6 +24,15 @@ def get_scheduler() -> AsyncIOScheduler | None:
 
 def is_pipeline_running() -> bool:
     return _running
+
+
+def get_current_step() -> str | None:
+    return _current_step
+
+
+def set_current_step(step: str | None) -> None:
+    global _current_step
+    _current_step = step
 
 
 async def _run_pipeline_wrapper() -> None:

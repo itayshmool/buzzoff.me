@@ -140,6 +140,7 @@ export interface SchedulerState {
   last_run_at: string | null;
   next_run_at: string | null;
   status: 'idle' | 'running' | 'disabled';
+  current_step: string | null;
 }
 
 export interface SchedulerUpdate {

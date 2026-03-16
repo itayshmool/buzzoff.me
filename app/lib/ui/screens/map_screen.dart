@@ -7,9 +7,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../core/model/app_settings.dart';
 import '../../core/model/camera.dart';
 import '../../providers/database_provider.dart';
 import '../../providers/driving_state_provider.dart';
+import '../../providers/settings_provider.dart';
 import '../../providers/simulation_provider.dart';
 import '../../services/orchestrator.dart';
 import '../../providers/location_provider.dart';
@@ -112,6 +114,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 
   void _showCameraDetail(Camera camera) {
+    final unit = ref.read(settingsProvider).speedUnit;
     final typeLabel = switch (camera.type) {
       CameraType.fixedSpeed => 'Speed Camera',
       CameraType.redLight => 'Red Light Camera',
@@ -163,7 +166,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ),
             const SizedBox(height: 16),
             if (camera.speedLimit != null)
-              _detailRow(Icons.speed, 'Speed Limit', '${camera.speedLimit} km/h'),
+              _detailRow(Icons.speed, 'Speed Limit',
+                  '${unit.convertLimit(camera.speedLimit!)} ${unit.label}'),
             if (camera.roadName != null)
               _detailRow(Icons.route, 'Road', camera.roadName!),
             _detailRow(Icons.location_on, 'Location',
@@ -205,6 +209,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   Widget build(BuildContext context) {
     final locationAsync = ref.watch(locationStreamProvider);
     final drivingState = ref.watch(drivingStateProvider);
+    final settings = ref.watch(settingsProvider);
+    final unit = settings.speedUnit;
 
     final filteredCameras =
         _mapCameras.where((c) => _visibleTypes.contains(c.type)).toList();
@@ -319,12 +325,17 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               left: 0,
               right: 0,
               child: Center(
-                child: Speedometer(
-                  speedKmh: locationAsync.whenOrNull(
+                child: Builder(builder: (_) {
+                  final rawKmh = locationAsync.whenOrNull(
                         data: (loc) => loc.speedKmh,
                       ) ??
-                      0,
-                ),
+                      0.0;
+                  return Speedometer(
+                    speed: unit.convert(rawKmh),
+                    unitLabel: unit.label,
+                    maxSpeed: unit == SpeedUnit.mph ? 120 : 180,
+                  );
+                }),
               ),
             ),
 

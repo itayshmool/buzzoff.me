@@ -1,3 +1,22 @@
+enum SpeedUnit { kmh, mph }
+
+extension SpeedUnitX on SpeedUnit {
+  String get label => switch (this) {
+        SpeedUnit.kmh => 'km/h',
+        SpeedUnit.mph => 'mph',
+      };
+
+  double convert(double kmh) => switch (this) {
+        SpeedUnit.kmh => kmh,
+        SpeedUnit.mph => kmh * 0.621371,
+      };
+
+  int convertLimit(int kmhLimit) => switch (this) {
+        SpeedUnit.kmh => kmhLimit,
+        SpeedUnit.mph => (kmhLimit * 0.621371).round(),
+      };
+}
+
 enum VibrationIntensity { low, medium, high }
 
 enum AlertSound {
@@ -40,6 +59,7 @@ class AppSettings {
   final bool avgSpeedZonesEnabled;
   final int sleepAfterMinutes;
   final VibrationIntensity vibrationIntensity;
+  final SpeedUnit speedUnit;
 
   const AppSettings({
     this.alertDistanceMeters = 800.0,
@@ -52,6 +72,7 @@ class AppSettings {
     this.avgSpeedZonesEnabled = true,
     this.sleepAfterMinutes = 5,
     this.vibrationIntensity = VibrationIntensity.high,
+    this.speedUnit = SpeedUnit.kmh,
   });
 
   AppSettings copyWith({
@@ -65,6 +86,7 @@ class AppSettings {
     bool? avgSpeedZonesEnabled,
     int? sleepAfterMinutes,
     VibrationIntensity? vibrationIntensity,
+    SpeedUnit? speedUnit,
   }) {
     return AppSettings(
       alertDistanceMeters: alertDistanceMeters ?? this.alertDistanceMeters,
@@ -79,6 +101,7 @@ class AppSettings {
           avgSpeedZonesEnabled ?? this.avgSpeedZonesEnabled,
       sleepAfterMinutes: sleepAfterMinutes ?? this.sleepAfterMinutes,
       vibrationIntensity: vibrationIntensity ?? this.vibrationIntensity,
+      speedUnit: speedUnit ?? this.speedUnit,
     );
   }
 }

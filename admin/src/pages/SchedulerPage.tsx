@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getScheduler, updateScheduler, runPipelineNow } from '../api/scheduler';
 import { getJobs } from '../api/jobs';
@@ -46,20 +45,32 @@ function parsePipelineResults(summary: string | null): Record<string, string> | 
   }
 }
 
+const PIPELINE_STEPS = ['fetch_sources', 'merge_cameras', 'generate_packs'] as const;
+const STEP_LABELS: Record<string, string> = {
+  starting: 'Starting',
+  fetch_sources: 'Fetching Sources',
+  merge_cameras: 'Merging Cameras',
+  generate_packs: 'Generating Packs',
+};
+
 export default function SchedulerPage() {
   const queryClient = useQueryClient();
-  const [runningNow, setRunningNow] = useState(false);
 
   const { data: scheduler, isLoading } = useQuery<SchedulerState>({
     queryKey: ['scheduler'],
     queryFn: getScheduler,
-    refetchInterval: 10_000,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      return data?.status === 'running' ? 3_000 : 10_000;
+    },
   });
+
+  const isPipelineActive = scheduler?.status === 'running';
 
   const { data: pipelineRuns = [] } = useQuery<JobRun[]>({
     queryKey: ['jobs', 'auto_pipeline'],
     queryFn: () => getJobs('auto_pipeline', 10),
-    refetchInterval: 15_000,
+    refetchInterval: isPipelineActive ? 5_000 : 15_000,
   });
 
   const toggleMutation = useMutation({
@@ -74,9 +85,7 @@ export default function SchedulerPage() {
 
   const runNowMutation = useMutation({
     mutationFn: runPipelineNow,
-    onMutate: () => setRunningNow(true),
     onSettled: () => {
-      setRunningNow(false);
       queryClient.invalidateQueries({ queryKey: ['scheduler'] });
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
     },
@@ -85,8 +94,6 @@ export default function SchedulerPage() {
   if (isLoading || !scheduler) {
     return <p className="text-sm text-text-muted font-mono">Loading...</p>;
   }
-
-  const isPipelineActive = scheduler.status === 'running' || runningNow;
 
   return (
     <div className="space-y-6">
@@ -193,14 +200,65 @@ export default function SchedulerPage() {
           </div>
         </div>
 
+        {/* Pipeline Stepper (visible when running) */}
+        {isPipelineActive && (
+          <div className="bg-surface-raised border border-warning/30 p-4 space-y-3">
+            <p className="text-[10px] text-text-muted font-heading tracking-wider">PIPELINE PROGRESS</p>
+            <div className="flex items-center gap-2">
+              {PIPELINE_STEPS.map((step, i) => {
+                const currentStep = scheduler.current_step;
+                const currentIdx = currentStep ? PIPELINE_STEPS.indexOf(currentStep as typeof PIPELINE_STEPS[number]) : -1;
+                const isDone = currentIdx > i;
+                const isActive = currentStep === step;
+
+                return (
+                  <div key={step} className="flex items-center gap-2 flex-1">
+                    {/* Step indicator */}
+                    <div className="flex flex-col items-center gap-1 flex-1">
+                      <div
+                        className={`
+                          w-8 h-8 rounded-full flex items-center justify-center text-xs font-heading border-2 transition-all duration-300
+                          ${isDone
+                            ? 'bg-success/20 border-success text-success shadow-[0_0_8px_rgba(67,176,71,0.4)]'
+                            : isActive
+                              ? 'bg-warning/20 border-warning text-warning animate-pulse shadow-[0_0_8px_rgba(251,208,0,0.4)]'
+                              : 'bg-surface-card border-border text-text-muted'
+                          }
+                        `}
+                      >
+                        {isDone ? '✓' : i + 1}
+                      </div>
+                      <span className={`text-[10px] font-heading tracking-wider text-center ${isActive ? 'text-warning' : isDone ? 'text-success' : 'text-text-muted'}`}>
+                        {STEP_LABELS[step]}
+                      </span>
+                    </div>
+                    {/* Connector line */}
+                    {i < PIPELINE_STEPS.length - 1 && (
+                      <div className={`h-0.5 flex-1 -mt-4 transition-colors duration-300 ${isDone ? 'bg-success/50' : 'bg-border'}`} />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            {scheduler.current_step && (
+              <div className="flex items-center gap-2 pt-1">
+                <div className="w-3 h-3 border-2 border-warning border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs font-mono text-warning">
+                  {STEP_LABELS[scheduler.current_step] || scheduler.current_step}...
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Run Now Button */}
         <button
           onClick={() => runNowMutation.mutate()}
-          disabled={isPipelineActive}
+          disabled={isPipelineActive || runNowMutation.isPending}
           className={`
             w-full py-3 font-heading text-sm tracking-widest border transition-all duration-200
             ${isPipelineActive
-              ? 'bg-warning/10 text-warning border-warning/30 cursor-not-allowed animate-pulse'
+              ? 'bg-warning/10 text-warning border-warning/30 cursor-not-allowed'
               : 'bg-success/10 text-success border-success/40 hover:bg-success/20 hover:border-success/60 hover:shadow-[0_0_12px_rgba(67,176,71,0.2)]'
             }
           `}

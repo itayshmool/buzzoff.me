@@ -13,6 +13,7 @@ class UserPreferences {
   static const _keySleepAfterMinutes = 'sleep_after_minutes';
   static const _keyVibrationIntensity = 'vibration_intensity';
   static const _keyAlertSound = 'alert_sound';
+  static const _keySpeedUnit = 'speed_unit';
 
   final SharedPreferences _prefs;
 
@@ -32,6 +33,7 @@ class UserPreferences {
       sleepAfterMinutes: _prefs.getInt(_keySleepAfterMinutes) ?? 5,
       vibrationIntensity: VibrationIntensity
           .values[_prefs.getInt(_keyVibrationIntensity) ?? 2],
+      speedUnit: SpeedUnit.values[_prefs.getInt(_keySpeedUnit) ?? 0],
     );
   }
 
@@ -47,5 +49,6 @@ class UserPreferences {
     await _prefs.setInt(_keySleepAfterMinutes, settings.sleepAfterMinutes);
     await _prefs.setInt(
         _keyVibrationIntensity, settings.vibrationIntensity.index);
+    await _prefs.setInt(_keySpeedUnit, settings.speedUnit.index);
   }
 }

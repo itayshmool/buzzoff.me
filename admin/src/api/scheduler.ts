@@ -11,7 +11,7 @@ export async function updateScheduler(data: SchedulerUpdate): Promise<SchedulerS
   return response.data;
 }
 
-export async function runPipelineNow(): Promise<{ status: string; results: Record<string, string> }> {
+export async function runPipelineNow(): Promise<{ status: string }> {
   const response = await client.post('/scheduler/run');
   return response.data;
 }

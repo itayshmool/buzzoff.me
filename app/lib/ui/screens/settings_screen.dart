@@ -125,6 +125,21 @@ class SettingsScreen extends ConsumerWidget {
           const RainbowDivider(),
           const SizedBox(height: 8),
 
+          // Gauge units
+          _SectionTitle('GAUGE UNITS'),
+          _RadioGroup<SpeedUnit>(
+            value: settings.speedUnit,
+            options: const {
+              SpeedUnit.kmh: 'km/h',
+              SpeedUnit.mph: 'mph',
+            },
+            onChanged: notifier.updateSpeedUnit,
+          ),
+
+          const SizedBox(height: 8),
+          const RainbowDivider(),
+          const SizedBox(height: 8),
+
           // Activate at speed
           _SectionTitle('MIN RACE SPEED'),
           _RadioGroup<double>(

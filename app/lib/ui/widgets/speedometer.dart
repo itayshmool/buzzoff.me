@@ -6,27 +6,39 @@ import 'package:google_fonts/google_fonts.dart';
 import '../theme/racing_colors.dart';
 
 class Speedometer extends StatelessWidget {
-  final double speedKmh;
+  /// Current speed in display units (km/h or mph).
+  final double speed;
+
+  /// Speed limit in display units (already converted), or null.
   final int? speedLimit;
+
+  /// Unit label shown below the number ("km/h" or "mph").
+  final String unitLabel;
+
+  /// Max speed for the arc gauge (in display units).
+  final double maxSpeed;
 
   const Speedometer({
     super.key,
-    required this.speedKmh,
+    required this.speed,
     this.speedLimit,
+    this.unitLabel = 'km/h',
+    this.maxSpeed = 180,
   });
 
   @override
   Widget build(BuildContext context) {
-    final displaySpeed = speedKmh.round();
-    final overLimit = speedLimit != null && speedKmh > speedLimit!;
+    final displaySpeed = speed.round();
+    final overLimit = speedLimit != null && speed > speedLimit!;
 
     return SizedBox(
       width: 96,
       height: 96,
       child: CustomPaint(
         painter: _SpeedometerPainter(
-          speedKmh: speedKmh,
+          speed: speed,
           speedLimit: speedLimit,
+          maxSpeed: maxSpeed,
         ),
         child: Center(
           child: Column(
@@ -42,7 +54,7 @@ class Speedometer extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                'km/h',
+                unitLabel,
                 style: GoogleFonts.russoOne(
                   fontSize: 10,
                   color: Colors.white54,
@@ -58,14 +70,18 @@ class Speedometer extends StatelessWidget {
 }
 
 class _SpeedometerPainter extends CustomPainter {
-  final double speedKmh;
+  final double speed;
   final int? speedLimit;
+  final double maxSpeed;
 
-  _SpeedometerPainter({required this.speedKmh, this.speedLimit});
+  _SpeedometerPainter({
+    required this.speed,
+    this.speedLimit,
+    required this.maxSpeed,
+  });
 
-  static const _startAngle = 135.0; // degrees, bottom-left
-  static const _sweepRange = 270.0; // degrees, full arc
-  static const _maxSpeed = 180.0; // km/h for full arc
+  static const _startAngle = 135.0;
+  static const _sweepRange = 270.0;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -98,12 +114,12 @@ class _SpeedometerPainter extends CustomPainter {
     );
 
     // Speed arc (colored)
-    final fraction = (speedKmh / _maxSpeed).clamp(0.0, 1.0);
+    final fraction = (speed / maxSpeed).clamp(0.0, 1.0);
     if (fraction > 0) {
-      final overLimit = speedLimit != null && speedKmh > speedLimit!;
+      final overLimit = speedLimit != null && speed > speedLimit!;
       final arcColor = overLimit
           ? RacingColors.racingRed
-          : speedKmh > 100
+          : fraction > 0.55
               ? RacingColors.coinGold
               : RacingColors.shellGreen;
 
@@ -124,7 +140,7 @@ class _SpeedometerPainter extends CustomPainter {
 
     // Speed limit tick mark
     if (speedLimit != null) {
-      final limitFraction = (speedLimit! / _maxSpeed).clamp(0.0, 1.0);
+      final limitFraction = (speedLimit! / maxSpeed).clamp(0.0, 1.0);
       final tickAngle = _degToRad(_startAngle + _sweepRange * limitFraction);
       final innerR = radius - 5;
       final outerR = radius + 5;
@@ -158,5 +174,7 @@ class _SpeedometerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_SpeedometerPainter oldDelegate) =>
-      oldDelegate.speedKmh != speedKmh || oldDelegate.speedLimit != speedLimit;
+      oldDelegate.speed != speed ||
+      oldDelegate.speedLimit != speedLimit ||
+      oldDelegate.maxSpeed != maxSpeed;
 }

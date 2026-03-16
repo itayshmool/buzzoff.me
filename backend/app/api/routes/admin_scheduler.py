@@ -1,14 +1,15 @@
+import asyncio
 import logging
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_admin, get_db
 from app.models.scheduler_settings import SchedulerSettings
-from app.services.scheduler import is_pipeline_running, reschedule
+from app.services.scheduler import get_current_step, is_pipeline_running, reschedule
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -22,6 +23,7 @@ class SchedulerResponse(BaseModel):
     last_run_at: str | None
     next_run_at: str | None
     status: str  # idle, running, disabled
+    current_step: str | None = None  # fetch_sources, merge_cameras, generate_packs
 
 
 class SchedulerUpdate(BaseModel):
@@ -55,6 +57,7 @@ async def get_scheduler_settings(
         last_run_at=settings.last_run_at.isoformat() if settings.last_run_at else None,
         next_run_at=settings.next_run_at.isoformat() if settings.next_run_at else None,
         status=current_status,
+        current_step=get_current_step() if is_pipeline_running() else None,
     )
 
 
@@ -118,18 +121,34 @@ async def run_pipeline_now(
             detail="Pipeline is already running",
         )
 
-    from app.db.session import async_session_factory
-    from jobs.pipeline import run_full_pipeline
+    from app.services.scheduler import set_current_step
 
-    # Update last_run_at
-    async with async_session_factory() as session:
-        result = await session.execute(select(SchedulerSettings).limit(1))
-        settings = result.scalar_one_or_none()
-        if settings:
-            settings.last_run_at = datetime.now(timezone.utc)
-            if settings.enabled:
-                settings.next_run_at = datetime.now(timezone.utc) + timedelta(hours=settings.interval_hours)
-            await session.commit()
+    # Mark as running immediately so subsequent polls see it
+    import app.services.scheduler as sched_mod
+    sched_mod._running = True
+    set_current_step("starting")
 
-    results = await run_full_pipeline()
-    return {"status": "completed", "results": results}
+    async def _run_in_background():
+        from app.db.session import async_session_factory
+        from jobs.pipeline import run_full_pipeline
+
+        try:
+            # Update last_run_at
+            async with async_session_factory() as session:
+                result = await session.execute(select(SchedulerSettings).limit(1))
+                settings = result.scalar_one_or_none()
+                if settings:
+                    settings.last_run_at = datetime.now(timezone.utc)
+                    if settings.enabled:
+                        settings.next_run_at = datetime.now(timezone.utc) + timedelta(hours=settings.interval_hours)
+                    await session.commit()
+
+            await run_full_pipeline()
+        except Exception:
+            logger.exception("Background pipeline run failed")
+        finally:
+            sched_mod._running = False
+            set_current_step(None)
+
+    asyncio.create_task(_run_in_background())
+    return {"status": "started"}

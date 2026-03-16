@@ -72,4 +72,9 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     state = state.copyWith(alertSound: sound);
     _prefs.save(state);
   }
+
+  void updateSpeedUnit(SpeedUnit unit) {
+    state = state.copyWith(speedUnit: unit);
+    _prefs.save(state);
+  }
 }

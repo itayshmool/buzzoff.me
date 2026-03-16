@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 
 from app.db.session import async_session_factory
 from app.models.job_run import JobRun
+from app.services.scheduler import set_current_step
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +25,7 @@ async def run_full_pipeline() -> dict[str, str]:
     started = datetime.now(timezone.utc)
 
     for step_name, runner in steps:
+        set_current_step(step_name)
         logger.info("Pipeline step: %s — starting", step_name)
         try:
             await runner()
@@ -32,6 +34,8 @@ async def run_full_pipeline() -> dict[str, str]:
         except Exception as e:
             results[step_name] = f"failed: {e}"
             logger.exception("Pipeline step: %s — failed", step_name)
+
+    set_current_step(None)
 
     # Record the pipeline run in job_runs
     finished = datetime.now(timezone.utc)
