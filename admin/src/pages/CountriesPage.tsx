@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getCountries, createCountry, deleteCountry } from '../api/countries';
+import { runCountryPipeline } from '../api/jobs';
 import DataTable, { type Column } from '../components/common/DataTable';
 import StatusBadge from '../components/common/StatusBadge';
 import ConfirmDialog from '../components/common/ConfirmDialog';
@@ -44,6 +45,22 @@ export default function CountriesPage() {
     },
   });
 
+  const [buildingCode, setBuildingCode] = useState<string | null>(null);
+  const [buildResult, setBuildResult] = useState<{ code: string; steps: Record<string, string> } | null>(null);
+
+  const buildMutation = useMutation({
+    mutationFn: runCountryPipeline,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['countries'] });
+      setBuildingCode(null);
+      setBuildResult({ code: data.country_code, steps: data.steps });
+      setTimeout(() => setBuildResult(null), 8000);
+    },
+    onError: () => {
+      setBuildingCode(null);
+    },
+  });
+
   const columns: Column<Country>[] = [
     { key: 'code', header: 'Code' },
     { key: 'name', header: 'Name' },
@@ -67,15 +84,30 @@ export default function CountriesPage() {
       key: 'actions',
       header: '',
       render: (c) => (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setDeleteTarget(c.code);
-          }}
-          className="text-xs font-heading tracking-wider text-text-muted hover:text-danger transition-colors"
-        >
-          DEL
-        </button>
+        <div className="flex items-center gap-3">
+          {c.enabled && c.pack_count === 0 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setBuildingCode(c.code);
+                buildMutation.mutate(c.code);
+              }}
+              disabled={buildingCode !== null}
+              className="text-xs font-heading tracking-wider text-warning hover:text-neon disabled:opacity-40 transition-colors"
+            >
+              {buildingCode === c.code ? 'BUILDING...' : 'BUILD'}
+            </button>
+          )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setDeleteTarget(c.code);
+            }}
+            className="text-xs font-heading tracking-wider text-text-muted hover:text-danger transition-colors"
+          >
+            DEL
+          </button>
+        </div>
       ),
     },
   ];
@@ -169,6 +201,22 @@ export default function CountriesPage() {
           ))}
         </div>
       </div>
+
+      {buildResult && (
+        <div className={`mb-4 px-4 py-3 text-xs font-heading tracking-wider border ${
+          Object.values(buildResult.steps).every((v) => v === 'completed')
+            ? 'bg-neon/10 text-neon border-neon/30'
+            : 'bg-danger/10 text-danger border-danger/30'
+        }`}>
+          <span className="font-bold">{buildResult.code}</span>
+          {' — '}
+          {Object.entries(buildResult.steps).map(([step, status]) => (
+            <span key={step} className="mr-3">
+              {status === 'completed' ? '\u2713' : '\u2717'} {step.replace('_', ' ').toUpperCase()}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="bg-surface-card border border-border overflow-x-auto">
         <DataTable

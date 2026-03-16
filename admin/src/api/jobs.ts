@@ -12,3 +12,8 @@ export async function runJob(jobType: string): Promise<{ status: string; job_typ
   const response = await client.post(`/jobs/run/${jobType}`);
   return response.data;
 }
+
+export async function runCountryPipeline(countryCode: string): Promise<{ country_code: string; steps: Record<string, string> }> {
+  const response = await client.post(`/jobs/run/pipeline/${countryCode}`);
+  return response.data;
+}
