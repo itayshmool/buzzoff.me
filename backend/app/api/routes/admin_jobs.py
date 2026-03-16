@@ -1,11 +1,14 @@
 import asyncio
+import json
 import logging
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_admin, get_db
+from app.db.session import async_session_factory
 from app.models.country import Country
 from app.models.job_run import JobRun
 
@@ -61,11 +64,39 @@ async def trigger_job(
     }
 
     runner = runners[job_type]
+    started = datetime.now(timezone.utc)
     try:
         await runner()
+        finished = datetime.now(timezone.utc)
+        async with async_session_factory() as session:
+            job = JobRun(
+                job_type=job_type,
+                status="completed",
+                started_at=started,
+                finished_at=finished,
+                result_summary=json.dumps({job_type: "completed"}),
+                items_processed=1,
+            )
+            session.add(job)
+            await session.commit()
         return {"status": "completed", "job_type": job_type}
     except Exception as e:
         logger.exception("Job %s failed", job_type)
+        finished = datetime.now(timezone.utc)
+        try:
+            async with async_session_factory() as session:
+                job = JobRun(
+                    job_type=job_type,
+                    status="failed",
+                    started_at=started,
+                    finished_at=finished,
+                    result_summary=json.dumps({job_type: f"failed: {e}"}),
+                    items_processed=0,
+                )
+                session.add(job)
+                await session.commit()
+        except Exception:
+            logger.exception("Failed to log job_run for %s", job_type)
         return {"status": "failed", "job_type": job_type, "error": str(e)}
 
 

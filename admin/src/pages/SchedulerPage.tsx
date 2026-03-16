@@ -100,9 +100,21 @@ export default function SchedulerPage() {
   });
 
   const [runningStep, setRunningStep] = useState<string | null>(null);
+  const [stepResult, setStepResult] = useState<{ status: string; step: string } | null>(null);
   const stepMutation = useMutation({
     mutationFn: runJob,
-    onMutate: (jobType) => setRunningStep(jobType),
+    onMutate: (jobType) => {
+      setRunningStep(jobType);
+      setStepResult(null);
+    },
+    onSuccess: (_data, jobType) => {
+      setStepResult({ status: 'completed', step: jobType });
+      setTimeout(() => setStepResult(null), 5000);
+    },
+    onError: (_err, jobType) => {
+      setStepResult({ status: 'failed', step: jobType });
+      setTimeout(() => setStepResult(null), 8000);
+    },
     onSettled: () => {
       setRunningStep(null);
       queryClient.invalidateQueries({ queryKey: ['scheduler'] });
@@ -307,6 +319,18 @@ export default function SchedulerPage() {
               </button>
             ))}
           </div>
+          {stepResult && (
+            <div className={`
+              mt-2 px-4 py-2 text-xs font-heading tracking-wider border transition-all
+              ${stepResult.status === 'completed'
+                ? 'bg-success/10 text-success border-success/30'
+                : 'bg-danger/10 text-danger border-danger/30'
+              }
+            `}>
+              {stepResult.status === 'completed' ? '✓' : '✗'}{' '}
+              {STEP_LABELS[stepResult.step]} — {stepResult.status.toUpperCase()}
+            </div>
+          )}
         </div>
 
         {/* Reset stuck pipeline */}
