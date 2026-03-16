@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getScheduler, updateScheduler, runPipelineNow } from '../api/scheduler';
-import { getJobs } from '../api/jobs';
+import { getScheduler, updateScheduler, runPipelineNow, resetPipeline } from '../api/scheduler';
+import { getJobs, runJob } from '../api/jobs';
 import StatusBadge from '../components/common/StatusBadge';
 import type { SchedulerState, JobRun } from '../types';
 
@@ -86,6 +87,24 @@ export default function SchedulerPage() {
   const runNowMutation = useMutation({
     mutationFn: runPipelineNow,
     onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['scheduler'] });
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+    },
+  });
+
+  const resetMutation = useMutation({
+    mutationFn: resetPipeline,
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['scheduler'] });
+    },
+  });
+
+  const [runningStep, setRunningStep] = useState<string | null>(null);
+  const stepMutation = useMutation({
+    mutationFn: runJob,
+    onMutate: (jobType) => setRunningStep(jobType),
+    onSettled: () => {
+      setRunningStep(null);
       queryClient.invalidateQueries({ queryKey: ['scheduler'] });
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
     },
@@ -265,6 +284,41 @@ export default function SchedulerPage() {
         >
           {isPipelineActive ? 'PIPELINE RUNNING...' : '🏁 RUN NOW'}
         </button>
+
+        {/* Manual Step Triggers */}
+        <div>
+          <p className="text-xs text-text-muted font-heading tracking-wider mb-2">RUN INDIVIDUAL STEP</p>
+          <div className="flex gap-2">
+            {PIPELINE_STEPS.map((step) => (
+              <button
+                key={step}
+                onClick={() => stepMutation.mutate(step)}
+                disabled={!!runningStep || isPipelineActive}
+                className={`
+                  flex-1 py-2 text-xs font-heading tracking-wider border transition-all duration-150
+                  ${runningStep === step
+                    ? 'bg-warning/10 text-warning border-warning/30 animate-pulse'
+                    : 'bg-surface-raised text-text-secondary border-border hover:border-neon/30 hover:text-text-primary'
+                  }
+                  disabled:opacity-50 disabled:cursor-not-allowed
+                `}
+              >
+                {runningStep === step ? 'RUNNING...' : STEP_LABELS[step].toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Reset stuck pipeline */}
+        {isPipelineActive && (
+          <button
+            onClick={() => resetMutation.mutate()}
+            disabled={resetMutation.isPending}
+            className="w-full py-2 text-xs font-heading tracking-widest border border-danger/30 text-danger hover:bg-danger/10 transition-all duration-200"
+          >
+            FORCE RESET (UNSTICK PIPELINE)
+          </button>
+        )}
       </div>
 
       {/* Recent Runs */}

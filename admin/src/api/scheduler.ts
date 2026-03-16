@@ -15,3 +15,8 @@ export async function runPipelineNow(): Promise<{ status: string }> {
   const response = await client.post('/scheduler/run');
   return response.data;
 }
+
+export async function resetPipeline(): Promise<{ status: string; was_running: boolean }> {
+  const response = await client.post('/scheduler/reset');
+  return response.data;
+}

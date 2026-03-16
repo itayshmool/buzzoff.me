@@ -152,3 +152,18 @@ async def run_pipeline_now(
 
     asyncio.create_task(_run_in_background())
     return {"status": "started"}
+
+
+@router.post("/scheduler/reset")
+async def reset_pipeline_state(
+    _admin: str = Depends(get_current_admin),
+):
+    """Force-reset the running flag if the pipeline is stuck."""
+    import app.services.scheduler as sched_mod
+    from app.services.scheduler import set_current_step
+
+    was_running = sched_mod._running
+    sched_mod._running = False
+    set_current_step(None)
+    logger.warning("Pipeline state force-reset (was_running=%s)", was_running)
+    return {"status": "reset", "was_running": was_running}

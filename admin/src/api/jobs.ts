@@ -7,3 +7,8 @@ export async function getJobs(jobType?: string, limit = 50): Promise<JobRun[]> {
   const response = await client.get<JobRun[]>('/jobs', { params });
   return response.data;
 }
+
+export async function runJob(jobType: string): Promise<{ status: string; job_type: string }> {
+  const response = await client.post(`/jobs/run/${jobType}`);
+  return response.data;
+}
