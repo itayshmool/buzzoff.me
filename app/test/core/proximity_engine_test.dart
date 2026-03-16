@@ -21,6 +21,12 @@ class FakeCameraQuery implements CameraQueryPort {
           c.lon <= maxLon;
     }).toList();
   }
+
+  @override
+  int getCameraCount() => cameras.length;
+
+  @override
+  String? getMeta(String key) => null;
 }
 
 // Tel Aviv center: 32.0853, 34.7818
@@ -30,13 +36,14 @@ const _userLon = 34.7818;
 const _headingNorth = 0.0;
 const _speed60 = 60.0;
 
-Camera _cameraAt(double lat, double lon, {int id = 1}) {
+Camera _cameraAt(double lat, double lon, {int id = 1, double? heading}) {
   return Camera(
     id: id,
     lat: lat,
     lon: lon,
     type: CameraType.fixedSpeed,
     speedLimit: 80,
+    heading: heading,
   );
 }
 
@@ -176,6 +183,49 @@ void main() {
 
       expect(alerts, hasLength(1));
       expect(alerts.first.level, AlertLevel.approaching);
+    });
+
+    test('skips camera facing opposite lane', () {
+      // Camera 600m north, facing south (180°) — opposite to user heading north (0°)
+      final camera =
+          _cameraAt(_userLat + 0.0054, _userLon, heading: 180);
+      final engine = ProximityEngine(FakeCameraQuery([camera]));
+      final alerts =
+          engine.check(_userLat, _userLon, _headingNorth, _speed60);
+
+      expect(alerts, isEmpty);
+    });
+
+    test('alerts for camera facing same lane', () {
+      // Camera 600m north, facing north (0°) — same as user heading north
+      final camera =
+          _cameraAt(_userLat + 0.0054, _userLon, heading: 0);
+      final engine = ProximityEngine(FakeCameraQuery([camera]));
+      final alerts =
+          engine.check(_userLat, _userLon, _headingNorth, _speed60);
+
+      expect(alerts, hasLength(1));
+    });
+
+    test('alerts for camera with no heading (null)', () {
+      // Camera 600m north, no heading data — should still alert (safe default)
+      final camera = _cameraAt(_userLat + 0.0054, _userLon);
+      final engine = ProximityEngine(FakeCameraQuery([camera]));
+      final alerts =
+          engine.check(_userLat, _userLon, _headingNorth, _speed60);
+
+      expect(alerts, hasLength(1));
+    });
+
+    test('alerts for camera facing similar direction within tolerance', () {
+      // Camera 600m north, facing NNE (30°) — within 90° of user heading north
+      final camera =
+          _cameraAt(_userLat + 0.0054, _userLon, heading: 30);
+      final engine = ProximityEngine(FakeCameraQuery([camera]));
+      final alerts =
+          engine.check(_userLat, _userLon, _headingNorth, _speed60);
+
+      expect(alerts, hasLength(1));
     });
   });
 }

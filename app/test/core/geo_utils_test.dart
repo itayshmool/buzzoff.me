@@ -56,6 +56,50 @@ void main() {
     });
   });
 
+  group('angleDiff', () {
+    test('same heading returns 0', () {
+      expect(GeoUtils.angleDiff(90, 90), 0);
+    });
+
+    test('opposite headings return 180', () {
+      expect(GeoUtils.angleDiff(0, 180), 180);
+    });
+
+    test('handles wrap-around', () {
+      expect(GeoUtils.angleDiff(350, 10), 20);
+      expect(GeoUtils.angleDiff(10, 350), 20);
+    });
+  });
+
+  group('isSameLane', () {
+    test('null camera heading returns true (safe default)', () {
+      expect(GeoUtils.isSameLane(90, null, 90), isTrue);
+    });
+
+    test('same direction is same lane', () {
+      expect(GeoUtils.isSameLane(180, 180, 90), isTrue);
+    });
+
+    test('similar direction within tolerance is same lane', () {
+      expect(GeoUtils.isSameLane(170, 200, 90), isTrue);
+    });
+
+    test('opposite direction is not same lane', () {
+      expect(GeoUtils.isSameLane(0, 180, 90), isFalse);
+    });
+
+    test('opposite direction with wrap-around is not same lane', () {
+      expect(GeoUtils.isSameLane(10, 200, 90), isFalse);
+    });
+
+    test('perpendicular direction at boundary', () {
+      // 90° diff is exactly at the boundary → same lane
+      expect(GeoUtils.isSameLane(0, 90, 90), isTrue);
+      // 91° diff is just past → not same lane
+      expect(GeoUtils.isSameLane(0, 91, 90), isFalse);
+    });
+  });
+
   group('isAhead', () {
     test('camera directly ahead is detected', () {
       expect(GeoUtils.isAhead(0, 0, 45), isTrue);

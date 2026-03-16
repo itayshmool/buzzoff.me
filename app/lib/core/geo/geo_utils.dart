@@ -53,6 +53,26 @@ class GeoUtils {
     return diff <= tolerance;
   }
 
+  /// Angular difference between two headings in degrees (0-180).
+  static double angleDiff(double a, double b) {
+    var diff = (a - b).abs();
+    if (diff > 180) diff = 360 - diff;
+    return diff;
+  }
+
+  /// Whether a camera facing [cameraHeading] is targeting the same lane
+  /// as a user traveling with [userHeading]. Returns true (same lane) when
+  /// the angular difference is within [tolerance], or when [cameraHeading]
+  /// is null (no data — assume same lane to be safe).
+  static bool isSameLane(
+    double userHeading,
+    double? cameraHeading,
+    double tolerance,
+  ) {
+    if (cameraHeading == null) return true; // no data → alert anyway
+    return angleDiff(userHeading, cameraHeading) <= tolerance;
+  }
+
   static double _toRadians(double deg) => deg * pi / 180;
   static double _toDegrees(double rad) => rad * 180 / pi;
 }

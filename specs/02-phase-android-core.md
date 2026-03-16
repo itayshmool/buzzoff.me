@@ -41,6 +41,7 @@ ProximityEngine.check(lat, lon, heading, speed)
     │
     ├── query R-tree: cameras within 2km
     ├── filter by heading (±45° cone ahead)
+    ├── filter by camera facing direction (±90° same lane)
     ├── calculate distance to each
     ├── check alert thresholds (800m, 400m)
     ├── debounce (don't re-alert same camera)
@@ -136,7 +137,8 @@ class ProximityEngine {
 
   static const approachDistance = 800.0;  // meters
   static const closeDistance = 400.0;
-  static const headingTolerance = 45.0;   // degrees
+  static const headingTolerance = 45.0;   // degrees — is camera position ahead?
+  static const laneTolerance = 90.0;      // degrees — is camera facing our lane?
   static const cooldownDistance = 200.0;
 
   ProximityEngine(this._cameraQuery);
@@ -155,7 +157,11 @@ class ProximityEngine {
       // 2. Is camera ahead of us? (within heading cone)
       if (!GeoUtils.isAhead(heading, bearing, headingTolerance)) continue;
 
-      // 3. Check alert thresholds
+      // 3. Is camera facing our lane? (skip opposite-lane cameras)
+      // If camera has no heading data → alert anyway (safe default)
+      if (!GeoUtils.isSameLane(heading, camera.heading, laneTolerance)) continue;
+
+      // 4. Check alert thresholds
       if (distance <= closeDistance && !_alertedClose.contains(camera.id)) {
         alerts.add(AlertEvent(camera, AlertLevel.close, distance));
         _alertedClose.add(camera.id);
@@ -164,7 +170,7 @@ class ProximityEngine {
         _alertedApproaching.add(camera.id);
       }
 
-      // 4. Reset if camera is behind us past cooldown
+      // 5. Reset if camera is behind us past cooldown
       if (distance > cooldownDistance && _alertedClose.contains(camera.id)) {
         if (!GeoUtils.isAhead(heading, bearing, 90.0)) {
           _alertedClose.remove(camera.id);
@@ -300,7 +306,7 @@ app/
 │   │
 │   ├── core/                        # Pure Dart — zero platform dependency, fully testable
 │   │   ├── geo/
-│   │   │   ├── geo_utils.dart       # haversine, bearing, isAhead
+│   │   │   ├── geo_utils.dart       # haversine, bearing, isAhead, isSameLane
 │   │   │   └── bounding_box.dart    # lat/lon offset calculations
 │   │   ├── proximity/
 │   │   │   ├── proximity_engine.dart # check(lat, lon, heading, speed) → alerts
@@ -397,8 +403,9 @@ This allows real-world testing without the full data pipeline.
 - [x] Activity Recognition detects STILL/ON_FOOT and stops GPS (with 2-min delay via scheduleStopping/cancelStopping)
 - [x] Foreground service runs with persistent notification (flutter_foreground_task configured with autoRunOnBoot)
 - [x] GPS updates arrive every 3-5 seconds while driving (geolocator stream with 10m distance filter)
-- [x] ProximityEngine correctly identifies cameras within alert distance (11 tests)
+- [x] ProximityEngine correctly identifies cameras within alert distance (15 tests)
 - [x] ProximityEngine filters cameras by heading (only ahead, ±45° cone)
+- [x] ProximityEngine filters cameras by facing direction (same lane, ±90° tolerance)
 - [x] ProximityEngine debounces (no double-alert for same camera)
 - [x] Vibration triggers at 800m (approaching) and 400m (close)
 - [x] App survives phone reboot (BootReceiver configured via flutter_foreground_task)
@@ -412,7 +419,7 @@ This allows real-world testing without the full data pipeline.
 ### Phase 2 Results
 
 - Flutter 3.41.4 project with full app architecture
-- 48 tests passing (16 GeoUtils + 11 ProximityEngine + 7 CameraDao + 8 Orchestrator + 3 UserPreferences + 3 Settings UI)
+- 55 tests passing (25 GeoUtils + 15 ProximityEngine + 7 CameraDao + 8 Orchestrator + 3 UserPreferences + 3 Settings UI) — includes lane-direction filtering tests
 - Pure Dart core engine with zero platform dependencies
 - CameraQueryPort abstraction decouples proximity engine from SQLite
 - Live map screen with OSM tiles, camera markers, user position dot

@@ -22,7 +22,8 @@ class ProximityEngine {
 
   static const approachDistance = 800.0; // meters
   static const closeDistance = 400.0;
-  static const headingTolerance = 45.0; // degrees
+  static const headingTolerance = 45.0; // degrees — is camera position ahead?
+  static const laneTolerance = 90.0; // degrees — is camera facing our lane?
   static const cooldownDistance = 200.0;
 
   // ~2km in lat/lon offsets
@@ -56,6 +57,11 @@ class ProximityEngine {
           _alertedClose.remove(camera.id);
           _alertedApproaching.remove(camera.id);
         }
+        continue;
+      }
+
+      // Is camera facing our lane? (skip opposite-lane cameras)
+      if (!GeoUtils.isSameLane(heading, camera.heading, laneTolerance)) {
         continue;
       }
 
