@@ -552,7 +552,6 @@ html[dir="rtl"] .btn-badge{right:auto;left:-10px}
   font-size:13px;color:var(--muted);letter-spacing:1px;
 }
 .gauge-needle{
-  transform-origin:100px 100px;
   transition:stroke .3s;
 }
 .gauge-item:hover .gauge-needle{
@@ -1480,12 +1479,13 @@ document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el
     gauges.forEach(function(g) {
       var targetDeg = -135 + (g.target * 270);
       gsap.to(g.progress, {
-        attr: { 'stroke-dashoffset': g.totalLength * (1 - g.target) },
+        strokeDashoffset: g.totalLength * (1 - g.target),
         duration: DURATION,
         ease: 'back.out(' + OVERSHOOT + ')'
       });
       gsap.to(g.needle, {
         rotation: targetDeg,
+        svgOrigin: '100 100',
         duration: DURATION,
         ease: 'back.out(' + OVERSHOOT + ')',
         onUpdate: function() {
@@ -1498,8 +1498,8 @@ document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el
 
   function resetGauges() {
     gauges.forEach(function(g) {
-      gsap.set(g.progress, { attr: { 'stroke-dashoffset': g.totalLength } });
-      gsap.set(g.needle, { rotation: -135 });
+      gsap.set(g.progress, { strokeDashoffset: g.totalLength });
+      gsap.set(g.needle, { rotation: -135, svgOrigin: '100 100' });
       g.needle.style.setProperty('--needle-deg', '-135deg');
     });
   }
