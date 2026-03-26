@@ -1415,7 +1415,7 @@ document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el
     progress.setAttribute('stroke-width', ARC_THICKNESS);
     progress.setAttribute('stroke-linecap', 'round');
     progress.setAttribute('stroke-dasharray', totalLength);
-    progress.setAttribute('stroke-dashoffset', totalLength);
+    progress.style.strokeDashoffset = totalLength;
     svg.appendChild(progress);
 
     // Tick marks (12)
@@ -1440,7 +1440,6 @@ document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el
     needle.setAttribute('stroke', 'var(--gold)');
     needle.setAttribute('stroke-width', '2');
     needle.setAttribute('class', 'gauge-needle');
-    needle.style.transform = 'rotate(-135deg)';
     svg.appendChild(needle);
 
     // Pivot dot
@@ -1465,6 +1464,9 @@ document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el
     item.appendChild(labelDiv);
 
     gaugeGrid.appendChild(item);
+
+    // Set initial needle position via GSAP so it knows the start value
+    gsap.set(needle, { rotation: -135, svgOrigin: '100 100' });
 
     gauges.push({
       item: item,
@@ -1513,7 +1515,7 @@ document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el
         animateGauges();
       }
     });
-  }, { threshold: 0.3 });
+  }, { threshold: 0.1 });
   gaugeObserver.observe(dashboard);
 
   // Replay button
