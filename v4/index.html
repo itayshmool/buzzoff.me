@@ -1353,6 +1353,7 @@ document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el
   var gaugeGrid = document.getElementById('gaugeGrid');
   var dashboard = document.getElementById('gaugeDashboard');
   var replayBtn = document.getElementById('gaugeReplay');
+  if (!gaugeGrid || !dashboard) return;
 
   var DURATION = 1.9;
   var OVERSHOOT = 1;
@@ -1367,7 +1368,6 @@ document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el
   ];
 
   var arcPath = 'M 43.43 156.57 A 80 80 0 1 1 156.57 156.57';
-  var totalLength = 80 * Math.PI * 1.5; // 270deg arc
   var rainbowColors = ['#E52521','#FF8C00','#FFD700','#43B047','#049CD8','#8A2BE2'];
 
   var gauges = [];
@@ -1376,7 +1376,6 @@ document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el
     var item = document.createElement('div');
     item.className = 'gauge-item fade-up';
 
-    // Build SVG
     var ns = 'http://www.w3.org/2000/svg';
     var svg = document.createElementNS(ns, 'svg');
     svg.setAttribute('viewBox', '0 0 200 200');
@@ -1414,8 +1413,6 @@ document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el
     progress.setAttribute('stroke', 'url(#gRainbow' + i + ')');
     progress.setAttribute('stroke-width', ARC_THICKNESS);
     progress.setAttribute('stroke-linecap', 'round');
-    progress.setAttribute('stroke-dasharray', totalLength);
-    progress.style.strokeDashoffset = totalLength;
     svg.appendChild(progress);
 
     // Tick marks (12)
@@ -1433,16 +1430,18 @@ document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el
       svg.appendChild(tick);
     }
 
-    // Needle
-    var needle = document.createElementNS(ns, 'line');
-    needle.setAttribute('x1', '100'); needle.setAttribute('y1', '100');
-    needle.setAttribute('x2', '100'); needle.setAttribute('y2', '25');
-    needle.setAttribute('stroke', 'var(--gold)');
-    needle.setAttribute('stroke-width', '2');
-    needle.setAttribute('class', 'gauge-needle');
-    svg.appendChild(needle);
+    // Needle group — use a <g> so we rotate the group, not a line directly
+    var needleG = document.createElementNS(ns, 'g');
+    needleG.setAttribute('class', 'gauge-needle');
+    var needleLine = document.createElementNS(ns, 'line');
+    needleLine.setAttribute('x1', '100'); needleLine.setAttribute('y1', '100');
+    needleLine.setAttribute('x2', '100'); needleLine.setAttribute('y2', '25');
+    needleLine.setAttribute('stroke', 'var(--gold)');
+    needleLine.setAttribute('stroke-width', '2');
+    needleG.appendChild(needleLine);
+    svg.appendChild(needleG);
 
-    // Pivot dot
+    // Pivot dot (on top of needle)
     var pivot = document.createElementNS(ns, 'circle');
     pivot.setAttribute('cx', '100'); pivot.setAttribute('cy', '100');
     pivot.setAttribute('r', '5'); pivot.setAttribute('fill', 'var(--gold)');
@@ -1450,13 +1449,11 @@ document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el
 
     item.appendChild(svg);
 
-    // Stat value
     var statDiv = document.createElement('div');
     statDiv.className = 'gauge-stat';
     statDiv.textContent = stat.value;
     item.appendChild(statDiv);
 
-    // Label (i18n-aware)
     var labelDiv = document.createElement('div');
     labelDiv.className = 'gauge-label';
     labelDiv.setAttribute('data-i18n', stat.label);
@@ -1465,34 +1462,52 @@ document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el
 
     gaugeGrid.appendChild(item);
 
-    // Set initial needle position via GSAP so it knows the start value
-    gsap.set(needle, { rotation: -135, svgOrigin: '100 100' });
-
     gauges.push({
       item: item,
       progress: progress,
-      needle: needle,
-      target: stat.target,
-      totalLength: totalLength
+      needleG: needleG,
+      target: stat.target
+    });
+  });
+
+  // After DOM insertion, measure actual path lengths and set initial state
+  requestAnimationFrame(function() {
+    gauges.forEach(function(g) {
+      // Get real path length from the browser
+      var len = g.progress.getTotalLength();
+      g.totalLength = len;
+      // Set initial dash state — fully hidden
+      g.progress.setAttribute('stroke-dasharray', len);
+      g.progress.setAttribute('stroke-dashoffset', len);
+      // Set initial needle rotation via SVG transform attribute
+      g.needleG.setAttribute('transform', 'rotate(-135 100 100)');
     });
   });
 
   function animateGauges() {
     gauges.forEach(function(g) {
+      var targetOffset = g.totalLength * (1 - g.target);
       var targetDeg = -135 + (g.target * 270);
-      gsap.to(g.progress, {
-        strokeDashoffset: g.totalLength * (1 - g.target),
-        duration: DURATION,
-        ease: 'back.out(' + OVERSHOOT + ')'
-      });
-      gsap.to(g.needle, {
-        rotation: targetDeg,
-        svgOrigin: '100 100',
+
+      // Animate arc fill using attribute directly (no CSS dependency)
+      gsap.to({ val: g.totalLength }, {
+        val: targetOffset,
         duration: DURATION,
         ease: 'back.out(' + OVERSHOOT + ')',
         onUpdate: function() {
-          var rot = gsap.getProperty(g.needle, 'rotation');
-          g.needle.style.setProperty('--needle-deg', rot + 'deg');
+          g.progress.setAttribute('stroke-dashoffset', this.targets()[0].val);
+        }
+      });
+
+      // Animate needle rotation via SVG transform attribute
+      gsap.to({ deg: -135 }, {
+        deg: targetDeg,
+        duration: DURATION,
+        ease: 'back.out(' + OVERSHOOT + ')',
+        onUpdate: function() {
+          var d = this.targets()[0].deg;
+          g.needleG.setAttribute('transform', 'rotate(' + d + ' 100 100)');
+          g.needleG.style.setProperty('--needle-deg', d + 'deg');
         }
       });
     });
@@ -1500,9 +1515,9 @@ document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el
 
   function resetGauges() {
     gauges.forEach(function(g) {
-      gsap.set(g.progress, { strokeDashoffset: g.totalLength });
-      gsap.set(g.needle, { rotation: -135, svgOrigin: '100 100' });
-      g.needle.style.setProperty('--needle-deg', '-135deg');
+      g.progress.setAttribute('stroke-dashoffset', g.totalLength);
+      g.needleG.setAttribute('transform', 'rotate(-135 100 100)');
+      g.needleG.style.setProperty('--needle-deg', '-135deg');
     });
   }
 
@@ -1519,12 +1534,13 @@ document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el
   gaugeObserver.observe(dashboard);
 
   // Replay button
-  replayBtn.addEventListener('click', function() {
-    gaugeObserved = true;
-    resetGauges();
-    setTimeout(animateGauges, 100);
-  });
-
+  if (replayBtn) {
+    replayBtn.addEventListener('click', function() {
+      gaugeObserved = true;
+      resetGauges();
+      setTimeout(animateGauges, 100);
+    });
+  }
 })();
 
 /* ═══════════ 3D PHONE CAROUSEL ═══════════ */
